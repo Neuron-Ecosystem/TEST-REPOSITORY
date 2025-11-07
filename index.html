@@ -5,24 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Neuron OS</title>
 <link rel="stylesheet" href="style.css">
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body class="light">
 
-<!-- Login Screen -->
-<div id="login-screen">
-  <h2>Neuron OS — Вход / Регистрация</h2>
+<div id="auth-screen">
+  <h2>Neuron OS</h2>
   <input type="email" id="email" placeholder="Email">
   <input type="password" id="password" placeholder="Пароль">
   <button id="login-btn">Войти</button>
-  <button id="register-btn">Регистрация</button>
-  <div id="login-error"></div>
+  <button id="register-btn">Зарегистрироваться</button>
 </div>
 
-<!-- Desktop -->
 <div id="desktop" style="display:none;">
   <div id="dock">
     <div class="dock-icon" data-app="ai">🧠</div>
@@ -37,22 +30,54 @@
 </div>
 
 <!-- Windows -->
-<!-- Пример Notes -->
+<div class="window" id="ai">
+  <div class="window-header">
+    <button class="close"></button>
+    <button class="minimize"></button>
+    <button class="maximize"></button>
+  </div>
+  <div class="window-content">
+    <h2>Neuron AI</h2>
+    <div id="ai-output" style="height:300px; overflow:auto;"></div>
+    <input id="ai-input" placeholder="Введите команду..." style="width:100%; padding:5px;">
+  </div>
+</div>
+
 <div class="window" id="notes">
   <div class="window-header">
-    <button class="close"></button><button class="minimize"></button><button class="maximize"></button>
+    <button class="close"></button>
+    <button class="minimize"></button>
+    <button class="maximize"></button>
   </div>
   <div class="window-content">
     <h2>Neuron Notes</h2>
     <textarea id="notes-area" style="width:100%; height:300px;"></textarea>
-    <button id="save-notes">Сохранить</button>
   </div>
 </div>
 
-<!-- Settings -->
+<div class="window" id="converter">
+  <div class="window-header">
+    <button class="close"></button>
+    <button class="minimize"></button>
+    <button class="maximize"></button>
+  </div>
+  <div class="window-content">
+    <h2>Neuron Converter</h2>
+    <input type="number" id="conv-input" placeholder="Введите число">
+    <select id="conv-type">
+      <option value="usdToEur">USD → EUR</option>
+      <option value="eurToUsd">EUR → USD</option>
+    </select>
+    <button id="conv-btn">Конвертировать</button>
+    <div id="conv-result"></div>
+  </div>
+</div>
+
 <div class="window" id="settings">
   <div class="window-header">
-    <button class="close"></button><button class="minimize"></button><button class="maximize"></button>
+    <button class="close"></button>
+    <button class="minimize"></button>
+    <button class="maximize"></button>
   </div>
   <div class="window-content">
     <h2>Настройки</h2>
@@ -74,6 +99,78 @@
   </div>
 </div>
 
-<script src="script.js"></script>
+<script type="module" src="script.js"></script>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDOaDVzzPjyYm4HWMND2XYWjLy_h4wty5s",
+  authDomain: "neuron-ecosystem-2025.firebaseapp.com",
+  projectId: "neuron-ecosystem-2025",
+  storageBucket: "neuron-ecosystem-2025.firebasestorage.app",
+  messagingSenderId: "589834476565",
+  appId: "1:589834476565:web:622fe04057d33339dd421c",
+  measurementId: "G-Z934BZPLG3"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Авторизация
+const loginBtn=document.getElementById('login-btn');
+const registerBtn=document.getElementById('register-btn');
+const emailInput=document.getElementById('email');
+const passInput=document.getElementById('password');
+const authScreen=document.getElementById('auth-screen');
+const desktop=document.getElementById('desktop');
+
+loginBtn.addEventListener('click',()=>{
+  signInWithEmailAndPassword(auth,emailInput.value,passInput.value)
+  .then(()=>console.log('Вход успешен'))
+  .catch(e=>alert(e.message));
+});
+
+registerBtn.addEventListener('click',()=>{
+  createUserWithEmailAndPassword(auth,emailInput.value,passInput.value)
+  .then(()=>console.log('Регистрация успешна'))
+  .catch(e=>alert(e.message));
+});
+
+onAuthStateChanged(auth,user=>{
+  if(user){
+    authScreen.style.display='none';
+    desktop.style.display='block';
+    loadUserData(user.uid);
+  }else{
+    authScreen.style.display='flex';
+    desktop.style.display='none';
+  }
+});
+
+async function loadUserData(uid){
+  const docRef = doc(db,"users",uid);
+  const docSnap = await getDoc(docRef);
+  if(docSnap.exists()){
+    const data=docSnap.data();
+    if(data.notes) document.getElementById('notes-area').value=data.notes;
+    if(data.theme) document.body.className=data.theme;
+    if(data.wallpaper) document.getElementById('desktop').style.backgroundImage=`url(${data.wallpaper})`;
+  }
+}
+async function saveUserData(uid){
+  const docRef = doc(db,"users",uid);
+  await setDoc(docRef,{
+    notes: document.getElementById('notes-area').value,
+    theme: document.body.className,
+    wallpaper: document.getElementById('desktop').style.backgroundImage.replace(/url\(|\)|"/g,'')
+  }, {merge:true});
+}
+
+</script>
 </body>
 </html>
