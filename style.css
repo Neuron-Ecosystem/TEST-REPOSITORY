@@ -1,92 +1,36 @@
-/* ========= Reset ========= */
 *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;}
-body, html{width:100%;height:100%;overflow:hidden;transition:background 0.5s;}
+body,html{width:100%;height:100%;overflow:hidden;transition:background 0.5s;}
 body.light{background:#eaeaea;color:#000;}
 body.dark{background:#111;color:#fff;}
 
-/* ========= Desktop ========= */
-#desktop{
-  width:100%; height:100%;
-  background-size:cover; background-position:center;
-  position:relative;
-  overflow:hidden;
-}
+/* Desktop */
+#desktop{width:100%;height:100%;background-size:cover;background-position:center;position:relative;overflow:hidden;}
 
-/* ========= Dock ========= */
-#dock{
-  position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
-  display:flex; gap:15px; padding:10px 20px;
-  background:rgba(255,255,255,0.2);
-  backdrop-filter:blur(20px);
-  border-radius:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.2);
-  z-index:100;
-  transition:background 0.3s;
-}
-.dock-icon{
-  width:60px; height:60px; cursor:pointer; transition:all 0.25s cubic-bezier(0.25,1,0.5,1);
-  border-radius:12px; display:flex; justify-content:center; align-items:center;
-  background:rgba(255,255,255,0.1); backdrop-filter:blur(10px);
-  box-shadow:0 5px 15px rgba(0,0,0,0.1);
-  position:relative;
-}
-.dock-icon:hover{
-  transform:scale(1.4);
-  box-shadow:0 10px 25px rgba(0,0,0,0.3);
-  background:rgba(255,255,255,0.2);
-}
-.dock-icon.active::after{
-  content:''; position:absolute; bottom:5px; width:8px; height:8px;
-  border-radius:50%; background:#fff;
-  box-shadow:0 0 6px rgba(255,255,255,0.8);
-}
+/* Dock */
+#dock{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:15px;padding:10px 20px;background:rgba(255,255,255,0.2);backdrop-filter:blur(20px);border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.2);z-index:100;transition:background 0.3s;}
+.dock-icon{width:60px;height:60px;cursor:pointer;transition:all 0.25s cubic-bezier(0.25,1,0.5,1);border-radius:12px;display:flex;justify-content:center;align-items:center;background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);box-shadow:0 5px 15px rgba(0,0,0,0.1);position:relative;}
+.dock-icon:hover{transform:scale(1.4);box-shadow:0 10px 25px rgba(0,0,0,0.3);background:rgba(255,255,255,0.2);}
+.dock-icon.active::after{content:'';position:absolute;bottom:5px;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 6px rgba(255,255,255,0.8);}
 
-/* ========= Windows ========= */
-.window{
-  position:absolute; width:600px; height:400px;
-  background:rgba(255,255,255,0.1); backdrop-filter:blur(20px);
-  border-radius:16px; box-shadow:0 15px 40px rgba(0,0,0,0.3);
-  top:50%; left:50%; transform:translate(-50%,-50%) scale(0.5);
-  transition:transform 0.35s cubic-bezier(0.25,1,0.5,1),opacity 0.35s ease;
-  opacity:0; display:flex; flex-direction:column; overflow:hidden; z-index:50;
-}
-.window.active{
-  transform:translate(-50%,-50%) scale(1);
-  opacity:1;
-}
-
-/* ========= Window header ========= */
-.window-header{
-  height:40px; display:flex; align-items:center; padding:0 10px;
-  background:rgba(255,255,255,0.1); backdrop-filter:blur(10px);
-  cursor:grab;
-}
-.window-header button{
-  width:14px; height:14px; border-radius:50%; border:none; margin-right:6px;
-  cursor:pointer;
-  transition:all 0.2s;
-}
+/* Windows */
+.window{position:absolute;width:600px;height:400px;background:rgba(255,255,255,0.1);backdrop-filter:blur(20px);border-radius:16px;box-shadow:0 15px 40px rgba(0,0,0,0.3);top:50%;left:50%;transform:translate(-50%,-50%) scale(0.5);transition:transform 0.35s cubic-bezier(0.25,1,0.5,1),opacity 0.35s ease;opacity:0;display:flex;flex-direction:column;overflow:hidden;z-index:50;}
+.window.active{transform:translate(-50%,-50%) scale(1);opacity:1;}
+.window-header{height:40px;display:flex;align-items:center;padding:0 10px;background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);cursor:grab;}
+.window-header button{width:14px;height:14px;border-radius:50%;border:none;margin-right:6px;cursor:pointer;transition:all 0.2s;}
 .close{background:#ff5f57;}
 .minimize{background:#ffbd2e;}
 .maximize{background:#28c840;}
 .window-header button:hover{transform:scale(1.2);}
 .window-content{flex:1;padding:15px;overflow:auto;transition:all 0.3s;}
 
-/* ========= Settings ========= */
+/* Settings */
 #settings .wallpaper-grid{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
-.wallpaper-thumb{width:100px; height:60px; border-radius:8px; cursor:pointer; object-fit:cover; border:2px solid transparent; transition:all 0.3s;}
-.wallpaper-thumb.selected{border:2px solid #fff; transform:scale(1.05);}
+.wallpaper-thumb{width:100px;height:60px;border-radius:8px;cursor:pointer;object-fit:cover;border:2px solid transparent;transition:all 0.3s;}
+.wallpaper-thumb.selected{border:2px solid #fff;transform:scale(1.05);}
 #settings label{display:block;margin-top:10px;}
 #settings input[type="file"]{margin-top:5px;}
-#settings button.apply{
-  margin-top:15px; padding:8px 16px; border:none; border-radius:12px;
-  background:rgba(255,255,255,0.2); backdrop-filter:blur(10px); cursor:pointer;
-  transition:all 0.3s ease;
-}
-#settings button.apply:hover{
-  background:rgba(255,255,255,0.3); transform:scale(1.05);
-  box-shadow:0 5px 15px rgba(255,255,255,0.3);
-}
+#settings button.apply{margin-top:15px;padding:8px 16px;border:none;border-radius:12px;background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);cursor:pointer;transition:all 0.3s ease;}
+#settings button.apply:hover{background:rgba(255,255,255,0.3);transform:scale(1.05);box-shadow:0 5px 15px rgba(255,255,255,0.3);}
 #login-screen {
   position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
   display:flex; flex-direction:column; align-items:center; gap:10px;
