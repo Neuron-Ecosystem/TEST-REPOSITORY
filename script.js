@@ -1,12 +1,15 @@
-const dockIcons = document.querySelectorAll('.dock-icon');
-const windows = document.querySelectorAll('.window');
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-dockIcons.forEach(icon => {
-  icon.addEventListener('click', () => {
-    const app = document.getElementById(icon.dataset.app);
-    const isActive = app.classList.contains('active');
-    windows.forEach(w => w.classList.remove('active'));
-    dockIcons.forEach(i => i.classList.remove('active'));
+const dockIcons=document.querySelectorAll('.dock-icon');
+const windows=document.querySelectorAll('.window');
+
+dockIcons.forEach(icon=>{
+  icon.addEventListener('click',()=>{
+    const app=document.getElementById(icon.dataset.app);
+    const isActive=app.classList.contains('active');
+    windows.forEach(w=>w.classList.remove('active'));
+    dockIcons.forEach(i=>i.classList.remove('active'));
     if(!isActive){
       app.classList.add('active');
       icon.classList.add('active');
@@ -16,9 +19,8 @@ dockIcons.forEach(icon => {
 
 // Window buttons + drag
 document.querySelectorAll('.window-header').forEach(header=>{
-  const win = header.parentElement;
-  const [closeBtn,minBtn,maxBtn] = header.querySelectorAll('button');
-
+  const win=header.parentElement;
+  const [closeBtn,minBtn,maxBtn]=header.querySelectorAll('button');
   closeBtn.addEventListener('click',()=>{win.classList.remove('active'); dockIcons.forEach(i=>{if(i.dataset.app==win.id)i.classList.remove('active')})});
   minBtn.addEventListener('click',()=>{win.classList.remove('active'); dockIcons.forEach(i=>{if(i.dataset.app==win.id)i.classList.add('active')})});
   maxBtn.addEventListener('click',()=>{ 
@@ -38,8 +40,10 @@ const wallpaperUpload=document.getElementById('wallpaper-upload');
 const wallpaperThumbs=document.querySelectorAll('.wallpaper-thumb');
 const applyBtn=document.getElementById('apply-settings');
 let selectedWallpaper=null;
+
 wallpaperThumbs.forEach(img=>img.addEventListener('click',()=>{wallpaperThumbs.forEach(i=>i.classList.remove('selected'));img.classList.add('selected');selectedWallpaper=img.src;}));
-applyBtn.addEventListener('click',()=>{
+
+applyBtn.addEventListener('click',async ()=>{
   document.body.className=themeSelect.value;
   if(selectedWallpaper) document.getElementById('desktop').style.backgroundImage=`url(${selectedWallpaper})`;
   if(wallpaperUpload.files[0]){
@@ -47,9 +51,23 @@ applyBtn.addEventListener('click',()=>{
     reader.onload=e=>document.getElementById('desktop').style.backgroundImage=`url(${e.target.result})`;
     reader.readAsDataURL(wallpaperUpload.files[0]);
   }
+  const user=getAuth().currentUser;
+  if(user){
+    await setDoc(doc(getFirestore(), 'users', user.uid), {
+      theme: document.body.className,
+      wallpaper: document.getElementById('desktop').style.backgroundImage.replace(/url\(|\)|"/g,'')
+    }, {merge:true});
+  }
 });
 
-// AI
+// Notes autosave
+const notesArea=document.getElementById('notes-area');
+notesArea.addEventListener('input',async ()=>{
+  const user=getAuth().currentUser;
+  if(user) await setDoc(doc(getFirestore(),'users',user.uid), {notes: notesArea.value}, {merge:true});
+});
+
+// AI input
 const aiInput=document.getElementById('ai-input');
 const aiOutput=document.getElementById('ai-output');
 aiInput.addEventListener('keydown',e=>{
@@ -68,98 +86,12 @@ aiInput.addEventListener('keydown',e=>{
   }
 });
 
-// Browser
-document.getElementById('open-browser')?.addEventListener('click',()=>window.open('https://neuron-p2p.ru','_blank'));
-
 // Converter
-const convertBtn = document.getElementById('convert-btn');
-convertBtn?.addEventListener('click',()=>{
-  const amount = parseFloat(document.getElementById('convert-input').value);
-  const from = document.getElementById('from-currency').value;
-  const to = document.getElementById('to-currency').value;
-  if(isNaN(amount)){alert('Введите число'); return;}
-  // Простые курсы USD->EUR->RUB
-  const rates = {USD:1, EUR:0.9, RUB:90};
-  const result = amount/rates[from]*rates[to];
-  document.getElementById('convert-result').innerText = `${amount} ${from} = ${result.toFixed(2)} ${to}`;
+document.getElementById('conv-btn').addEventListener('click',()=>{
+  const val=parseFloat(document.getElementById('conv-input').value);
+  const type=document.getElementById('conv-type').value;
+  let res=0;
+  if(type==='usdToEur') res=(val*0.93).toFixed(2);
+  if(type==='eurToUsd') res=(val*1.08).toFixed(2);
+  document.getElementById('conv-result').textContent=res;
 });
-// Firebase config
-const firebaseConfig = {
-  apiKey: "ТВОЙ_API_KEY",
-  authDomain: "ТВОЙ_PROJECT.firebaseapp.com",
-  projectId: "ТВОЙ_PROJECT_ID",
-  storageBucket: "ТВОЙ_PROJECT.appspot.com",
-  messagingSenderId: "ТВОЙ_SENDER_ID",
-  appId: "ТВОЙ_APP_ID"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-// Авторизация
-const loginScreen = document.getElementById('login-screen');
-const desktop = document.getElementById('desktop');
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
-const loginBtn = document.getElementById('login-btn');
-const registerBtn = document.getElementById('register-btn');
-const loginError = document.getElementById('login-error');
-
-loginBtn.addEventListener('click',()=>{
-  auth.signInWithEmailAndPassword(emailInput.value, passwordInput.value)
-    .then(()=>{loginScreen.style.display='none'; desktop.style.display='block'; loadUserData();})
-    .catch(e=>loginError.innerText=e.message);
-});
-
-registerBtn.addEventListener('click',()=>{
-  auth.createUserWithEmailAndPassword(emailInput.value, passwordInput.value)
-    .then(()=>{loginScreen.style.display='none'; desktop.style.display='block'; loadUserData();})
-    .catch(e=>loginError.innerText=e.message);
-});
-
-// Сохранение / загрузка Notes
-const notesArea = document.getElementById('notes-area');
-document.getElementById('save-notes').addEventListener('click',()=>{
-  const uid = auth.currentUser.uid;
-  db.collection('users').doc(uid).set({notes: notesArea.value}, {merge:true});
-});
-
-function loadUserData(){
-  const uid = auth.currentUser.uid;
-  db.collection('users').doc(uid).get().then(doc=>{
-    if(doc.exists){
-      const data = doc.data();
-      if(data.notes) notesArea.value = data.notes;
-      if(data.theme) document.body.className = data.theme;
-      if(data.wallpaper) document.getElementById('desktop').style.backgroundImage = `url(${data.wallpaper})`;
-    }
-  });
-}
-
-// Settings: синхронизация темы и обоев
-const themeSelect=document.getElementById('theme-select');
-const wallpaperUpload=document.getElementById('wallpaper-upload');
-const wallpaperThumbs=document.querySelectorAll('.wallpaper-thumb');
-const applyBtn=document.getElementById('apply-settings');
-let selectedWallpaper=null;
-wallpaperThumbs.forEach(img=>img.addEventListener('click',()=>{wallpaperThumbs.forEach(i=>i.classList.remove('selected'));img.classList.add('selected');selectedWallpaper=img.src;}));
-applyBtn.addEventListener('click',()=>{
-  const theme = themeSelect.value;
-  document.body.className=theme;
-  let wallpaper = selectedWallpaper;
-  if(wallpaperUpload.files[0]){
-    const reader=new FileReader();
-    reader.onload=e=>{wallpaper=e.target.result; setWallpaperAndSync(theme,wallpaper);}
-    reader.readAsDataURL(wallpaperUpload.files[0]);
-  } else {
-    setWallpaperAndSync(theme,wallpaper);
-  }
-});
-
-function setWallpaperAndSync(theme, wallpaper){
-  if(theme) document.body.className = theme;
-  if(wallpaper) document.getElementById('desktop').style.backgroundImage = `url(${wallpaper})`;
-  // Sync to Firebase
-  const uid = auth.currentUser.uid;
-  db.collection('users').doc(uid).set({theme, wallpaper}, {merge:true});
-}
