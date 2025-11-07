@@ -4,99 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Neuron OS</title>
-<style>
-  /* ========= Reset ========= */
-  *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;}
-  body, html{width:100%;height:100%;overflow:hidden;transition:background 0.5s;}
-  body.light{background:#eaeaea;color:#000;}
-  body.dark{background:#111;color:#fff;}
-
-  /* ========= Desktop ========= */
-  #desktop{
-    width:100%; height:100%;
-    background-size:cover; background-position:center;
-    position:relative;
-    overflow:hidden;
-  }
-
-  /* ========= Dock ========= */
-  #dock{
-    position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
-    display:flex; gap:15px; padding:10px 20px;
-    background:rgba(255,255,255,0.2);
-    backdrop-filter:blur(20px);
-    border-radius:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.2);
-    z-index:100;
-    transition:background 0.3s;
-  }
-  .dock-icon{
-    width:60px; height:60px; cursor:pointer; transition:all 0.25s cubic-bezier(0.25,1,0.5,1);
-    border-radius:12px; display:flex; justify-content:center; align-items:center;
-    background:rgba(255,255,255,0.1); backdrop-filter:blur(10px);
-    box-shadow:0 5px 15px rgba(0,0,0,0.1);
-    position:relative;
-  }
-  .dock-icon:hover{
-    transform:scale(1.4);
-    box-shadow:0 10px 25px rgba(0,0,0,0.3);
-    background:rgba(255,255,255,0.2);
-  }
-  .dock-icon.active::after{
-    content:''; position:absolute; bottom:5px; width:8px; height:8px;
-    border-radius:50%; background:#fff;
-    box-shadow:0 0 6px rgba(255,255,255,0.8);
-  }
-
-  /* ========= Windows ========= */
-  .window{
-    position:absolute; width:600px; height:400px;
-    background:rgba(255,255,255,0.1); backdrop-filter:blur(20px);
-    border-radius:16px; box-shadow:0 15px 40px rgba(0,0,0,0.3);
-    top:50%; left:50%; transform:translate(-50%,-50%) scale(0.5);
-    transition:transform 0.35s cubic-bezier(0.25,1,0.5,1),opacity 0.35s ease;
-    opacity:0; display:flex; flex-direction:column; overflow:hidden; z-index:50;
-  }
-  .window.active{
-    transform:translate(-50%,-50%) scale(1);
-    opacity:1;
-  }
-
-  /* ========= Window header ========= */
-  .window-header{
-    height:40px; display:flex; align-items:center; padding:0 10px;
-    background:rgba(255,255,255,0.1); backdrop-filter:blur(10px);
-    cursor:grab;
-  }
-  .window-header button{
-    width:14px; height:14px; border-radius:50%; border:none; margin-right:6px;
-    cursor:pointer;
-    transition:all 0.2s;
-  }
-  .close{background:#ff5f57;}
-  .minimize{background:#ffbd2e;}
-  .maximize{background:#28c840;}
-  .window-header button:hover{transform:scale(1.2);}
-
-  .window-content{flex:1;padding:15px;overflow:auto;transition:all 0.3s;}
-
-  /* ========= Settings ========= */
-  #settings .wallpaper-grid{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
-  .wallpaper-thumb{width:100px; height:60px; border-radius:8px; cursor:pointer; object-fit:cover; border:2px solid transparent; transition:all 0.3s;}
-  .wallpaper-thumb.selected{border:2px solid #fff; transform:scale(1.05);}
-
-  #settings label{display:block;margin-top:10px;}
-  #settings input[type="file"]{margin-top:5px;}
-  #settings button.apply{
-    margin-top:15px; padding:8px 16px; border:none; border-radius:12px;
-    background:rgba(255,255,255,0.2); backdrop-filter:blur(10px); cursor:pointer;
-    transition:all 0.3s ease;
-  }
-  #settings button.apply:hover{
-    background:rgba(255,255,255,0.3); transform:scale(1.05);
-    box-shadow:0 5px 15px rgba(255,255,255,0.3);
-  }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body class="light">
 <div id="desktop">
@@ -113,110 +21,76 @@
 </div>
 
 <!-- Windows -->
-<div class="window" id="ai"><div class="window-header"><button class="close"></button><button class="minimize"></button><button class="maximize"></button></div><div class="window-content"><h2>Neuron AI</h2><div id="ai-output" style="height:300px; overflow:auto;"></div><input id="ai-input" placeholder="Введите команду..." style="width:100%; padding:5px;"></div></div>
-
-<div class="window" id="notes"><div class="window-header"><button class="close"></button><button class="minimize"></button><button class="maximize"></button></div><div class="window-content"><h2>Neuron Notes</h2><textarea style="width:100%; height:300px;"></textarea></div></div>
-
-<div class="window" id="converter"><div class="window-header"><button class="close"></button><button class="minimize"></button><button class="maximize"></button></div><div class="window-content"><h2>Neuron Converter</h2></div></div>
-
-<div class="window" id="budget"><div class="window-header"><button class="close"></button><button class="minimize"></button><button class="maximize"></button></div><div class="window-content"><h2>Neuron Budget</h2></div></div>
-
-<div class="window" id="tools"><div class="window-header"><button class="close"></button><button class="minimize"></button><button class="maximize"></button></div><div class="window-content"><h2>Neuron Tools</h2></div></div>
-
-<div class="window" id="games"><div class="window-header"><button class="close"></button><button class="minimize"></button><button class="maximize"></button></div><div class="window-content"><h2>Game Hub</h2></div></div>
-
-<div class="window" id="browser"><div class="window-header"><button class="close"></button><button class="minimize"></button><button class="maximize"></button></div><div class="window-content"><h2>Neuron Browser</h2><button id="open-browser">Открыть neuron-p2p.ru</button></div></div>
-
-<div class="window" id="settings"><div class="window-header"><button class="close"></button><button class="minimize"></button><button class="maximize"></button></div><div class="window-content">
-  <h2>Настройки</h2>
-  <label>Тема:
-    <select id="theme-select">
-      <option value="light">Светлая</option>
-      <option value="dark">Тёмная</option>
-    </select>
-  </label>
-  <label>Загрузить обои:
-    <input type="file" id="wallpaper-upload" accept="image/*">
-  </label>
-  <div class="wallpaper-grid">
-    <img src="https://picsum.photos/id/1015/200/120" class="wallpaper-thumb">
-    <img src="https://picsum.photos/id/1020/200/120" class="wallpaper-thumb">
-    <img src="https://picsum.photos/id/1024/200/120" class="wallpaper-thumb">
+<div class="window" id="ai">
+  <div class="window-header">
+    <button class="close"></button><button class="minimize"></button><button class="maximize"></button>
   </div>
-  <button class="apply" id="apply-settings">Применить</button>
-</div></div>
+  <div class="window-content">
+    <h2>Neuron AI</h2>
+    <div id="ai-output" style="height:300px; overflow:auto;"></div>
+    <input id="ai-input" placeholder="Введите команду..." style="width:100%; padding:5px;">
+  </div>
+</div>
 
-<script>
-const dockIcons = document.querySelectorAll('.dock-icon');
-const windows = document.querySelectorAll('.window');
-dockIcons.forEach(icon => {
-  icon.addEventListener('click', () => {
-    const app = document.getElementById(icon.dataset.app);
-    const isActive = app.classList.contains('active');
-    windows.forEach(w => w.classList.remove('active'));
-    dockIcons.forEach(i => i.classList.remove('active'));
-    if(!isActive){
-      app.classList.add('active');
-      icon.classList.add('active');
-    }
-  });
-});
+<div class="window" id="notes">
+  <div class="window-header">
+    <button class="close"></button><button class="minimize"></button><button class="maximize"></button>
+  </div>
+  <div class="window-content">
+    <h2>Neuron Notes</h2>
+    <textarea style="width:100%; height:300px;"></textarea>
+  </div>
+</div>
 
-// Window buttons + drag
-document.querySelectorAll('.window-header').forEach(header=>{
-  const win = header.parentElement;
-  const [closeBtn,minBtn,maxBtn] = header.querySelectorAll('button');
-  closeBtn.addEventListener('click',()=>{win.classList.remove('active'); dockIcons.forEach(i=>{if(i.dataset.app==win.id)i.classList.remove('active')})});
-  minBtn.addEventListener('click',()=>{win.classList.remove('active'); dockIcons.forEach(i=>{if(i.dataset.app==win.id)i.classList.add('active')})});
-  maxBtn.addEventListener('click',()=>{ 
-    if(win.style.width==='100%'){win.style.width='600px';win.style.height='400px';win.style.top='50%';win.style.left='50%';win.style.transform='translate(-50%,-50%)';}
-    else{win.style.width='100%';win.style.height='100%';win.style.top='0';win.style.left='0';win.style.transform='none';}
-  });
+<div class="window" id="converter">
+  <div class="window-header">
+    <button class="close"></button><button class="minimize"></button><button class="maximize"></button>
+  </div>
+  <div class="window-content">
+    <h2>Neuron Converter</h2>
+    <label>Сумма:</label>
+    <input type="number" id="convert-input" placeholder="100">
+    <label>Из валюты:</label>
+    <select id="from-currency">
+      <option value="USD">USD</option>
+      <option value="EUR">EUR</option>
+      <option value="RUB">RUB</option>
+    </select>
+    <label>В валюту:</label>
+    <select id="to-currency">
+      <option value="USD">USD</option>
+      <option value="EUR">EUR</option>
+      <option value="RUB">RUB</option>
+    </select>
+    <button id="convert-btn">Конвертировать</button>
+    <div id="convert-result"></div>
+  </div>
+</div>
 
-  let dragging=false, offsetX=0, offsetY=0;
-  header.addEventListener('mousedown',e=>{dragging=true; offsetX=e.clientX-win.offsetLeft; offsetY=e.clientY-win.offsetTop; header.style.cursor='grabbing';});
-  document.addEventListener('mouseup',()=>{dragging=false; header.style.cursor='grab';});
-  document.addEventListener('mousemove',e=>{if(dragging){win.style.left=(e.clientX-offsetX)+'px'; win.style.top=(e.clientY-offsetY)+'px';}});
-});
+<div class="window" id="settings">
+  <div class="window-header">
+    <button class="close"></button><button class="minimize"></button><button class="maximize"></button>
+  </div>
+  <div class="window-content">
+    <h2>Настройки</h2>
+    <label>Тема:
+      <select id="theme-select">
+        <option value="light">Светлая</option>
+        <option value="dark">Тёмная</option>
+      </select>
+    </label>
+    <label>Загрузить обои:
+      <input type="file" id="wallpaper-upload" accept="image/*">
+    </label>
+    <div class="wallpaper-grid">
+      <img src="https://picsum.photos/id/1015/200/120" class="wallpaper-thumb">
+      <img src="https://picsum.photos/id/1020/200/120" class="wallpaper-thumb">
+      <img src="https://picsum.photos/id/1024/200/120" class="wallpaper-thumb">
+    </div>
+    <button class="apply" id="apply-settings">Применить</button>
+  </div>
+</div>
 
-// Settings
-const themeSelect=document.getElementById('theme-select');
-const wallpaperUpload=document.getElementById('wallpaper-upload');
-const wallpaperThumbs=document.querySelectorAll('.wallpaper-thumb');
-const applyBtn=document.getElementById('apply-settings');
-let selectedWallpaper=null;
-wallpaperThumbs.forEach(img=>img.addEventListener('click',()=>{wallpaperThumbs.forEach(i=>i.classList.remove('selected'));img.classList.add('selected');selectedWallpaper=img.src;}));
-applyBtn.addEventListener('click',()=>{
-  document.body.className=themeSelect.value;
-  if(selectedWallpaper) document.getElementById('desktop').style.backgroundImage=`url(${selectedWallpaper})`;
-  if(wallpaperUpload.files[0]){
-    const reader=new FileReader();
-    reader.onload=e=>document.getElementById('desktop').style.backgroundImage=`url(${e.target.result})`;
-    reader.readAsDataURL(wallpaperUpload.files[0]);
-  }
-});
-
-// AI
-const aiInput=document.getElementById('ai-input');
-const aiOutput=document.getElementById('ai-output');
-aiInput.addEventListener('keydown',e=>{
-  if(e.key==='Enter'){
-    const cmd=aiInput.value.trim();
-    aiOutput.innerHTML+=`<div><b>> ${cmd}</b></div>`;
-    if(cmd==='/help') aiOutput.innerHTML+=`<div>/help, /about, /open notes, /settings, /clear, /shutdown</div>`;
-    else if(cmd.startsWith('/open ')){
-      const appName=cmd.split(' ')[1];
-      const app=document.getElementById(appName);
-      if(app){windows.forEach(w=>w.classList.remove('active')); app.classList.add('active'); dockIcons.forEach(i=>{if(i.dataset.app==appName)i.classList.add('active')});}
-    } else if(cmd==='/clear') aiOutput.innerHTML='';
-    else if(cmd==='/shutdown'){windows.forEach(w=>w.classList.remove('active')); dockIcons.forEach(i=>i.classList.remove('active'));}
-    else aiOutput.innerHTML+=`<div>Неизвестная команда</div>`;
-    aiInput.value=''; aiOutput.scrollTop=aiOutput.scrollHeight;
-  }
-});
-
-// Browser
-document.getElementById('open-browser').addEventListener('click',()=>window.open('https://neuron-p2p.ru','_blank'));
-</script>
+<script src="script.js"></script>
 </body>
 </html>
