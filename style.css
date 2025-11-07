@@ -87,3 +87,11 @@ body.dark{background:#111;color:#fff;}
   background:rgba(255,255,255,0.3); transform:scale(1.05);
   box-shadow:0 5px 15px rgba(255,255,255,0.3);
 }
+#login-screen {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  background:rgba(255,255,255,0.1); backdrop-filter:blur(20px); padding:30px; border-radius:16px;
+}
+#login-screen input{padding:8px 12px; border-radius:8px; border:none;}
+#login-screen button{padding:8px 12px; border:none; border-radius:12px; cursor:pointer; background:rgba(255,255,255,0.2);}
+#login-error{color:red; margin-top:10px;}
