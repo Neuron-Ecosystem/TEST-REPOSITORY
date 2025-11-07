@@ -1,57 +1,321 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Neuron OS</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="data:,">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neuron OS</title>
+
+<style>
+  /* ===== Глобальные стили ===== */
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: url('https://images.unsplash.com/photo-1612832021131-7bcf3d546f2c') center/cover no-repeat;
+    overflow: hidden;
+    transition: background 0.5s ease-in-out;
+  }
+
+  .dark-theme {
+    background: linear-gradient(to bottom, #1f1f1f, #121212);
+    color: #fff;
+  }
+
+  /* ===== Рабочий стол ===== */
+  #desktop {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  .icon {
+    width: 80px;
+    text-align: center;
+    position: absolute;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .icon img {
+    width: 64px;
+    height: 64px;
+    transition: transform 0.2s ease;
+  }
+
+  .icon:hover img {
+    transform: scale(1.1);
+  }
+
+  .icon span {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #fff;
+    text-shadow: 0 0 2px #000;
+  }
+
+  /* ===== Панель задач / Dock ===== */
+  #dock {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 10px 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  }
+
+  #dock img {
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  #dock img:hover {
+    transform: scale(1.2);
+  }
+
+  /* ===== Окна приложений ===== */
+  .window {
+    width: 400px;
+    height: 300px;
+    position: absolute;
+    top: 100px;
+    left: 100px;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(15px);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    display: none;
+    flex-direction: column;
+    transition: all 0.3s ease-in-out;
+    overflow: hidden;
+  }
+
+  .window-header {
+    background: rgba(255,255,255,0.3);
+    backdrop-filter: blur(10px);
+    padding: 5px 10px;
+    cursor: move;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .window-header span {
+    font-weight: bold;
+  }
+
+  .window-header .controls {
+    display: flex;
+    gap: 5px;
+  }
+
+  .control-btn {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  .close { background: #ff5f57; }
+  .min { background: #ffbd2e; }
+  .max { background: #28c840; }
+
+  .window-content {
+    flex: 1;
+    padding: 10px;
+    overflow: auto;
+    color: #fff;
+    font-size: 14px;
+  }
+
+  /* ===== Меню Пуск ===== */
+  #startmenu {
+    position: absolute;
+    bottom: 60px;
+    left: 20px;
+    width: 250px;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(15px);
+    border-radius: 10px;
+    padding: 10px;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #startmenu input {
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    width: 100%;
+  }
+
+  #startmenu .app {
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  #startmenu .app:hover {
+    background: rgba(255,255,255,0.2);
+  }
+
+  /* ===== Ассистент ===== */
+  #assistant {
+    position: absolute;
+    bottom: 80px;
+    right: 20px;
+    width: 300px;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(15px);
+    border-radius: 10px;
+    padding: 10px;
+    display: none;
+    color: #fff;
+    font-size: 14px;
+  }
+
+</style>
 </head>
 <body>
-  <div id="wallpaper"></div>
+<div id="desktop">
+  <!-- Иконки приложений -->
+  <div class="icon" style="top:50px; left:50px;" data-app="notes">
+    <img src="https://cdn-icons-png.flaticon.com/512/29/29302.png" alt="Notes">
+    <span>Notes</span>
+  </div>
+  <div class="icon" style="top:50px; left:150px;" data-app="converter">
+    <img src="https://cdn-icons-png.flaticon.com/512/2921/2921822.png" alt="Converter">
+    <span>Converter</span>
+  </div>
 
-  <div id="desktop"></div>
-
-  <div id="windows-container"></div>
-
-  <div id="dock">
-    <div class="dock-icon" data-app="ai" title="Neuron AI">
-      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-      <div class="dock-dot"></div>
+  <!-- Окна приложений -->
+  <div class="window" id="notes">
+    <div class="window-header">
+      <span>Notes</span>
+      <div class="controls">
+        <div class="control-btn close" data-target="notes"></div>
+        <div class="control-btn min"></div>
+        <div class="control-btn max"></div>
+      </div>
     </div>
-    <div class="dock-icon" data-app="notes" title="Neuron Notes">
-      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-      <div class="dock-dot"></div>
-    </div>
-    <div class="dock-icon" data-app="converter" title="Neuron Converter">
-      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 13.17l7.59-7.59L19 7l-9 9z"/></svg>
-      <div class="dock-dot"></div>
-    </div>
-    <div class="dock-icon" data-app="budget" title="Neuron Budget">
-      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.52 3 2.48 0 .98-.85 1.96-2.7 1.96-2.07 0-2.85-1.09-2.94-2.28h-2.21c.09 2.03 1.57 3.62 3.93 4.11V21h3v-2.16c1.95-.42 3.5-1.68 3.5-3.61 0-2.31-1.91-3.46-4.7-4.13z"/></svg>
-      <div class="dock-dot"></div>
-    </div>
-    <div class="dock-icon" data-app="tools" title="Neuron Tools">
-      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19.43 12.98c.04-.32.07-.64.07-.98 0-.34-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.09-.16-.26-.25-.43-.25-.06 0-.12.01-.17.03l-2.48 1c-.54-.39-1.13-.71-1.79-.95l-.38-2.63c-.03-.23-.23-.4-.46-.4h-4c-.23 0-.43.17-.46.4l-.38 2.63c-.66.24-1.25.56-1.79.95l-2.48-1c-.05-.02-.11-.03-.17-.03-.17 0-.34.09-.43.25l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98 0 .33.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.09.16.26.25.43.25.06 0 .12-.01.17-.03l2.48-1c.54.39 1.13.71 1.79.95l.38 2.63c.03.23.23.4.46.4h4c.23 0 .43-.17.46-.4l.38-2.63c.66-.24 1.25-.56 1.79-.95l2.48 1c.05.02.11.03.17.03.17 0 .34-.09.43-.25l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zm-7.43 2.52c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/></svg>
-      <div class="dock-dot"></div>
-    </div>
-    <div class="dock-icon" data-app="games" title="Game Hub">
-      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M15 7.5V2H9v5.5l3 3 3-3zM7.5 9H2v6h5.5l3-3-3-3zM9 16.5V22h6v-5.5l-3-3-3 3zM16.5 9l-3 3 3 3H22V9h-5.5z"/></svg>
-      <div class="dock-dot"></div>
-    </div>
-    <div class="dock-icon" data-app="browser" title="Browser">
-      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-      <div class="dock-dot"></div>
-    </div>
-    <div class="dock-icon" data-app="settings" title="Settings">
-      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19.43 12.98c.04-.32.07-.64.07-.98 0-.34-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.09-.16-.26-.25-.43-.25-.06 0-.12.01-.17.03l-2.48 1c-.54-.39-1.13-.71-1.79-.95l-.38-2.63c-.03-.23-.23-.4-.46-.4h-4c-.23 0-.43.17-.46.4l-.38 2.63c-.66.24-1.25.56-1.79.95l-2.48-1c-.05-.02-.11-.03-.17-.03-.17 0-.34.09-.43.25l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98 0 .33.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.09.16.26.25.43.25.06 0 .12-.01.17-.03l2.48-1c.54.39 1.13.71 1.79.95l.38 2.63c.03.23.23.4.46.4h4c.23 0 .43-.17.46-.4l.38-2.63c.66-.24 1.25-.56 1.79-.95l2.48 1c.05.02.11.03.17.03.17 0 .34-.09.43-.25l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zm-7.43 2.52c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/></svg>
-      <div class="dock-dot"></div>
+    <div class="window-content">
+      <textarea style="width:100%; height:100%; background: rgba(0,0,0,0.3); color:white; border:none; padding:5px; border-radius:5px;"></textarea>
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <div class="window" id="converter">
+    <div class="window-header">
+      <span>Converter</span>
+      <div class="controls">
+        <div class="control-btn close" data-target="converter"></div>
+        <div class="control-btn min"></div>
+        <div class="control-btn max"></div>
+      </div>
+    </div>
+    <div class="window-content">
+      <input type="number" id="amount" placeholder="Введите сумму" style="width:100%; padding:5px; border-radius:5px; border:none; margin-bottom:10px;">
+      <select id="currency" style="width:100%; padding:5px; border-radius:5px; border:none;">
+        <option value="USD">USD</option>
+        <option value="EUR">EUR</option>
+        <option value="RUB">RUB</option>
+      </select>
+      <button onclick="convert()" style="margin-top:10px; padding:5px; border:none; border-radius:5px; background:#28c840; color:#fff;">Convert</button>
+      <div id="result" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <!-- Панель задач / Dock -->
+  <div id="dock">
+    <img src="https://cdn-icons-png.flaticon.com/512/29/29302.png" alt="Notes" data-app="notes">
+    <img src="https://cdn-icons-png.flaticon.com/512/2921/2921822.png" alt="Converter" data-app="converter">
+    <img src="https://cdn-icons-png.flaticon.com/512/709/709579.png" alt="Assistant" id="assistant-btn">
+  </div>
+
+  <!-- Меню Пуск -->
+  <div id="startmenu">
+    <input type="text" placeholder="Поиск...">
+    <div class="app" data-app="notes">Notes</div>
+    <div class="app" data-app="converter">Converter</div>
+  </div>
+
+  <!-- Ассистент -->
+  <div id="assistant">
+    <strong>Neuron Assistant</strong>
+    <div style="margin-top:5px;">Привет! Я помогу тебе управлять Neuron OS.</div>
+  </div>
+
+</div>
+
+<script>
+  // ===== Drag & Drop для окон =====
+  const windows = document.querySelectorAll('.window');
+  windows.forEach(win => {
+    const header = win.querySelector('.window-header');
+    header.onmousedown = function(e) {
+      let offsetX = e.clientX - win.offsetLeft;
+      let offsetY = e.clientY - win.offsetTop;
+
+      function move(e) {
+        win.style.left = e.clientX - offsetX + 'px';
+        win.style.top = e.clientY - offsetY + 'px';
+      }
+
+      document.addEventListener('mousemove', move);
+
+      document.onmouseup = function() {
+        document.removeEventListener('mousemove', move);
+        document.onmouseup = null;
+      }
+    }
+  });
+
+  // ===== Открытие окон =====
+  const icons = document.querySelectorAll('.icon, #dock img, #startmenu .app');
+  icons.forEach(icon => {
+    icon.onclick = function() {
+      const app = icon.dataset.app;
+      if(app) document.getElementById(app).style.display = 'flex';
+    }
+  });
+
+  // ===== Закрытие окон =====
+  const closeBtns = document.querySelectorAll('.control-btn.close');
+  closeBtns.forEach(btn => {
+    btn.onclick = function() {
+      const target = btn.dataset.target;
+      document.getElementById(target).style.display = 'none';
+    }
+  });
+
+  // ===== Ассистент =====
+  const assistantBtn = document.getElementById('assistant-btn');
+  const assistant = document.getElementById('assistant');
+  assistantBtn.onclick = () => assistant.style.display = assistant.style.display === 'flex' ? 'none' : 'flex';
+
+  // ===== Конвертер =====
+  function convert() {
+    const amount = document.getElementById('amount').value;
+    const currency = document.getElementById('currency').value;
+    let rate = {USD:1, EUR:0.9, RUB:100}[currency];
+    document.getElementById('result').innerText = amount ? (amount*rate).toFixed(2) : '';
+  }
+
+  // ===== Меню Пуск =====
+  const startMenu = document.getElementById('startmenu');
+  document.body.addEventListener('keydown', e => {
+    if(e.key === 'Meta') startMenu.style.display = startMenu.style.display === 'flex' ? 'none' : 'flex';
+  });
+
+</script>
 </body>
 </html>
