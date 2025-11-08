@@ -30,11 +30,22 @@ body.light { --glass: rgba(255, 255, 255, 0.7); --text: #1d1d1f; --border: rgba(
 @keyframes modalOpen { from { opacity: 0; transform: scale(0.9); } }
 
 .brand { color: var(--accent); font-weight: 700; }
-input, button { width: 100%; padding: 12px; margin: 8px 0; border: none; border-radius: 12px; font-size: 14px; }
+
+input, .auth-btn {
+  width: 100%; padding: 12px; margin: 8px 0; border: none; border-radius: 12px; font-size: 14px;
+}
 input { background: rgba(255,255,255,0.2); color: white; }
-button { background: var(--accent); color: white; cursor: pointer; font-weight: 600; transition: var(--transition); }
-button:hover { background: #5b21b6; transform: translateY(-2px); }
-.google-btn { background: #fff; color: #000; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+.auth-buttons { display: flex; gap: 8px; margin: 8px 0; }
+.auth-btn {
+  flex: 1; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+#login-btn, #register-btn { background: var(--accent); color: white; }
+#login-btn:hover, #register-btn:hover { background: #5b21b6; transform: translateY(-2px); }
+.google-btn { background: rgba(255,255,255,0.15); color: white; border: 1px solid var(--border); }
+.google-btn:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
+
+.divider { text-align: center; margin: 12px 0; color: rgba(255,255,255,0.6); font-size: 14px; }
 
 #dock {
   position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
@@ -44,9 +55,7 @@ button:hover { background: #5b21b6; transform: translateY(-2px); }
 }
 #dock:hover { transform: translateX(-50%) translateY(-8px); }
 
-.dock-icon {
-  position: relative; cursor: pointer; padding: 6px; border-radius: 16px; transition: var(--transition);
-}
+.dock-icon { position: relative; cursor: pointer; padding: 6px; border-radius: 16px; transition: var(--transition); }
 .dock-icon:hover { transform: scale(1.35) translateY(-4px); background: var(--glass-hover); }
 .dock-icon svg { width: 44px; height: 44px; color: white; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
 .dock-dot { position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; background: white; border-radius: 50%; opacity: 0; transition: opacity 0.2s; }
@@ -92,56 +101,10 @@ button:hover { background: #5b21b6; transform: translateY(-2px); }
 
 .hidden { display: none !important; }
 
+@keyframes spin { to { transform: rotate(360deg); } }
+
 @media (max-width: 768px) {
   .window { width: 95vw; height: 85vh; }
   #dock { bottom: 8px; padding: 8px 12px; gap: 8px; }
   .dock-icon svg { width: 36px; height: 36px; }
-}
-.auth-buttons {
-  display: flex;
-  gap: 8px;
-  margin: 8px 0;
-}
-
-.auth-btn {
-  flex: 1;
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-#login-btn, #register-btn {
-  background: var(--accent);
-  color: white;
-}
-
-#login-btn:hover, #register-btn:hover {
-  background: #5b21b6;
-  transform: translateY(-2px);
-}
-
-.google-btn {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  border: 1px solid var(--border);
-}
-
-.google-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px);
-}
-
-.divider {
-  text-align: center;
-  margin: 12px 0;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 14px;
 }
