@@ -97,3 +97,51 @@ button:hover { background: #5b21b6; transform: translateY(-2px); }
   #dock { bottom: 8px; padding: 8px 12px; gap: 8px; }
   .dock-icon svg { width: 36px; height: 36px; }
 }
+.auth-buttons {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.auth-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+#login-btn, #register-btn {
+  background: var(--accent);
+  color: white;
+}
+
+#login-btn:hover, #register-btn:hover {
+  background: #5b21b6;
+  transform: translateY(-2px);
+}
+
+.google-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid var(--border);
+}
+
+.google-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.divider {
+  text-align: center;
+  margin: 12px 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+}
