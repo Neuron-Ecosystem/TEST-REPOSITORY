@@ -21,12 +21,41 @@ document.addEventListener('DOMContentLoaded', () => {
   setupAuth();
   setupDock();
   setupContextMenu();
+  setupSettings();
 });
 
 function setupAuth() {
-  document.getElementById('login-btn').onclick = () => login();
-  document.getElementById('register-btn').onclick = () => register();
-  document.getElementById('google-btn').onclick = () => signInWithPopup(auth, neuronAuth.googleProvider);
+  const loginBtn = document.getElementById('login-btn');
+  const registerBtn = document.getElementById('register-btn');
+  const googleBtn = document.getElementById('google-btn');
+
+  loginBtn.onclick = () => {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    if (!email || !password) return showAuthError('Заполните все поля');
+    showAuthLoading(true);
+    signInWithEmailAndPassword(auth, email, password)
+      .catch(err => showAuthError(getErrorMessage(err.code)))
+      .finally(() => showAuthLoading(false));
+  };
+
+  registerBtn.onclick = () => {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    if (!email || !password) return showAuthError('Заполните все поля');
+    if (password.length < 6) return showAuthError('Пароль должен быть ≥ 6 символов');
+    showAuthLoading(true);
+    createUserWithEmailAndPassword(auth, email, password)
+      .catch(err => showAuthError(getErrorMessage(err.code)))
+      .finally(() => showAuthLoading(false));
+  };
+
+  googleBtn.onclick = () => {
+    showAuthLoading(true);
+    signInWithPopup(auth, neuronAuth.googleProvider)
+      .catch(err => showAuthError(getErrorMessage(err.code)))
+      .finally(() => showAuthLoading(false));
+  };
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -35,35 +64,50 @@ function setupAuth() {
       document.getElementById('desktop').classList.remove('hidden');
       await loadUserData();
       renderDock();
-    } else {
-      document.getElementById('auth-modal').classList.remove('hidden');
-      document.getElementById('desktop').classList.add('hidden');
     }
   });
 }
 
-async function login() {
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch (e) { alert('Ошибка входа'); }
+function showAuthLoading(show) {
+  document.getElementById('auth-form').style.display = show ? 'none' : 'block';
+  document.getElementById('auth-loading').classList.toggle('hidden', !show);
 }
 
-async function register() {
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  try {
-    await createUserWithEmailAndPassword(auth, email, password);
-  } catch (e) { alert('Ошибка регистрации'); }
+function showAuthError(msg) {
+  const existing = document.querySelector('.auth-error');
+  if (existing) existing.remove();
+  const error = document.createElement('div');
+  error.className = 'auth-error';
+  error.textContent = msg;
+  error.style = 'color: #ff5f57; font-size: 13px; margin-top: 8px; text-align: center;';
+  document.getElementById('auth-form').appendChild(error);
+  setTimeout(() => error.remove(), 4000);
+}
+
+function getErrorMessage(code) {
+  const messages = {
+    'auth/user-not-found': 'Пользователь не найден',
+    'auth/wrong-password': 'Неверный пароль',
+    'auth/email-already-in-use': 'Email уже используется',
+    'auth/weak-password': 'Пароль слишком слабый',
+    'auth/invalid-email': 'Неверный email',
+    'auth/too-many-requests': 'Слишком много попыток. Попробуйте позже.',
+    'auth/popup-closed-by-user': 'Вход отменён',
+  };
+  return messages[code] || 'Ошибка авторизации';
 }
 
 async function loadUserData() {
   const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
   if (userDoc.exists()) {
     const data = userDoc.data();
-    if (data.theme) document.body.classList.toggle('light', data.theme === 'light');
-    if (data.wallpaper) document.getElementById('wallpaper').style.backgroundImage = `url(${data.wallpaper})`;
+    if (data.theme) {
+      document.body.classList.toggle('light', data.theme === 'light');
+      document.querySelector(`input[name="theme"][value="${data.theme}"]`).checked = true;
+    }
+    if (data.wallpaper) {
+      document.getElementById('wallpaper').style.backgroundImage = `url(${data.wallpaper})`;
+    }
   }
 }
 
@@ -88,19 +132,9 @@ function renderDock() {
 
 function openApp(id, trigger) {
   const app = apps[id];
-  if (app.external) {
-    window.open(app.url, '_blank');
-    return;
-  }
-  if (app.modal) {
-    document.getElementById(app.modal).classList.remove('hidden');
-    return;
-  }
-  if (windows.has(id)) {
-    const win = windows.get(id);
-    win.element.style.zIndex = ++zIndex;
-    return;
-  }
+  if (app.external) { window.open(app.url, '_blank'); return; }
+  if (app.modal) { document.getElementById(app.modal).classList.remove('hidden'); return; }
+  if (windows.has(id)) { windows.get(id).element.style.zIndex = ++zIndex; return; }
 
   const win = document.createElement('div');
   win.className = 'window open';
@@ -145,7 +179,6 @@ function showContextMenu(e, id) {
   menu.classList.remove('hidden');
   menu.style.left = e.pageX + 'px';
   menu.style.top = e.pageY + 'px';
-
   menu.onclick = (ev) => {
     const action = ev.target.dataset.action;
     if (action === 'pin') pinToDock(id);
@@ -153,7 +186,6 @@ function showContextMenu(e, id) {
     if (action === 'ask-ai') askAIAbout(id);
     menu.classList.add('hidden');
   };
-
   document.onclick = () => menu.classList.add('hidden');
 }
 
@@ -191,6 +223,58 @@ function addAIMessage(text, type) {
   div.style = `margin:8px 0; padding:10px 14px; border-radius:14px; max-width:80%; align-self:${type==='user'?'flex-end':'flex-start'}; background:${type==='user'?'#7c3aed':'rgba(255,255,255,0.2)'}; color:white;`;
   messages.appendChild(div);
   messages.scrollTop = messages.scrollHeight;
+}
+
+function setupSettings() {
+  document.querySelectorAll('input[name="theme"]').forEach(radio => {
+    radio.onchange = () => {
+      const isLight = radio.value === 'light';
+      document.body.classList.toggle('light', isLight);
+      saveUserData('theme', radio.value);
+    };
+  });
+
+  document.getElementById('wallpaper-input').onchange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const url = ev.target.result;
+      document.getElementById('wallpaper').style.backgroundImage = `url(${url})`;
+      saveUserData('wallpaper', url);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  document.querySelectorAll('.wallpaper-gallery img').forEach(img => {
+    img.onclick = () => {
+      const url = img.src;
+      document.getElementById('wallpaper').style.backgroundImage = `url(${url})`;
+      saveUserData('wallpaper', url);
+    };
+  });
+}
+
+function setupWindowDrag(win) {
+  const header = win.querySelector('.window-header');
+  let isDragging = false;
+  header.addEventListener('mousedown', e => {
+    if (e.target.closest('.window-controls')) return;
+    isDragging = true;
+    const rect = win.getBoundingClientRect();
+    win.dataset.offsetX = e.clientX - rect.left;
+    win.dataset.offsetY = e.clientY - rect.top;
+    win.style.transition = 'none';
+    win.style.zIndex = ++zIndex;
+  });
+  document.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    win.style.left = `${e.clientX - win.dataset.offsetX}px`;
+    win.style.top = `${e.clientY - win.dataset.offsetY}px`;
+  });
+  document.addEventListener('mouseup', () => {
+    if (isDragging) win.style.transition = '';
+    isDragging = false;
+  });
 }
 
 // Service Worker
