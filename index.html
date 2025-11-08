@@ -68,7 +68,7 @@
     <div class="window-content">
       <div class="settings-section">
         <h3>Тема</h3>
-        <label><input type="radio" name="theme" value="dark" checked> Тёмная</label>
+        <label><input type="radio" name="theme" value="dark"> Тёмная</label>
         <label><input type="radio" name="theme" value="light"> Светлая</label>
       </div>
       <div class="settings-section">
@@ -81,6 +81,7 @@
           <img src="https://images.unsplash.com/photo-1550745162-459ca0d0e52a?w=800" data-wallpaper="minimal" />
         </div>
       </div>
+      <button id="logout-btn" class="glass-btn" style="background:#ff5f57; margin-top:16px;">Выйти из аккаунта</button>
       <button id="apply-settings" class="glass-btn">Применить</button>
     </div>
   </div>
@@ -97,8 +98,8 @@
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDOaDVzzPjyYm4HWMND2XYWjLy_h4wty5s",
@@ -115,7 +116,7 @@
     const db = getFirestore(app);
     const googleProvider = new GoogleAuthProvider();
 
-    window.neuronAuth = { auth, db, googleProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, onAuthStateChanged, doc, setDoc, getDoc };
+    window.neuronAuth = { auth, db, googleProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, onAuthStateChanged, signOut, doc, setDoc, getDoc, onSnapshot };
   </script>
 </body>
 </html>
