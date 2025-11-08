@@ -1,176 +1,120 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Neuron OS</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neuron OS</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="light">
-
-<div id="auth-screen">
-  <h2>Neuron OS</h2>
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Пароль">
-  <button id="login-btn">Войти</button>
-  <button id="register-btn">Зарегистрироваться</button>
-</div>
-
-<div id="desktop" style="display:none;">
-  <div id="dock">
-    <div class="dock-icon" data-app="ai">🧠</div>
-    <div class="dock-icon" data-app="notes">📝</div>
-    <div class="dock-icon" data-app="converter">🔄</div>
-    <div class="dock-icon" data-app="budget">💰</div>
-    <div class="dock-icon" data-app="tools">🧰</div>
-    <div class="dock-icon" data-app="games">🎮</div>
-    <div class="dock-icon" data-app="browser">🌐</div>
-    <div class="dock-icon" data-app="settings">⚙️</div>
-  </div>
-</div>
-
-<!-- Windows -->
-<div class="window" id="ai">
-  <div class="window-header">
-    <button class="close"></button>
-    <button class="minimize"></button>
-    <button class="maximize"></button>
-  </div>
-  <div class="window-content">
-    <h2>Neuron AI</h2>
-    <div id="ai-output" style="height:300px; overflow:auto;"></div>
-    <input id="ai-input" placeholder="Введите команду..." style="width:100%; padding:5px;">
-  </div>
-</div>
-
-<div class="window" id="notes">
-  <div class="window-header">
-    <button class="close"></button>
-    <button class="minimize"></button>
-    <button class="maximize"></button>
-  </div>
-  <div class="window-content">
-    <h2>Neuron Notes</h2>
-    <textarea id="notes-area" style="width:100%; height:300px;"></textarea>
-  </div>
-</div>
-
-<div class="window" id="converter">
-  <div class="window-header">
-    <button class="close"></button>
-    <button class="minimize"></button>
-    <button class="maximize"></button>
-  </div>
-  <div class="window-content">
-    <h2>Neuron Converter</h2>
-    <input type="number" id="conv-input" placeholder="Введите число">
-    <select id="conv-type">
-      <option value="usdToEur">USD → EUR</option>
-      <option value="eurToUsd">EUR → USD</option>
-    </select>
-    <button id="conv-btn">Конвертировать</button>
-    <div id="conv-result"></div>
-  </div>
-</div>
-
-<div class="window" id="settings">
-  <div class="window-header">
-    <button class="close"></button>
-    <button class="minimize"></button>
-    <button class="maximize"></button>
-  </div>
-  <div class="window-content">
-    <h2>Настройки</h2>
-    <label>Тема:
-      <select id="theme-select">
-        <option value="light">Светлая</option>
-        <option value="dark">Тёмная</option>
-      </select>
-    </label>
-    <label>Загрузить обои:
-      <input type="file" id="wallpaper-upload" accept="image/*">
-    </label>
-    <div class="wallpaper-grid">
-      <img src="https://picsum.photos/id/1015/200/120" class="wallpaper-thumb">
-      <img src="https://picsum.photos/id/1020/200/120" class="wallpaper-thumb">
-      <img src="https://picsum.photos/id/1024/200/120" class="wallpaper-thumb">
+<body>
+  <div id="desktop">
+    <!-- Рабочий стол с Dock -->
+    <div id="dock">
+      <div class="dock-icon" data-app="browser" title="Интернет">🌐</div>
+      <div class="dock-icon" data-app="ai" title="Neuron AI">🧠</div>
+      <div class="dock-icon" data-app="notes" title="Notes">📝</div>
+      <div class="dock-icon" data-app="converter" title="Converter">🔄</div>
+      <div class="dock-icon" data-app="budget" title="Budget">💰</div>
+      <div class="dock-icon" data-app="tools" title="Tools">🧰</div>
+      <div class="dock-icon" data-app="games" title="Games">🎮</div>
+      <div class="dock-icon" data-app="settings" title="Settings">⚙️</div>
     </div>
-    <button class="apply" id="apply-settings">Применить</button>
   </div>
-</div>
 
-<script type="module" src="script.js"></script>
+  <!-- Окна -->
+  <div class="window" id="ai">
+    <div class="window-header"><span>🧠 Neuron AI</span>
+      <div class="win-btns">
+        <button class="close">🔴</button><button class="min">🟡</button><button class="max">🟢</button>
+      </div>
+    </div>
+    <div class="window-body">
+      <div id="ai-output"></div>
+      <input id="ai-input" placeholder="Введите команду (например /help)">
+    </div>
+  </div>
 
-<!-- Firebase -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+  <div class="window" id="notes">
+    <div class="window-header"><span>📝 Neuron Notes</span>
+      <div class="win-btns">
+        <button class="close">🔴</button><button class="min">🟡</button><button class="max">🟢</button>
+      </div>
+    </div>
+    <iframe src="https://neuron-p2p.ru/notes.html"></iframe>
+  </div>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDOaDVzzPjyYm4HWMND2XYWjLy_h4wty5s",
-  authDomain: "neuron-ecosystem-2025.firebaseapp.com",
-  projectId: "neuron-ecosystem-2025",
-  storageBucket: "neuron-ecosystem-2025.firebasestorage.app",
-  messagingSenderId: "589834476565",
-  appId: "1:589834476565:web:622fe04057d33339dd421c",
-  measurementId: "G-Z934BZPLG3"
-};
+  <div class="window" id="converter">
+    <div class="window-header"><span>🔄 Neuron Converter</span>
+      <div class="win-btns">
+        <button class="close">🔴</button><button class="min">🟡</button><button class="max">🟢</button>
+      </div>
+    </div>
+    <iframe src="https://neuron-ecosystem.github.io/Unit-Converter/"></iframe>
+  </div>
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+  <div class="window" id="budget">
+    <div class="window-header"><span>💰 Neuron Budget</span>
+      <div class="win-btns">
+        <button class="close">🔴</button><button class="min">🟡</button><button class="max">🟢</button>
+      </div>
+    </div>
+    <iframe src="https://neuron-ecosystem.github.io/Neuron-Budget/"></iframe>
+  </div>
 
-// Авторизация
-const loginBtn=document.getElementById('login-btn');
-const registerBtn=document.getElementById('register-btn');
-const emailInput=document.getElementById('email');
-const passInput=document.getElementById('password');
-const authScreen=document.getElementById('auth-screen');
-const desktop=document.getElementById('desktop');
+  <div class="window" id="tools">
+    <div class="window-header"><span>🧰 Neuron Tools</span>
+      <div class="win-btns">
+        <button class="close">🔴</button><button class="min">🟡</button><button class="max">🟢</button>
+      </div>
+    </div>
+    <iframe src="https://neuron-ecosystem.github.io/Neuron-Tools/"></iframe>
+  </div>
 
-loginBtn.addEventListener('click',()=>{
-  signInWithEmailAndPassword(auth,emailInput.value,passInput.value)
-  .then(()=>console.log('Вход успешен'))
-  .catch(e=>alert(e.message));
-});
+  <div class="window" id="games">
+    <div class="window-header"><span>🎮 Game Hub</span>
+      <div class="win-btns">
+        <button class="close">🔴</button><button class="min">🟡</button><button class="max">🟢</button>
+      </div>
+    </div>
+    <iframe src="https://neuron-ecosystem.github.io/Game-Hub/"></iframe>
+  </div>
 
-registerBtn.addEventListener('click',()=>{
-  createUserWithEmailAndPassword(auth,emailInput.value,passInput.value)
-  .then(()=>console.log('Регистрация успешна'))
-  .catch(e=>alert(e.message));
-});
+  <div class="window" id="settings">
+    <div class="window-header"><span>⚙️ Settings</span>
+      <div class="win-btns">
+        <button class="close">🔴</button><button class="min">🟡</button><button class="max">🟢</button>
+      </div>
+    </div>
+    <div class="window-body settings-body">
+      <h2>Настройки Neuron OS</h2>
+      <label>Выбрать тему:</label>
+      <select id="theme-select">
+        <option value="dark">Тёмная</option>
+        <option value="light">Светлая</option>
+      </select>
+      <label>Выбрать обои:</label>
+      <input type="file" id="wallpaper-upload" accept="image/*">
+      <button id="apply-settings">Применить</button>
+    </div>
+  </div>
 
-onAuthStateChanged(auth,user=>{
-  if(user){
-    authScreen.style.display='none';
-    desktop.style.display='block';
-    loadUserData(user.uid);
-  }else{
-    authScreen.style.display='flex';
-    desktop.style.display='none';
-  }
-});
+  <script type="module" src="script.js"></script>
 
-async function loadUserData(uid){
-  const docRef = doc(db,"users",uid);
-  const docSnap = await getDoc(docRef);
-  if(docSnap.exists()){
-    const data=docSnap.data();
-    if(data.notes) document.getElementById('notes-area').value=data.notes;
-    if(data.theme) document.body.className=data.theme;
-    if(data.wallpaper) document.getElementById('desktop').style.backgroundImage=`url(${data.wallpaper})`;
-  }
-}
-async function saveUserData(uid){
-  const docRef = doc(db,"users",uid);
-  await setDoc(docRef,{
-    notes: document.getElementById('notes-area').value,
-    theme: document.body.className,
-    wallpaper: document.getElementById('desktop').style.backgroundImage.replace(/url\(|\)|"/g,'')
-  }, {merge:true});
-}
-
-</script>
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyDOaDVzzPjyYm4HWMND2XYWjLy_h4wty5s",
+      authDomain: "neuron-ecosystem-2025.firebaseapp.com",
+      projectId: "neuron-ecosystem-2025",
+      storageBucket: "neuron-ecosystem-2025.firebasestorage.app",
+      messagingSenderId: "589834476565",
+      appId: "1:589834476565:web:622fe04057d33339dd421c",
+      measurementId: "G-Z934BZPLG3"
+    };
+    const app = initializeApp(firebaseConfig);
+    getAnalytics(app);
+  </script>
 </body>
 </html>
