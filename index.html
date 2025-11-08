@@ -1,118 +1,302 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Neuron OS</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
-    <link rel="stylesheet" href="style.css">
-    <!-- Firebase (compat for easy browser use) -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Neuron OS</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", sans-serif;
+    overflow: hidden;
+    background: url('default-wallpaper.jpg') center/cover no-repeat;
+    transition: background 0.5s;
+  }
+
+  #login-screen {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    z-index: 10;
+  }
+  #login-screen input {
+    margin: 8px 0;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    width: 200px;
+  }
+  #login-screen button {
+    margin: 6px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background: #0078d7;
+    color: white;
+  }
+
+  #taskbar {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 45px;
+    background: rgba(20,20,20,0.8);
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+  }
+  .taskbar-icon {
+    width: 35px;
+    height: 35px;
+    margin: 0 5px;
+    border-radius: 5px;
+    background: rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+  }
+  .taskbar-icon .dot {
+    position: absolute;
+    bottom: 3px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #00bfff;
+    display: none;
+  }
+
+  .window {
+    position: absolute;
+    background: rgba(240,240,240,0.95);
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    top: 60px; left: 60px;
+    width: 600px; height: 400px;
+    display: none;
+    flex-direction: column;
+  }
+  .window-header {
+    background: #0078d7;
+    color: white;
+    padding: 8px 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    cursor: move;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .window-content { flex: 1; padding: 10px; overflow: auto; }
+  .window-controls button {
+    background: transparent; border: none; color: white; cursor: pointer; font-weight: bold;
+    margin-left: 5px;
+  }
+  #context-menu {
+    position: absolute;
+    display: none;
+    background: #222;
+    color: white;
+    border-radius: 5px;
+    overflow: hidden;
+    flex-direction: column;
+    z-index: 999;
+  }
+  #context-menu button {
+    background: none;
+    border: none;
+    color: white;
+    text-align: left;
+    padding: 8px 15px;
+    cursor: pointer;
+    width: 100%;
+  }
+  #context-menu button:hover { background: rgba(255,255,255,0.1); }
+
+  #settings { display: none; }
+  #logout-btn {
+    background: #d9534f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+  }
+
+  #status-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: white;
+  }
+  .online { background: #28a745; }
+  .offline { background: #dc3545; }
+</style>
 </head>
 <body>
-    <!-- Окно авторизации -->
-    <div id="login-modal" class="modal">
-        <button class="demo-button" onclick="activateDemoMode()">Демо-режим</button>
-        <div class="login-window">
-            <div class="login-header">
-                <h2>Neuron OS</h2>
-                <p>Войдите в свою экосистему</p>
-            </div>
-            <div class="login-form">
-                <div class="input-group">
-                    <label for="email">Электронная почта</label>
-                    <input type="email" id="email" placeholder="your@email.com" value="demo@neuron.ru">
-                </div>
-                <div class="input-group">
-                    <label for="password">Пароль</label>
-                    <input type="password" id="password" placeholder="••••••••" value="demo123">
-                </div>
-                <button id="login-btn" class="login-button" onclick="handleLogin()">Войти</button>
-                <button id="google-login" class="google-login-button" onclick="handleGoogleLogin()">
-                    <span>Войти с помощью Google</span>
-                </button>
-                <p class="register-link">Нет аккаунта? <a href="#" onclick="handleRegister()">Зарегистрироваться</a></p>
-            </div>
-        </div>
+
+<div id="login-screen">
+  <h2>Neuron OS — вход</h2>
+  <input id="email" type="email" placeholder="Email" />
+  <input id="password" type="password" placeholder="Пароль" />
+  <button id="login-btn">Войти</button>
+  <button id="register-btn">Регистрация</button>
+  <button id="google-login-btn">Войти через Google</button>
+</div>
+
+<div id="desktop">
+  <div id="status-indicator" class="offline">Оффлайн</div>
+  <div id="taskbar"></div>
+  <div class="window" id="settings-window">
+    <div class="window-header">
+      Настройки
+      <div class="window-controls">
+        <button id="close-settings">×</button>
+      </div>
     </div>
-
-    <!-- Рабочий стол -->
-    <div id="desktop" class="desktop">
-        <div class="wallpaper"></div>
-
-        <div class="desktop-icons" id="desktop-icons">
-            <!-- Динамические иконки — оставил статичными как у тебя -->
-            <div class="desktop-icon" data-app="ai" onclick="openApp('ai')" oncontextmenu="return showContextMenu(event, 'ai', 'desktop')">
-                <div class="icon">🧠</div>
-                <span>Neuron AI</span>
-            </div>
-            <div class="desktop-icon" data-app="notes" onclick="openApp('notes')" oncontextmenu="return showContextMenu(event, 'notes', 'desktop')">
-                <div class="icon">📝</div>
-                <span>Neuron Notes</span>
-            </div>
-            <div class="desktop-icon" data-app="converter" onclick="openApp('converter')" oncontextmenu="return showContextMenu(event, 'converter', 'desktop')">
-                <div class="icon">🔄</div>
-                <span>Neuron Converter</span>
-            </div>
-            <div class="desktop-icon" data-app="budget" onclick="openApp('budget')" oncontextmenu="return showContextMenu(event, 'budget', 'desktop')">
-                <div class="icon">💰</div>
-                <span>Neuron Budget</span>
-            </div>
-            <div class="desktop-icon" data-app="tools" onclick="openApp('tools')" oncontextmenu="return showContextMenu(event, 'tools', 'desktop')">
-                <div class="icon">🧰</div>
-                <span>Neuron Tools</span>
-            </div>
-            <div class="desktop-icon" data-app="games" onclick="openApp('games')" oncontextmenu="return showContextMenu(event, 'games', 'desktop')">
-                <div class="icon">🎮</div>
-                <span>Game Hub</span>
-            </div>
-            <div class="desktop-icon" data-app="browser" onclick="openApp('browser')" oncontextmenu="return showContextMenu(event, 'browser', 'desktop')">
-                <div class="icon">🌐</div>
-                <span>Интернет</span>
-            </div>
-            <div class="desktop-icon" data-app="settings" onclick="openApp('settings')" oncontextmenu="return showContextMenu(event, 'settings', 'desktop')">
-                <div class="icon">⚙️</div>
-                <span>Настройки</span>
-            </div>
-        </div>
-
-        <!-- Окна приложений -->
-        <div id="windows-container"></div>
-
-        <!-- Контекстное меню -->
-        <div id="context-menu" class="context-menu">
-            <!-- Элементы меняются динамически -->
-        </div>
+    <div class="window-content">
+      <h3>Настройки пользователя</h3>
+      <button id="logout-btn">Выйти</button>
     </div>
+  </div>
+  <div id="context-menu"></div>
+</div>
 
-    <!-- Панель задач (Dock) -->
-    <div class="dock" id="dock">
-        <div class="dock-items" id="dock-items">
-            <div class="dock-item active" data-app="browser" onclick="toggleAppWindow('browser')" oncontextmenu="return showContextMenu(event,'browser','dock')">
-                <div class="dock-icon">🌐</div>
-                <div class="active-indicator"></div>
-            </div>
-        </div>
-        <div class="system-info">
-            <div id="clock" class="clock">00:00</div>
-        </div>
-    </div>
+<script type="module">
+  // Firebase SDK
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getAuth,
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc,
+    onSnapshot,
+    updateDoc
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    <!-- Start menu -->
-    <div id="start-menu" class="start-menu">
-        <div class="start-header">
-            <h3>Приложения</h3>
-            <div class="search-box">
-                <input type="text" id="app-search" placeholder="Поиск приложений..." oninput="filterApps()">
-            </div>
-        </div>
-        <div class="app-grid" id="app-grid">
-            <!-- same items as before -->
-        </div>
-    </div>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDOaDVzzPjyYm4HWMND2XYWjLy_h4wty5s",
+    authDomain: "neuron-ecosystem-2025.firebaseapp.com",
+    projectId: "neuron-ecosystem-2025",
+    storageBucket: "neuron-ecosystem-2025.firebasestorage.app",
+    messagingSenderId: "589834476565",
+    appId: "1:589834476565:web:622fe04057d33339dd421c",
+    measurementId: "G-Z934BZPLG3"
+  };
 
-    <script src="script.js"></script>
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const loginScreen = document.getElementById("login-screen");
+  const desktop = document.getElementById("desktop");
+  const statusIndicator = document.getElementById("status-indicator");
+
+  let currentUser = null;
+  let userDocUnsub = null;
+
+  // Авторизация
+  document.getElementById("login-btn").onclick = async () => {
+    const email = emailInput.value;
+    const password = passwordInput.value;
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (e) { alert("Ошибка входа: " + e.message); }
+  };
+  document.getElementById("register-btn").onclick = async () => {
+    const email = emailInput.value;
+    const password = passwordInput.value;
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+    } catch (e) { alert("Ошибка регистрации: " + e.message); }
+  };
+  document.getElementById("google-login-btn").onclick = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (e) { alert("Ошибка входа через Google: " + e.message); }
+  };
+
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+
+  // Обработчик авторизации
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      currentUser = user;
+      loginScreen.style.display = "none";
+      desktop.style.display = "block";
+
+      const userRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(userRef);
+      if (!docSnap.exists()) {
+        await setDoc(userRef, { wallpaper: "default-wallpaper.jpg", dock: [] });
+      }
+
+      // Мгновенная синхронизация
+      userDocUnsub = onSnapshot(userRef, (snapshot) => {
+        const data = snapshot.data();
+        if (data) {
+          applyUserSettings(data);
+          localStorage.setItem("userData", JSON.stringify(data));
+        }
+      });
+    } else {
+      desktop.style.display = "none";
+      loginScreen.style.display = "flex";
+      currentUser = null;
+      if (userDocUnsub) userDocUnsub();
+    }
+  });
+
+  // Применение настроек
+  function applyUserSettings(data) {
+    document.body.style.backgroundImage = `url('${data.wallpaper}')`;
+  }
+
+  // Выход
+  document.getElementById("logout-btn").onclick = async () => {
+    await signOut(auth);
+  };
+
+  // Индикатор сети
+  function updateStatus() {
+    if (navigator.onLine) {
+      statusIndicator.classList.remove("offline");
+      statusIndicator.classList.add("online");
+      statusIndicator.textContent = "Онлайн";
+      if (currentUser) syncToCloud();
+    } else {
+      statusIndicator.classList.remove("online");
+      statusIndicator.classList.add("offline");
+      statusIndicator.textContent = "Оффлайн";
+    }
+  }
+  window.addEventListener("online", updateStatus);
+  window.addEventListener("offline", updateStatus);
+  updateStatus();
+
+  // Синхронизация при восстановлении соединения
+  async function syncToCloud() {
+    const local = localStorage.getItem("userData");
+    if (local && currentUser) {
+      const parsed = JSON.parse(local);
+      await updateDoc(doc(db, "users", currentUser.uid), parsed);
+    }
+  }
+</script>
 </body>
 </html>
