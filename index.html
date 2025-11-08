@@ -1,86 +1,163 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Neuron OS</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="data:,">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
-
-  <!-- Firebase SDK (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuron OS</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
 </head>
 <body>
-  <!-- Обои -->
-  <div id="wallpaper"></div>
-
-  <!-- Авторизация -->
-  <div id="auth-modal" class="modal">
-    <div class="modal-content">
-      <h2>Neuron OS</h2>
-      <div id="auth-form">
-        <input type="email" id="email" placeholder="Email" />
-        <input type="password" id="password" placeholder="Пароль" />
-        <div class="auth-buttons">
-          <button id="login-btn" class="auth-btn">Войти</button>
-          <button id="register-btn" class="auth-btn">Регистрация</button>
+    <!-- Окно авторизации -->
+    <div id="login-modal" class="modal">
+        <div class="login-window">
+            <div class="login-header">
+                <h2>Neuron OS</h2>
+                <p>Войдите в свою экосистему</p>
+            </div>
+            <div class="login-form">
+                <div class="input-group">
+                    <label for="email">Электронная почта</label>
+                    <input type="email" id="email" placeholder="your@email.com">
+                </div>
+                <div class="input-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" placeholder="••••••••">
+                </div>
+                <button id="login-btn" class="login-button">Войти</button>
+                <button id="google-login" class="google-login-button">
+                    <span>Войти с помощью Google</span>
+                </button>
+                <p class="register-link">Нет аккаунта? <a href="#" id="register-link">Зарегистрироваться</a></p>
+            </div>
         </div>
-        <div class="divider">или</div>
-        <button id="google-btn" class="auth-btn google-btn">
-          <svg viewBox="0 0 18 18" width="18" height="18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.208 1.125-.842 2.078-1.777 2.712v2.297h2.878c1.683-1.55 2.655-3.83 2.655-6.65z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.878-2.297c-.805.54-1.837.86-2.978.86-2.292 0-4.236-1.545-4.933-3.627H2.1v2.284C3.58 16.22 6.136 18 9 18z"/><path fill="#FBBC05" d="M4.067 10.787C3.91 10.347 3.82 9.88 3.82 9.397c0-.483.09-.95.247-1.39V5.723H1.1C.58 6.85.3 8.085.3 9.397c0 1.312.28 2.548.8 3.674l2.967-2.284z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.346l2.582-2.58C13.463.89 11.426 0 9 0 6.136 0 3.58 1.78 2.1 4.04l2.967 2.284C5.764 4.24 7.708 3.58 9 3.58z"/></svg>
-          Google
-        </button>
-      </div>
-      <div id="auth-loading" class="hidden" style="text-align:center;padding:16px;">
-        <div style="display:inline-block;width:24px;height:24px;border:3px solid transparent;border-top-color:#7c3aed;border-radius:50%;animation:spin 1s linear infinite;"></div>
-      </div>
     </div>
-  </div>
 
-  <!-- Рабочий стол -->
-  <div id="desktop" class="hidden"></div>
-  <div id="windows-container"></div>
-
-  <!-- Dock -->
-  <div id="dock">
-    <div class="dock-icon pinned" data-app="browser" title="Интернет">
-      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-      <div class="dock-dot"></div>
-    </div>
-  </div>
-
-  <!-- Настройки -->
-  <div id="settings-modal" class="window hidden">
-    <div class="window-header">
-      <span>Настройки</span>
-      <div class="window-controls">
-        <div class="control-btn close" onclick="closeWindow('settings')"></div>
-        <div class="control-btn minimize" onclick="minimizeWindow('settings')"></div>
-        <div class="control-btn maximize" onclick="maximizeWindow('settings')"></div>
-      </div>
-    </div>
-    <div class="window-content">
-      <div class="settings-section">
-        <h3>Тема</h3>
-        <label><input type="radio" name="theme" value="dark" checked> Тёмная</label>
-        <label><input type="radio" name="theme" value="light"> Светлая</label>
-      </div>
-      <div class="settings-section">
-        <h3>Обои</h3>
-        <input type="file" id="wallpaper-input" accept="image/*" />
-        <div class="wallpaper-gallery">
-          <img src="https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?w=800" />
-          <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800" />
+    <!-- Рабочий стол -->
+    <div id="desktop" class="desktop">
+        <!-- Обои -->
+        <div class="wallpaper"></div>
+        
+        <!-- Иконки на рабочем столе -->
+        <div class="desktop-icons">
+            <div class="desktop-icon" data-app="ai">
+                <div class="icon">🧠</div>
+                <span>Neuron AI</span>
+            </div>
+            <div class="desktop-icon" data-app="notes">
+                <div class="icon">📝</div>
+                <span>Neuron Notes</span>
+            </div>
+            <div class="desktop-icon" data-app="converter">
+                <div class="icon">🔄</div>
+                <span>Neuron Converter</span>
+            </div>
+            <div class="desktop-icon" data-app="budget">
+                <div class="icon">💰</div>
+                <span>Neuron Budget</span>
+            </div>
+            <div class="desktop-icon" data-app="tools">
+                <div class="icon">🧰</div>
+                <span>Neuron Tools</span>
+            </div>
+            <div class="desktop-icon" data-app="games">
+                <div class="icon">🎮</div>
+                <span>Game Hub</span>
+            </div>
+            <div class="desktop-icon" data-app="browser">
+                <div class="icon">🌐</div>
+                <span>Интернет</span>
+            </div>
+            <div class="desktop-icon" data-app="settings">
+                <div class="icon">⚙️</div>
+                <span>Настройки</span>
+            </div>
         </div>
-      </div>
-      <button id="logout-btn" class="glass-btn" style="background:#ff5f57;">Выйти</button>
-    </div>
-  </div>
 
-  <script src="script.js"></script>
+        <!-- Окна приложений -->
+        <div id="windows-container"></div>
+
+        <!-- Контекстное меню -->
+        <div id="context-menu" class="context-menu">
+            <div class="context-item" data-action="pin">Закрепить на панели задач</div>
+            <div class="context-item" data-action="open-tab">Открыть в отдельной вкладке</div>
+            <div class="context-item" data-action="ask-ai">Спросить у ИИ</div>
+        </div>
+    </div>
+
+    <!-- Панель задач (Dock) -->
+    <div class="dock">
+        <div class="dock-items">
+            <!-- Иконка интернета всегда слева -->
+            <div class="dock-item active" data-app="browser">
+                <div class="dock-icon">🌐</div>
+                <div class="active-indicator"></div>
+            </div>
+            
+            <!-- Остальные иконки будут добавляться динамически -->
+        </div>
+        
+        <!-- Часы и системная информация -->
+        <div class="system-info">
+            <div id="clock" class="clock">00:00</div>
+        </div>
+    </div>
+
+    <!-- Меню "Пуск" -->
+    <div id="start-menu" class="start-menu">
+        <div class="start-header">
+            <h3>Приложения</h3>
+            <div class="search-box">
+                <input type="text" id="app-search" placeholder="Поиск приложений...">
+            </div>
+        </div>
+        <div class="app-grid">
+            <div class="app-item" data-app="ai">
+                <div class="app-icon">🧠</div>
+                <span>Neuron AI</span>
+            </div>
+            <div class="app-item" data-app="notes">
+                <div class="app-icon">📝</div>
+                <span>Neuron Notes</span>
+            </div>
+            <div class="app-item" data-app="converter">
+                <div class="app-icon">🔄</div>
+                <span>Neuron Converter</span>
+            </div>
+            <div class="app-item" data-app="study">
+                <div class="app-icon">📚</div>
+                <span>Neuron Study</span>
+            </div>
+            <div class="app-item" data-app="password">
+                <div class="app-icon">🔐</div>
+                <span>Password Generator</span>
+            </div>
+            <div class="app-item" data-app="budget">
+                <div class="app-icon">💰</div>
+                <span>Neuron Budget</span>
+            </div>
+            <div class="app-item" data-app="games">
+                <div class="app-icon">🎮</div>
+                <span>Game Hub</span>
+            </div>
+            <div class="app-item" data-app="tools">
+                <div class="app-icon">🧰</div>
+                <span>Neuron Tools</span>
+            </div>
+            <div class="app-item" data-app="synapse">
+                <div class="app-icon">🌐</div>
+                <span>Synapse</span>
+            </div>
+            <div class="app-item" data-app="settings">
+                <div class="app-icon">⚙️</div>
+                <span>Настройки</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
