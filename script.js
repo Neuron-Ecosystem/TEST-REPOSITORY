@@ -1,7 +1,22 @@
-import { neuronAuth } from './index.html';
+// === script.js ===
 
-const { auth, db, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, onAuthStateChanged, signOut, doc, setDoc, getDoc, onSnapshot } = neuronAuth;
+const firebaseConfig = {
+  apiKey: "AIzaSyDOaDVzzPjyYm4HWMND2XYWjLy_h4wty5s",
+  authDomain: "neuron-ecosystem-2025.firebaseapp.com",
+  projectId: "neuron-ecosystem-2025",
+  storageBucket: "neuron-ecosystem-2025.appspot.com",
+  messagingSenderId: "589834476565",
+  appId: "1:589834476565:web:622fe04057d33339dd421c",
+  measurementId: "G-Z934BZPLG3"
+};
 
+// Инициализация Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+// === Твои приложения ===
 const apps = {
   ai: { name: 'Neuron AI', icon: 'brain', url: null, chat: true },
   notes: { name: 'Neuron Notes', icon: 'note', url: 'https://neuron-p2p.ru/notes.html', saveKey: 'notes' },
@@ -18,50 +33,49 @@ let windows = new Map();
 let zIndex = 100;
 let userUnsubscribe = null;
 
+// === DOM Ready ===
 document.addEventListener('DOMContentLoaded', () => {
   setupAuth();
   setupDock();
   setupContextMenu();
   setupSettings();
-  setupRealtimeSync();
 });
 
+// === АВТОРИЗАЦИЯ ===
 function setupAuth() {
   const loginBtn = document.getElementById('login-btn');
   const registerBtn = document.getElementById('register-btn');
   const googleBtn = document.getElementById('google-btn');
 
-  if (!loginBtn || !registerBtn || !googleBtn) return;
-
-  loginBtn.addEventListener('click', () => {
+  loginBtn.onclick = () => {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
     if (!email || !password) return showAuthError('Заполните все поля');
     showAuthLoading(true);
-    signInWithEmailAndPassword(auth, email, password)
+    auth.signInWithEmailAndPassword(email, password)
       .catch(err => showAuthError(getErrorMessage(err.code)))
       .finally(() => showAuthLoading(false));
-  });
+  };
 
-  registerBtn.addEventListener('click', () => {
+  registerBtn.onclick = () => {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
     if (!email || !password) return showAuthError('Заполните все поля');
     if (password.length < 6) return showAuthError('Пароль ≥ 6 символов');
     showAuthLoading(true);
-    createUserWithEmailAndPassword(auth, email, password)
+    auth.createUserWithEmailAndPassword(email, password)
       .catch(err => showAuthError(getErrorMessage(err.code)))
       .finally(() => showAuthLoading(false));
-  });
+  };
 
-  googleBtn.addEventListener('click', () => {
+  googleBtn.onclick = () => {
     showAuthLoading(true);
-    signInWithPopup(auth, neuronAuth.googleProvider)
+    auth.signInWithPopup(googleProvider)
       .catch(err => showAuthError(getErrorMessage(err.code)))
       .finally(() => showAuthLoading(false));
-  });
+  };
 
-  onAuthStateChanged(auth, async (user) => {
+  auth.onAuthStateChanged(async (user) => {
     if (user) {
       currentUser = user;
       document.getElementById('auth-modal').classList.add('hidden');
@@ -80,8 +94,8 @@ function setupAuth() {
 function showAuthLoading(show) {
   const form = document.getElementById('auth-form');
   const loading = document.getElementById('auth-loading');
-  if (form) form.style.display = show ? 'none' : 'block';
-  if (loading) loading.classList.toggle('hidden', !show);
+  form.style.display = show ? 'none' : 'block';
+  loading.classList.toggle('hidden', !show);
 }
 
 function showAuthError(msg) {
@@ -91,12 +105,12 @@ function showAuthError(msg) {
   error.className = 'auth-error';
   error.textContent = msg;
   error.style = 'color: #ff5f57; font-size: 13px; margin-top: 8px; text-align: center;';
-  document.getElementById('auth-form')?.appendChild(error);
+  document.getElementById('auth-form').appendChild(error);
   setTimeout(() => error.remove(), 4000);
 }
 
 function getErrorMessage(code) {
-  const messages = {
+  const map = {
     'auth/user-not-found': 'Пользователь не найден',
     'auth/wrong-password': 'Неверный пароль',
     'auth/email-already-in-use': 'Email уже используется',
@@ -105,52 +119,48 @@ function getErrorMessage(code) {
     'auth/too-many-requests': 'Слишком много попыток',
     'auth/popup-closed-by-user': 'Вход отменён',
   };
-  return messages[code] || 'Ошибка авторизации';
+  return map[code] || 'Ошибка';
 }
 
+// === Загрузка данных ===
 async function loadUserData() {
   if (!currentUser) return;
-  const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-  if (userDoc.exists()) {
-    const data = userDoc.data();
-    // Тема
+  const snap = await db.collection('users').doc(currentUser.uid).get();
+  if (snap.exists) {
+    const data = snap.data();
     if (data.theme) {
       document.body.classList.toggle('light', data.theme === 'light');
       const radio = document.querySelector(`input[name="theme"][value="${data.theme}"]`);
       if (radio) radio.checked = true;
     }
-    // Обои
     if (data.wallpaper) {
       document.getElementById('wallpaper').style.backgroundImage = `url(${data.wallpaper})`;
     }
-    // Закреплённые иконки
     if (data.pinned) {
       data.pinned.forEach(id => pinToDock(id, false));
     }
   }
 }
 
-async function saveUserData(key, value) {
+function saveUserData(key, value) {
   if (!currentUser) return;
-  await setDoc(doc(db, 'users', currentUser.uid), { [key]: value }, { merge: true });
+  db.collection('users').doc(currentUser.uid).set({ [key]: value }, { merge: true });
 }
 
+// === Синхронизация ===
 function startRealtimeSync() {
   if (userUnsubscribe || !currentUser) return;
-  userUnsubscribe = onSnapshot(doc(db, 'users', currentUser.uid), (doc) => {
-    if (doc.exists()) {
+  userUnsubscribe = db.collection('users').doc(currentUser.uid).onSnapshot(doc => {
+    if (doc.exists) {
       const data = doc.data();
-      // Синхронизация темы
       if (data.theme !== undefined) {
         document.body.classList.toggle('light', data.theme === 'light');
         const radio = document.querySelector(`input[name="theme"][value="${data.theme}"]`);
         if (radio) radio.checked = true;
       }
-      // Синхронизация обоев
       if (data.wallpaper) {
         document.getElementById('wallpaper').style.backgroundImage = `url(${data.wallpaper})`;
       }
-      // Синхронизация закреплённых
       if (data.pinned) {
         document.querySelectorAll('.dock-icon.pinned:not([data-app="browser"])').forEach(el => el.remove());
         data.pinned.forEach(id => pinToDock(id, false));
@@ -164,6 +174,7 @@ function stopRealtimeSync() {
   userUnsubscribe = null;
 }
 
+// === Dock и окна ===
 function renderDock() {
   const dock = document.getElementById('dock');
   Object.entries(apps).forEach(([id, app]) => {
@@ -172,13 +183,13 @@ function renderDock() {
     icon.className = 'dock-icon';
     icon.dataset.app = id;
     icon.innerHTML = `<svg viewBox="0 0 24 24"><use href="#icon-${app.icon}"></use></svg><div class="dock-dot"></div>`;
-    icon.onclick = () => openApp(id, icon);
+    icon.onclick = () => openApp(id);
     icon.oncontextmenu = (e) => showContextMenu(e, id);
     dock.appendChild(icon);
   });
 }
 
-function openApp(id, trigger) {
+function openApp(id) {
   const app = apps[id];
   if (app.external) { window.open(app.url, '_blank'); return; }
   if (app.modal) { document.getElementById(app.modal).classList.remove('hidden'); return; }
@@ -231,7 +242,6 @@ function showContextMenu(e, id) {
     const action = ev.target.dataset.action;
     if (action === 'pin') pinToDock(id);
     if (action === 'open-tab') window.open(apps[id].url, '_blank');
-    if (action === 'ask-ai') askAIAbout(id);
     menu.classList.add('hidden');
   };
   document.onclick = () => menu.classList.add('hidden');
@@ -250,43 +260,16 @@ function pinToDock(id, save = true) {
   }
 }
 
-function askAIAbout(id) {
-  openApp('ai');
-  setTimeout(() => {
-    const msg = `Что такое ${apps[id].name}?`;
-    addAIMessage(msg, 'user');
-    setTimeout(() => addAIMessage(`Это ${apps[id].name.toLowerCase()} — мощный инструмент для...`, 'ai'), 800);
-  }, 500);
-}
-
-function getAIChat() {
-  return `
-    <div style="padding:20px; display:flex; flex-direction:column; height:100%;">
-      <div id="ai-messages" style="flex:1; overflow-y:auto; margin-bottom:16px;"></div>
-      <input type="text" id="ai-input" placeholder="Введите команду..." style="padding:12px; border-radius:12px; border:none; background:rgba(255,255,255,0.2); color:white;" />
-    </div>
-  `;
-}
-
-function addAIMessage(text, type) {
-  const messages = document.getElementById('ai-messages');
-  const div = document.createElement('div');
-  div.textContent = text;
-  div.style = `margin:8px 0; padding:10px 14px; border-radius:14px; max-width:80%; align-self:${type==='user'?'flex-end':'flex-start'}; background:${type==='user'?'#7c3aed':'rgba(255,255,255,0.2)'}; color:white;`;
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
-}
-
+// === Настройки ===
 function setupSettings() {
   document.querySelectorAll('input[name="theme"]').forEach(radio => {
-    radio.addEventListener('change', () => {
-      const isLight = radio.value === 'light';
-      document.body.classList.toggle('light', isLight);
+    radio.onchange = () => {
+      document.body.classList.toggle('light', radio.value === 'light');
       saveUserData('theme', radio.value);
-    });
+    };
   });
 
-  document.getElementById('wallpaper-input').addEventListener('change', (e) => {
+  document.getElementById('wallpaper-input').onchange = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onload = (ev) => {
@@ -295,38 +278,33 @@ function setupSettings() {
       saveUserData('wallpaper', url);
     };
     reader.readAsDataURL(file);
-  });
+  };
 
   document.querySelectorAll('.wallpaper-gallery img').forEach(img => {
-    img.addEventListener('click', () => {
+    img.onclick = () => {
       const url = img.src;
       document.getElementById('wallpaper').style.backgroundImage = `url(${url})`;
       saveUserData('wallpaper', url);
-    });
+    };
   });
 
-  document.getElementById('logout-btn').addEventListener('click', () => {
-    signOut(auth);
-  });
+  document.getElementById('logout-btn').onclick = () => auth.signOut();
 }
 
 function setupIframeSync(appId, iframe) {
   if (!apps[appId]?.saveKey) return;
-  const key = apps[appId].saveKey;
-  iframe.onload = () => {
-    setInterval(() => {
-      try {
-        const data = iframe.contentWindow.localStorage.getItem(key);
-        if (data) saveUserData(key, data);
-      } catch (e) {}
-    }, 2000);
-  };
+  setInterval(() => {
+    try {
+      const data = iframe.contentWindow.localStorage.getItem(apps[appId].saveKey);
+      if (data) saveUserData(apps[appId].saveKey, data);
+    } catch (e) {}
+  }, 2000);
 }
 
 function setupWindowDrag(win) {
   const header = win.querySelector('.window-header');
   let isDragging = false;
-  header.addEventListener('mousedown', e => {
+  header.onmousedown = (e) => {
     if (e.target.closest('.window-controls')) return;
     isDragging = true;
     const rect = win.getBoundingClientRect();
@@ -334,18 +312,19 @@ function setupWindowDrag(win) {
     win.dataset.offsetY = e.clientY - rect.top;
     win.style.transition = 'none';
     win.style.zIndex = ++zIndex;
-  });
-  document.addEventListener('mousemove', e => {
+  };
+  document.onmousemove = (e) => {
     if (!isDragging) return;
     win.style.left = `${e.clientX - win.dataset.offsetX}px`;
     win.style.top = `${e.clientY - win.dataset.offsetY}px`;
-  });
-  document.addEventListener('mouseup', () => {
+  };
+  document.onmouseup = () => {
     if (isDragging) win.style.transition = '';
     isDragging = false;
-  });
+  };
 }
 
+// === Service Worker ===
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
