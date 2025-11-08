@@ -20,7 +20,8 @@ const state = {
     userData: {},
     openWindows: {},
     dockApps: ['browser', 'settings'],
-    activeApp: null
+    activeApp: null,
+    isDemoMode: false
 };
 
 // Карта приложений
@@ -89,7 +90,34 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeAuth();
     initializeClock();
     initializeEventListeners();
+    setupDemoMode();
 });
+
+// Настройка демо-режима
+function setupDemoMode() {
+    const demoButton = document.createElement('button');
+    demoButton.textContent = 'Демо-режим';
+    demoButton.style.position = 'fixed';
+    demoButton.style.top = '20px';
+    demoButton.style.right = '20px';
+    demoButton.style.zIndex = '1001';
+    demoButton.style.padding = '12px 20px';
+    demoButton.style.background = 'linear-gradient(45deg, #4ecdc4, #45b7d1)';
+    demoButton.style.color = 'white';
+    demoButton.style.border = 'none';
+    demoButton.style.borderRadius = '10px';
+    demoButton.style.cursor = 'pointer';
+    demoButton.style.fontWeight = '600';
+    demoButton.style.boxShadow = '0 4px 15px rgba(78, 205, 196, 0.3)';
+    
+    demoButton.addEventListener('click', function() {
+        state.isDemoMode = true;
+        showDesktop();
+        alert('Демо-режим активирован! Используйте любые email и пароль для входа.');
+    });
+    
+    document.getElementById('login-modal').appendChild(demoButton);
+}
 
 // Инициализация аутентификации
 function initializeAuth() {
@@ -141,7 +169,17 @@ function initializeEventListeners() {
     document.getElementById('google-login').addEventListener('click', handleGoogleLogin);
     
     // Ссылка регистрации
-    document.getElementById('register-link').addEventListener('click', handleRegister);
+    document.getElementById('register-link').addEventListener('click', function(e) {
+        e.preventDefault();
+        handleRegister();
+    });
+    
+    // Обработка Enter в полях ввода
+    document.getElementById('password').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            handleLogin();
+        }
+    });
     
     // Иконки рабочего стола
     document.querySelectorAll('.desktop-icon').forEach(icon => {
@@ -189,39 +227,159 @@ function handleLogin() {
         return;
     }
     
+    // Показываем индикатор загрузки
+    const loginBtn = document.getElementById('login-btn');
+    const originalText = loginBtn.textContent;
+    loginBtn.textContent = 'Вход...';
+    loginBtn.disabled = true;
+    
+    // Если демо-режим, просто показываем рабочий стол
+    if (state.isDemoMode) {
+        setTimeout(() => {
+            loginBtn.textContent = originalText;
+            loginBtn.disabled = false;
+            showDesktop();
+        }, 1000);
+        return;
+    }
+    
     auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-            // Успешный вход
+            loginBtn.textContent = originalText;
+            loginBtn.disabled = false;
         })
         .catch((error) => {
-            alert('Ошибка входа: ' + error.message);
+            loginBtn.textContent = originalText;
+            loginBtn.disabled = false;
+            
+            let errorMessage = 'Ошибка входа: ';
+            switch(error.code) {
+                case 'auth/invalid-email':
+                    errorMessage += 'Неверный формат email';
+                    break;
+                case 'auth/user-disabled':
+                    errorMessage += 'Аккаунт отключен';
+                    break;
+                case 'auth/user-not-found':
+                    errorMessage += 'Пользователь не найден';
+                    break;
+                case 'auth/wrong-password':
+                    errorMessage += 'Неверный пароль';
+                    break;
+                case 'auth/too-many-requests':
+                    errorMessage += 'Слишком много попыток. Попробуйте позже';
+                    break;
+                default:
+                    errorMessage += error.message;
+            }
+            alert(errorMessage);
         });
 }
 
 // Обработка входа через Google
 function handleGoogleLogin() {
-    alert('Вход через Google будет реализован позже');
-    // Для демонстрации просто показываем рабочий стол
-    showDesktop();
+    // Показываем индикатор загрузки
+    const googleBtn = document.getElementById('google-login');
+    const originalText = googleBtn.innerHTML;
+    googleBtn.innerHTML = '<span>Вход через Google...</span>';
+    googleBtn.disabled = true;
+
+    // Если демо-режим, просто показываем рабочий стол
+    if (state.isDemoMode) {
+        setTimeout(() => {
+            googleBtn.innerHTML = originalText;
+            googleBtn.disabled = false;
+            showDesktop();
+        }, 1000);
+        return;
+    }
+
+    try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        
+        auth.signInWithPopup(provider)
+            .then((result) => {
+                googleBtn.innerHTML = originalText;
+                googleBtn.disabled = false;
+            })
+            .catch((error) => {
+                googleBtn.innerHTML = originalText;
+                googleBtn.disabled = false;
+                
+                if (error.code === 'auth/operation-not-supported-in-this-environment') {
+                    if (confirm('Google аутентификация не настроена. Хотите войти в демо-режим?')) {
+                        state.isDemoMode = true;
+                        showDesktop();
+                    }
+                } else {
+                    alert('Ошибка входа через Google: ' + error.message);
+                }
+            });
+    } catch (error) {
+        googleBtn.innerHTML = originalText;
+        googleBtn.disabled = false;
+        if (confirm('Google аутентификация недоступна. Хотите войти в демо-режим?')) {
+            state.isDemoMode = true;
+            showDesktop();
+        }
+    }
 }
 
 // Обработка регистрации
-function handleRegister(e) {
-    e.preventDefault();
+function handleRegister() {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     
     if (!email || !password) {
-        alert('Пожалуйста, заполните все поля');
+        alert('Пожалуйста, заполните все поля для регистрации');
+        return;
+    }
+    
+    // Показываем индикатор загрузки
+    const loginBtn = document.getElementById('login-btn');
+    const originalText = loginBtn.textContent;
+    loginBtn.textContent = 'Регистрация...';
+    loginBtn.disabled = true;
+
+    // Если демо-режим, просто показываем рабочий стол
+    if (state.isDemoMode) {
+        setTimeout(() => {
+            loginBtn.textContent = originalText;
+            loginBtn.disabled = false;
+            showDesktop();
+            alert('Регистрация успешна! Добро пожаловать в Neuron OS!');
+        }, 1000);
         return;
     }
     
     auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
-            // Успешная регистрация
+            loginBtn.textContent = originalText;
+            loginBtn.disabled = false;
+            alert('Регистрация успешна! Добро пожаловать в Neuron OS!');
         })
         .catch((error) => {
-            alert('Ошибка регистрации: ' + error.message);
+            loginBtn.textContent = originalText;
+            loginBtn.disabled = false;
+            
+            let errorMessage = 'Ошибка регистрации: ';
+            switch(error.code) {
+                case 'auth/email-already-in-use':
+                    errorMessage += 'Email уже используется';
+                    break;
+                case 'auth/invalid-email':
+                    errorMessage += 'Неверный формат email';
+                    break;
+                case 'auth/operation-not-allowed':
+                    errorMessage += 'Регистрация по email отключена';
+                    break;
+                case 'auth/weak-password':
+                    errorMessage += 'Пароль слишком слабый';
+                    break;
+                default:
+                    errorMessage += error.message;
+            }
+            alert(errorMessage);
         });
 }
 
@@ -328,6 +486,8 @@ function createAppWindow(appId) {
     const windowElement = document.createElement('div');
     windowElement.className = 'window';
     windowElement.dataset.app = appId;
+    windowElement.style.left = '50px';
+    windowElement.style.top = '50px';
     
     // Для встроенных приложений создаем специальный контент
     if (app.builtin) {
@@ -403,7 +563,7 @@ function getBuiltinAppContent(appId) {
                     <div class="setting-section" style="margin-bottom: 30px;">
                         <h4 style="margin-bottom: 15px;">Обои</h4>
                         <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
-                            <div class="wallpaper-preview" data-wallpaper="default" style="width: 120px; height: 80px; background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%); border-radius: 10px; cursor: pointer; border: 2px solid #4ecdc4;"></div>
+                            <div class="wallpaper-preview active" data-wallpaper="default" style="width: 120px; height: 80px; background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%); border-radius: 10px; cursor: pointer; border: 2px solid #4ecdc4;"></div>
                             <div class="wallpaper-preview" data-wallpaper="space" style="width: 120px; height: 80px; background: linear-gradient(135deg, #000428 0%, #004e92 100%); border-radius: 10px; cursor: pointer;"></div>
                             <div class="wallpaper-preview" data-wallpaper="nature" style="width: 120px; height: 80px; background: linear-gradient(135deg, #134E5E 0%, #71B280 100%); border-radius: 10px; cursor: pointer;"></div>
                             <div class="wallpaper-preview" data-wallpaper="city" style="width: 120px; height: 80px; background: linear-gradient(135deg, #2C3E50 0%, #4CA1AF 100%); border-radius: 10px; cursor: pointer;"></div>
@@ -471,6 +631,7 @@ function makeWindowDraggable(windowElement) {
         offsetX = e.clientX - windowElement.offsetLeft;
         offsetY = e.clientY - windowElement.offsetTop;
         bringWindowToFront(windowElement.dataset.app);
+        e.preventDefault();
     });
     
     document.addEventListener('mousemove', (e) => {
@@ -722,6 +883,10 @@ function initializeSettings() {
                 p.style.border = 'none';
             });
             this.style.border = '2px solid #4ecdc4';
+            
+            // Применяем выбранные обои
+            const wallpaper = this.dataset.wallpaper;
+            applyWallpaper(wallpaper);
         });
     });
     
@@ -731,8 +896,11 @@ function initializeSettings() {
         if (file) {
             const reader = new FileReader();
             reader.onload = function(event) {
-                // Здесь можно сохранить обои или применить их
-                alert('Обои загружены! Нажмите "Применить обои" для установки.');
+                const wallpaper = document.querySelector('.wallpaper');
+                wallpaper.style.backgroundImage = `url(${event.target.result})`;
+                wallpaper.style.backgroundSize = 'cover';
+                wallpaper.style.backgroundPosition = 'center';
+                alert('Обои загружены и применены!');
             };
             reader.readAsDataURL(file);
         }
@@ -740,13 +908,17 @@ function initializeSettings() {
     
     // Применение обоев
     document.getElementById('apply-wallpaper').addEventListener('click', function() {
+        const activeWallpaper = document.querySelector('.wallpaper-preview.active');
+        if (activeWallpaper) {
+            applyWallpaper(activeWallpaper.dataset.wallpaper);
+        }
         alert('Обои применены!');
-        // Здесь будет логика применения обоев
     });
     
     // Смена темы
     document.getElementById('theme-dark').addEventListener('click', function() {
         document.body.style.filter = 'none';
+        alert('Тёмная тема применена!');
     });
     
     document.getElementById('theme-light').addEventListener('click', function() {
@@ -754,9 +926,29 @@ function initializeSettings() {
     });
 }
 
+// Применить обои
+function applyWallpaper(wallpaperType) {
+    const wallpaper = document.querySelector('.wallpaper');
+    
+    switch(wallpaperType) {
+        case 'default':
+            wallpaper.style.background = 'linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%)';
+            break;
+        case 'space':
+            wallpaper.style.background = 'linear-gradient(135deg, #000428 0%, #004e92 100%)';
+            break;
+        case 'nature':
+            wallpaper.style.background = 'linear-gradient(135deg, #134E5E 0%, #71B280 100%)';
+            break;
+        case 'city':
+            wallpaper.style.background = 'linear-gradient(135deg, #2C3E50 0%, #4CA1AF 100%)';
+            break;
+    }
+}
+
 // Загрузка данных пользователя
 function loadUserData() {
-    if (!state.currentUser) return;
+    if (!state.currentUser || state.isDemoMode) return;
     
     db.collection('users').doc(state.currentUser.uid).get()
         .then((doc) => {
@@ -772,7 +964,7 @@ function loadUserData() {
 
 // Сохранение данных пользователя
 function saveUserData() {
-    if (!state.currentUser) return;
+    if (!state.currentUser || state.isDemoMode) return;
     
     db.collection('users').doc(state.currentUser.uid).set({
         dockApps: state.dockApps,
@@ -803,3 +995,8 @@ if ('serviceWorker' in navigator) {
             });
     });
 }
+
+// Экспорт функций для глобального доступа
+window.openApp = openApp;
+window.showStartMenu = showStartMenu;
+window.hideStartMenu = hideStartMenu;
