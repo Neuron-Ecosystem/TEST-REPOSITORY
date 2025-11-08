@@ -18,16 +18,23 @@
     <div class="modal-content">
       <h2>Добро пожаловать в <span class="brand">Neuron OS</span></h2>
       <div id="auth-form">
-        <input type="email" id="email" placeholder="Email" required />
-        <input type="password" id="password" placeholder="Пароль" required />
-        <button id="login-btn">Войти</button>
-        <button id="register-btn">Регистрация</button>
-        <div class="divider">или</div>
-        <button id="google-btn" class="google-btn">
-          <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 6.5c1.65 0 3.12.64 4.27 1.88l3.19-3.19C17.46 2.71 14.97 1.5 12 1.5c-4.3 0-8.01 2.47-9.82 6.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-          Войти через Google
-        </button>
-      </div>
+  <input type="email" id="email" placeholder="Email" required />
+  <input type="password" id="password" placeholder="Пароль" required />
+  <div class="auth-buttons">
+    <button id="login-btn" class="auth-btn">Войти</button>
+    <button id="register-btn" class="auth-btn">Регистрация</button>
+  </div>
+  <div class="divider">или</div>
+  <button id="google-btn" class="auth-btn google-btn">
+    <svg viewBox="0 0 18 18" width="18" height="18">
+      <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.208 1.125-.842 2.078-1.777 2.712v2.297h2.878c1.683-1.55 2.655-3.83 2.655-6.65z"/>
+      <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.878-2.297c-.805.54-1.837.86-2.978.86-2.292 0-4.236-1.545-4.933-3.627H2.1v2.284C3.58 16.22 6.136 18 9 18z"/>
+      <path fill="#FBBC05" d="M4.067 10.787C3.91 10.347 3.82 9.88 3.82 9.397c0-.483.09-.95.247-1.39V5.723H1.1C.58 6.85.3 8.085.3 9.397c0 1.312.28 2.548.8 3.674l2.967-2.284z"/>
+      <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.346l2.582-2.58C13.463.89 11.426 0 9 0 6.136 0 3.58 1.78 2.1 4.04l2.967 2.284C5.764 4.24 7.708 3.58 9 3.58z"/>
+    </svg>
+    Google
+  </button>
+</div>
       <div id="auth-loading" class="hidden">Загрузка...</div>
     </div>
   </div>
