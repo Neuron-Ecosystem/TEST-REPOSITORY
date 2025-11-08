@@ -1,109 +1,97 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Neuron OS</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="data:,">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="desktop">
-    <!-- Рабочий стол с Dock -->
-    <div id="dock">
-      <div class="dock-icon" data-app="browser" title="Интернет">🌐</div>
-      <div class="dock-icon" data-app="ai" title="Neuron AI">🧠</div>
-      <div class="dock-icon" data-app="notes" title="Notes">📝</div>
-      <div class="dock-icon" data-app="converter" title="Converter">🔄</div>
-      <div class="dock-icon" data-app="budget" title="Budget">💰</div>
-      <div class="dock-icon" data-app="tools" title="Tools">🧰</div>
-      <div class="dock-icon" data-app="games" title="Games">🎮</div>
-      <div class="dock-icon" data-app="settings" title="Settings">⚙️</div>
+  <!-- Обои -->
+  <div id="wallpaper"></div>
+
+  <!-- Регистрация / Вход -->
+  <div id="auth-modal" class="modal">
+    <div class="modal-content">
+      <h2>Добро пожаловать в <span class="brand">Neuron OS</span></h2>
+      <div id="auth-form">
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Пароль" required />
+        <button id="login-btn">Войти</button>
+        <button id="register-btn">Регистрация</button>
+        <div class="divider">или</div>
+        <button id="google-btn" class="google-btn">
+          <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 6.5c1.65 0 3.12.64 4.27 1.88l3.19-3.19C17.46 2.71 14.97 1.5 12 1.5c-4.3 0-8.01 2.47-9.82 6.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Войти через Google
+        </button>
+      </div>
+      <div id="auth-loading" class="hidden">Загрузка...</div>
     </div>
   </div>
+
+  <!-- Рабочий стол -->
+  <div id="desktop" class="hidden"></div>
 
   <!-- Окна -->
-  <div class="window" id="ai">
-    <div class="window-header"><span>🧠 Neuron AI</span>
-      <div class="win-btns">
-        <button class="close">🔴</button><button class="min">🟡</button><button class="max">🟢</button>
+  <div id="windows-container"></div>
+
+  <!-- Dock -->
+  <div id="dock">
+    <div class="dock-icon pinned" data-app="browser" title="Интернет">
+      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      <div class="dock-dot"></div>
+    </div>
+    <!-- Динамические иконки -->
+  </div>
+
+  <!-- Настройки -->
+  <div id="settings-modal" class="window hidden">
+    <div class="window-header">
+      <span>Настройки</span>
+      <div class="window-controls">
+        <div class="control-btn close" onclick="closeWindow('settings')"></div>
+        <div class="control-btn minimize" onclick="minimizeWindow('settings')"></div>
+        <div class="control-btn maximize" onclick="maximizeWindow('settings')"></div>
       </div>
     </div>
-    <div class="window-body">
-      <div id="ai-output"></div>
-      <input id="ai-input" placeholder="Введите команду (например /help)">
+    <div class="window-content">
+      <div class="settings-section">
+        <h3>Тема</h3>
+        <label><input type="radio" name="theme" value="dark" checked> Тёмная</label>
+        <label><input type="radio" name="theme" value="light"> Светлая</label>
+      </div>
+      <div class="settings-section">
+        <h3>Обои</h3>
+        <input type="file" id="wallpaper-input" accept="image/*" />
+        <div class="wallpaper-gallery">
+          <img src="https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?w=800" data-wallpaper="nature" />
+          <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800" data-wallpaper="city" />
+          <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800" data-wallpaper="space" />
+          <img src="https://images.unsplash.com/photo-1550745162-459ca0d0e52a?w=800" data-wallpaper="minimal" />
+        </div>
+      </div>
+      <button id="apply-settings" class="glass-btn">Применить</button>
     </div>
   </div>
 
-  <div class="window" id="notes">
-    <div class="window-header"><span>📝 Neuron Notes</span>
-      <div class="win-btns">
-        <button class="close">🔴</button><button class="min">🟡</button><button class="max">🟢</button>
-      </div>
-    </div>
-    <iframe src="https://neuron-p2p.ru/notes.html"></iframe>
-  </div>
-
-  <div class="window" id="converter">
-    <div class="window-header"><span>🔄 Neuron Converter</span>
-      <div class="win-btns">
-        <button class="close">🔴</button><button class="min">🟡</button><button class="max">🟢</button>
-      </div>
-    </div>
-    <iframe src="https://neuron-ecosystem.github.io/Unit-Converter/"></iframe>
-  </div>
-
-  <div class="window" id="budget">
-    <div class="window-header"><span>💰 Neuron Budget</span>
-      <div class="win-btns">
-        <button class="close">🔴</button><button class="min">🟡</button><button class="max">🟢</button>
-      </div>
-    </div>
-    <iframe src="https://neuron-ecosystem.github.io/Neuron-Budget/"></iframe>
-  </div>
-
-  <div class="window" id="tools">
-    <div class="window-header"><span>🧰 Neuron Tools</span>
-      <div class="win-btns">
-        <button class="close">🔴</button><button class="min">🟡</button><button class="max">🟢</button>
-      </div>
-    </div>
-    <iframe src="https://neuron-ecosystem.github.io/Neuron-Tools/"></iframe>
-  </div>
-
-  <div class="window" id="games">
-    <div class="window-header"><span>🎮 Game Hub</span>
-      <div class="win-btns">
-        <button class="close">🔴</button><button class="min">🟡</button><button class="max">🟢</button>
-      </div>
-    </div>
-    <iframe src="https://neuron-ecosystem.github.io/Game-Hub/"></iframe>
-  </div>
-
-  <div class="window" id="settings">
-    <div class="window-header"><span>⚙️ Settings</span>
-      <div class="win-btns">
-        <button class="close">🔴</button><button class="min">🟡</button><button class="max">🟢</button>
-      </div>
-    </div>
-    <div class="window-body settings-body">
-      <h2>Настройки Neuron OS</h2>
-      <label>Выбрать тему:</label>
-      <select id="theme-select">
-        <option value="dark">Тёмная</option>
-        <option value="light">Светлая</option>
-      </select>
-      <label>Выбрать обои:</label>
-      <input type="file" id="wallpaper-upload" accept="image/*">
-      <button id="apply-settings">Применить</button>
-    </div>
+  <!-- Контекстное меню -->
+  <div id="context-menu" class="hidden">
+    <div class="menu-item" data-action="pin">Закрепить в Dock</div>
+    <div class="menu-item" data-action="open-tab">Открыть в новой вкладке</div>
+    <div class="menu-item" data-action="ask-ai">Спросить у AI</div>
   </div>
 
   <script type="module" src="script.js"></script>
 
-  <!-- Firebase -->
+  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyDOaDVzzPjyYm4HWMND2XYWjLy_h4wty5s",
       authDomain: "neuron-ecosystem-2025.firebaseapp.com",
@@ -113,8 +101,13 @@
       appId: "1:589834476565:web:622fe04057d33339dd421c",
       measurementId: "G-Z934BZPLG3"
     };
+
     const app = initializeApp(firebaseConfig);
-    getAnalytics(app);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    window.neuronAuth = { auth, db, googleProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, onAuthStateChanged, doc, setDoc, getDoc };
   </script>
 </body>
 </html>
