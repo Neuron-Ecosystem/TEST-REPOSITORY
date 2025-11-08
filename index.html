@@ -39,6 +39,8 @@ body { overflow: hidden; background: #000; color: #fff; height: 100vh; width: 10
 
 /* Иконки рабочего стола */
 .desktop-icons { position:absolute; top:20px; left:20px; display:flex; flex-direction:column; gap:20px; }
+.desktop-icons-column { display:flex; flex-direction:column; gap:20px; }
+.desktop-icons-row { display:flex; gap:20px; }
 .desktop-icon { display:flex; flex-direction:column; align-items:center; width:80px; padding:10px; border-radius:10px; cursor:pointer; transition: all .3s; user-select:none; }
 .desktop-icon:hover { background: rgba(255,255,255,0.1); transform: scale(1.05); }
 .desktop-icon .icon { font-size:2rem; margin-bottom:5px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
@@ -92,14 +94,27 @@ body { overflow: hidden; background: #000; color: #fff; height: 100vh; width: 10
 
 /* Адаптивность */
 @media (max-width:768px) {
-  .desktop-icons { top:10px; left:10px; gap:15px; }
+  .desktop-icons { top:10px; left:10px; gap:15px; flex-direction:row; flex-wrap:wrap; }
+  .desktop-icons-column { gap:15px; }
+  .desktop-icons-row { gap:15px; }
   .desktop-icon { width:60px; }
   .desktop-icon .icon { font-size:1.5rem; }
   .desktop-icon span { font-size:.7rem; }
   .dock { bottom:10px; padding:8px 15px; }
   .dock-icon { font-size:1.5rem; }
   .window { width:95vw; height:70vh; }
+  .window-header { padding:10px 15px; }
+  .window-control { width:10px; height:10px; }
 }
+
+/* О нас стили */
+.about-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+.about-section h4 { margin-bottom: 15px; }
+.social-icons { display: flex; gap: 15px; margin-bottom: 20px; }
+.social-icon { font-size: 2rem; cursor: pointer; transition: transform 0.3s; }
+.social-icon:hover { transform: scale(1.1); }
+.support-button { padding: 10px 20px; background: linear-gradient(45deg,#4ecdc4,#45b7d1); border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer; transition: all .3s; }
+.support-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(78,205,196,0.3); }
 </style>
 </head>
 <body>
@@ -135,29 +150,44 @@ body { overflow: hidden; background: #000; color: #fff; height: 100vh; width: 10
     <div class="wallpaper" id="wallpaper"></div>
 
     <div class="desktop-icons" id="desktop-icons">
-        <div class="desktop-icon" data-app="ai" onclick="openApp('ai')" oncontextmenu="return showContextMenu(event,'ai','desktop')">
-            <div class="icon">🧠</div><span>Neuron AI</span>
+        <div class="desktop-icons-column">
+            <div class="desktop-icon" data-app="ai" onclick="openApp('ai')" oncontextmenu="return showContextMenu(event,'ai','desktop')">
+                <div class="icon">🧠</div><span>Neuron AI</span>
+            </div>
+            <div class="desktop-icon" data-app="notes" onclick="openApp('notes')" oncontextmenu="return showContextMenu(event,'notes','desktop')">
+                <div class="icon">📝</div><span>Neuron Notes</span>
+            </div>
+            <div class="desktop-icon" data-app="converter" onclick="openApp('converter')" oncontextmenu="return showContextMenu(event,'converter','desktop')">
+                <div class="icon">🔄</div><span>Neuron Converter</span>
+            </div>
+            <div class="desktop-icon" data-app="budget" onclick="openApp('budget')" oncontextmenu="return showContextMenu(event,'budget','desktop')">
+                <div class="icon">💰</div><span>Neuron Budget</span>
+            </div>
         </div>
-        <div class="desktop-icon" data-app="notes" onclick="openApp('notes')" oncontextmenu="return showContextMenu(event,'notes','desktop')">
-            <div class="icon">📝</div><span>Neuron Notes</span>
+        <div class="desktop-icons-column">
+            <div class="desktop-icon" data-app="synapse" onclick="openApp('synapse')" oncontextmenu="return showContextMenu(event,'synapse','desktop')">
+                <div class="icon">🌐</div><span>Synapse</span>
+            </div>
+            <div class="desktop-icon" data-app="study" onclick="openApp('study')" oncontextmenu="return showContextMenu(event,'study','desktop')">
+                <div class="icon">📚</div><span>Neuron Study</span>
+            </div>
+            <div class="desktop-icon" data-app="password" onclick="openApp('password')" oncontextmenu="return showContextMenu(event,'password','desktop')">
+                <div class="icon">🔐</div><span>Password Generator</span>
+            </div>
+            <div class="desktop-icon" data-app="tools" onclick="openApp('tools')" oncontextmenu="return showContextMenu(event,'tools','desktop')">
+                <div class="icon">🧰</div><span>Neuron Tools</span>
+            </div>
         </div>
-        <div class="desktop-icon" data-app="converter" onclick="openApp('converter')" oncontextmenu="return showContextMenu(event,'converter','desktop')">
-            <div class="icon">🔄</div><span>Neuron Converter</span>
-        </div>
-        <div class="desktop-icon" data-app="budget" onclick="openApp('budget')" oncontextmenu="return showContextMenu(event,'budget','desktop')">
-            <div class="icon">💰</div><span>Neuron Budget</span>
-        </div>
-        <div class="desktop-icon" data-app="tools" onclick="openApp('tools')" oncontextmenu="return showContextMenu(event,'tools','desktop')">
-            <div class="icon">🧰</div><span>Neuron Tools</span>
-        </div>
-        <div class="desktop-icon" data-app="games" onclick="openApp('games')" oncontextmenu="return showContextMenu(event,'games','desktop')">
-            <div class="icon">🎮</div><span>Game Hub</span>
-        </div>
-        <div class="desktop-icon" data-app="browser" onclick="openApp('browser')" oncontextmenu="return showContextMenu(event,'browser','desktop')">
-            <div class="icon">🌐</div><span>Интернет</span>
-        </div>
-        <div class="desktop-icon" data-app="settings" onclick="openApp('settings')" oncontextmenu="return showContextMenu(event,'settings','desktop')">
-            <div class="icon">⚙️</div><span>Настройки</span>
+        <div class="desktop-icons-column">
+            <div class="desktop-icon" data-app="games" onclick="openApp('games')" oncontextmenu="return showContextMenu(event,'games','desktop')">
+                <div class="icon">🎮</div><span>Game Hub</span>
+            </div>
+            <div class="desktop-icon" data-app="browser" onclick="openApp('browser')" oncontextmenu="return showContextMenu(event,'browser','desktop')">
+                <div class="icon">🌐</div><span>Интернет</span>
+            </div>
+            <div class="desktop-icon" data-app="settings" onclick="openApp('settings')" oncontextmenu="return showContextMenu(event,'settings','desktop')">
+                <div class="icon">⚙️</div><span>Настройки</span>
+            </div>
         </div>
     </div>
 
@@ -571,7 +601,7 @@ function createAppWindow(appId) {
     win.dataset.app = appId;
 
     const headerHtml = `
-        <div class="window-header" onmousedown="startDrag(event,'${appId}')">
+        <div class="window-header" onmousedown="startDrag(event,'${appId}')" ontouchstart="handleTouchStart(event,'${appId}')">
             <div class="window-title"><span>${app.icon}</span><span>${app.name}</span></div>
             <div class="window-controls">
                 <div class="window-control minimize" title="Свернуть" onclick="minimizeApp('${appId}')"></div>
@@ -639,7 +669,11 @@ function updateActiveApp(appId) {
         const id = el.dataset.app;
         const ind = el.querySelector('.active-indicator');
         if (!ind) return;
-        if (id === appId) ind.style.display = 'block'; else ind.style.display = 'none';
+        if (id === appId && state.openWindows[appId] && !state.openWindows[appId].classList.contains('minimized')) {
+            ind.style.display = 'block';
+        } else {
+            ind.style.display = 'none';
+        }
     });
 }
 
@@ -685,10 +719,17 @@ function showContextMenu(e, appId, origin='desktop') {
         contextMenuEl.appendChild(row);
     });
 
-    // позиционирование
+    // позиционирование - для док-меню показываем над панелью
     contextMenuEl.style.display = 'block';
-    contextMenuEl.style.left = e.pageX + 'px';
-    contextMenuEl.style.top = e.pageY + 'px';
+    if (isDock) {
+        const dockRect = document.getElementById('dock').getBoundingClientRect();
+        contextMenuEl.style.left = e.pageX + 'px';
+        contextMenuEl.style.top = (dockRect.top - contextMenuEl.offsetHeight - 10) + 'px';
+    } else {
+        contextMenuEl.style.left = e.pageX + 'px';
+        contextMenuEl.style.top = e.pageY + 'px';
+    }
+    
     const cmRect = contextMenuEl.getBoundingClientRect();
     if (cmRect.right > window.innerWidth) contextMenuEl.style.left = (window.innerWidth - cmRect.width - 10) + 'px';
     if (cmRect.bottom > window.innerHeight) contextMenuEl.style.top = (window.innerHeight - cmRect.height - 10) + 'px';
@@ -722,7 +763,13 @@ function handleContextMenuAction(action, appId) {
             break;
         case 'ask-ai':
             openApp('ai');
-            setTimeout(()=>{ const aiInput = document.getElementById('ai-input'); if(aiInput){ aiInput.value = `Расскажи о приложении ${apps[appId].name}`; document.getElementById('ai-send')?.click(); } }, 500);
+            setTimeout(()=>{ 
+                const aiInput = document.getElementById('ai-input'); 
+                if(aiInput){ 
+                    aiInput.value = `Расскажи о приложении ${apps[appId].name}`; 
+                    document.getElementById('ai-send')?.click(); 
+                } 
+            }, 500);
             break;
         case 'toggle':
             toggleAppWindow(appId); break;
@@ -769,11 +816,11 @@ function initializeSettings() {
             <h3>Настройки системы</h3>
             <div style="margin-top:15px;">
                 <h4>Обои</h4>
-                <div style="display:flex;gap:10px;margin-bottom:10px;">
-                    <div class="wallpaper-preview btn-wallpaper" data-wallpaper="default" style="width:120px;height:80px;border-radius:10px;background:linear-gradient(135deg,#0c0c0c 0%,#1a1a2e 50%,#16213e 100%);cursor:pointer;">&nbsp;</div>
-                    <div class="wallpaper-preview btn-wallpaper" data-wallpaper="space" style="width:120px;height:80px;border-radius:10px;background:linear-gradient(135deg,#000428 0%,#004e92 100%);cursor:pointer;">&nbsp;</div>
-                    <div class="wallpaper-preview btn-wallpaper" data-wallpaper="nature" style="width:120px;height:80px;border-radius:10px;background:linear-gradient(135deg,#134E5E 0%,#71B280 100%);cursor:pointer;">&nbsp;</div>
-                    <div class="wallpaper-preview btn-wallpaper" data-wallpaper="city" style="width:120px;height:80px;border-radius:10px;background:linear-gradient(135deg,#2C3E50 0%,#4CA1AF 100%);cursor:pointer;">&nbsp;</div>
+                <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+                    <div class="wallpaper-preview btn-wallpaper" data-wallpaper="default" style="width:120px;height:80px;border-radius:10px;background:linear-gradient(135deg,#0c0c0c 0%,#1a1a2e 50%,#16213e 100%);cursor:pointer;border:2px solid transparent;">&nbsp;</div>
+                    <div class="wallpaper-preview btn-wallpaper" data-wallpaper="space" style="width:120px;height:80px;border-radius:10px;background:linear-gradient(135deg,#000428 0%,#004e92 100%);cursor:pointer;border:2px solid transparent;">&nbsp;</div>
+                    <div class="wallpaper-preview btn-wallpaper" data-wallpaper="nature" style="width:120px;height:80px;border-radius:10px;background:linear-gradient(135deg,#134E5E 0%,#71B280 100%);cursor:pointer;border:2px solid transparent;">&nbsp;</div>
+                    <div class="wallpaper-preview btn-wallpaper" data-wallpaper="city" style="width:120px;height:80px;border-radius:10px;background:linear-gradient(135deg,#2C3E50 0%,#4CA1AF 100%);cursor:pointer;border:2px solid transparent;">&nbsp;</div>
                 </div>
                 <input type="file" id="wallpaper-upload" accept="image/*" style="margin-bottom:10px;">
                 <div style="display:flex;gap:10px;margin-top:10px;">
@@ -781,14 +828,23 @@ function initializeSettings() {
                     <button id="logout-btn" style="padding:8px 12px;border-radius:8px;background:#ff5f57;border:none;cursor:pointer;color:#fff;">Выйти</button>
                 </div>
             </div>
+            <div class="about-section">
+                <h4>О нас</h4>
+                <div class="social-icons">
+                    <div class="social-icon" onclick="window.open('https://t.me/neuron_ecosystem', '_blank')">📱</div>
+                    <div class="social-icon" onclick="window.open('https://neuron-p2p.ru', '_blank')">🌐</div>
+                    <div class="social-icon" onclick="window.open('https://vk.ru/club233118101', '_blank')">👥</div>
+                </div>
+                <button class="support-button" onclick="window.open('https://yoomoney.ru/to/4100119394883694', '_blank')">Поддержать проект</button>
+            </div>
         </div>
     `;
     settingsWindow.innerHTML = html;
 
     settingsWindow.querySelectorAll('.btn-wallpaper').forEach(el => {
         el.onclick = () => {
-            settingsWindow.querySelectorAll('.btn-wallpaper').forEach(p => p.style.outline = 'none');
-            el.style.outline = '3px solid rgba(78,205,196,0.5)';
+            settingsWindow.querySelectorAll('.btn-wallpaper').forEach(p => p.style.border = '2px solid transparent');
+            el.style.border = '3px solid rgba(78,205,196,0.5)';
             settingsWindow.dataset.selectedWallpaper = el.dataset.wallpaper;
         };
     });
@@ -852,7 +908,11 @@ function getBuiltinAppContent(appId) {
 function makeWindowDraggable(win) {
     const header = win.querySelector('.window-header');
     if (!header) return;
+    
     let isDragging = false, offsetX = 0, offsetY = 0;
+    let touchStartTime = 0;
+    
+    // Mouse events
     header.addEventListener('mousedown', (e) => {
         isDragging = true;
         offsetX = e.clientX - win.offsetLeft;
@@ -860,6 +920,24 @@ function makeWindowDraggable(win) {
         bringWindowToFront(win.dataset.app);
         e.preventDefault();
     });
+    
+    // Touch events for mobile
+    header.addEventListener('touchstart', (e) => {
+        touchStartTime = Date.now();
+        const touch = e.touches[0];
+        offsetX = touch.clientX - win.offsetLeft;
+        offsetY = touch.clientY - win.offsetTop;
+        bringWindowToFront(win.dataset.app);
+    });
+    
+    header.addEventListener('touchend', (e) => {
+        // Double tap detection for mobile
+        const touchEndTime = Date.now();
+        if (touchEndTime - touchStartTime < 300) {
+            isDragging = true;
+        }
+    });
+    
     document.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
         const x = e.clientX - offsetX;
@@ -869,9 +947,42 @@ function makeWindowDraggable(win) {
         win.style.left = Math.max(0, Math.min(x, maxX)) + 'px';
         win.style.top = Math.max(0, Math.min(y, maxY)) + 'px';
     });
+    
+    document.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        const touch = e.touches[0];
+        const x = touch.clientX - offsetX;
+        const y = touch.clientY - offsetY;
+        const maxX = window.innerWidth - win.offsetWidth;
+        const maxY = window.innerHeight - win.offsetHeight - 70;
+        win.style.left = Math.max(0, Math.min(x, maxX)) + 'px';
+        win.style.top = Math.max(0, Math.min(y, maxY)) + 'px';
+        e.preventDefault();
+    });
+    
     document.addEventListener('mouseup', () => isDragging = false);
+    document.addEventListener('touchend', () => isDragging = false);
 }
-function startDrag() { /* noop for inline handler compatibility */ }
+
+function handleTouchStart(e, appId) {
+    // Double tap to start dragging on mobile
+    if (e.touches.length === 1) {
+        const now = Date.now();
+        if (now - (window.lastTouchTime || 0) < 300) {
+            // Double tap detected
+            const win = state.openWindows[appId];
+            if (win) {
+                bringWindowToFront(appId);
+            }
+        }
+        window.lastTouchTime = now;
+    }
+}
+
+function startDrag(e, appId) {
+    // This function is kept for compatibility with inline handlers
+    bringWindowToFront(appId);
+}
 
 /* ========== Чат ИИ (простая эмуляция) ========== */
 function initializeAIChat() {
@@ -909,6 +1020,15 @@ function generateAIResponse(message) {
     if (m.includes('привет')) return 'Привет! Чем помочь?';
     if (m.includes('/help')) return 'Доступные команды: /open notes, /about и т.д.';
     if (m.includes('/about')) return 'Neuron OS — демо версия.';
+    if (m.includes('synapse')) return 'Synapse — это веб-браузер с современным интерфейсом и расширенными функциями.';
+    if (m.includes('study')) return 'Neuron Study — приложение для организации учебного процесса и заметок.';
+    if (m.includes('password')) return 'Password Generator — генератор безопасных паролей.';
+    if (m.includes('tools')) return 'Neuron Tools — набор полезных инструментов для повседневных задач.';
+    if (m.includes('notes')) return 'Neuron Notes — приложение для создания и управления заметками.';
+    if (m.includes('converter')) return 'Neuron Converter — конвертер единиц измерения.';
+    if (m.includes('budget')) return 'Neuron Budget — приложение для управления личными финансами.';
+    if (m.includes('games')) return 'Game Hub — коллекция мини-игр для развлечения.';
+    if (m.includes('browser')) return 'Браузер — веб-обозреватель для просмотра сайтов.';
     return 'Пока не знаю, попробуйте другое.';
 }
 
@@ -1101,6 +1221,7 @@ window.openApp = openApp;
 window.toggleAppWindow = toggleAppWindow;
 window.handleLogout = handleLogout;
 window.applyWallpaperFrom = applyWallpaperFrom;
+window.handleTouchStart = handleTouchStart;
 
 /* ========== keyboard shortcuts for dev/testing (optional) ==========
 document.addEventListener('keydown', (e) => {
