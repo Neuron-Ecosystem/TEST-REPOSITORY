@@ -37,11 +37,27 @@ body { overflow: hidden; background: #000; color: #fff; height: 100vh; width: 10
 .desktop { position: relative; width: 100%; height: 100vh; display: none; }
 .wallpaper { position:absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(135deg,#0c0c0c 0%,#1a1a2e 50%,#16213e 100%); z-index:-1; background-size:cover; background-position:center; }
 
-/* Иконки рабочего стола */
-.desktop-icons { position:absolute; top:20px; left:20px; display:flex; flex-direction:column; gap:20px; }
-.desktop-icons-column { display:flex; flex-direction:column; gap:20px; }
-.desktop-icons-row { display:flex; gap:20px; }
-.desktop-icon { display:flex; flex-direction:column; align-items:center; width:80px; padding:10px; border-radius:10px; cursor:pointer; transition: all .3s; user-select:none; }
+/* Иконки рабочего стола - 3 КОЛОНКИ для ПК */
+.desktop-icons { 
+    position:absolute; 
+    top:20px; 
+    left:20px; 
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: auto;
+}
+.desktop-icon { 
+    display:flex; 
+    flex-direction:column; 
+    align-items:center; 
+    width:80px; 
+    padding:10px; 
+    border-radius:10px; 
+    cursor:pointer; 
+    transition: all .3s; 
+    user-select:none; 
+}
 .desktop-icon:hover { background: rgba(255,255,255,0.1); transform: scale(1.05); }
 .desktop-icon .icon { font-size:2rem; margin-bottom:5px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
 .desktop-icon span { font-size:0.8rem; text-align:center; color:white; text-shadow:0 1px 2px rgba(0,0,0,0.5); }
@@ -93,18 +109,47 @@ body { overflow: hidden; background: #000; color: #fff; height: 100vh; width: 10
 @keyframes windowOpen { from { opacity:0; transform:scale(0.8);} to { opacity:1; transform:scale(1);} }
 
 /* Адаптивность */
-@media (max-width:768px) {
-  .desktop-icons { top:10px; left:10px; gap:15px; flex-direction:row; flex-wrap:wrap; }
-  .desktop-icons-column { gap:15px; }
-  .desktop-icons-row { gap:15px; }
-  .desktop-icon { width:60px; }
-  .desktop-icon .icon { font-size:1.5rem; }
-  .desktop-icon span { font-size:.7rem; }
-  .dock { bottom:10px; padding:8px 15px; }
-  .dock-icon { font-size:1.5rem; }
-  .window { width:95vw; height:70vh; }
-  .window-header { padding:10px 15px; }
-  .window-control { width:10px; height:10px; }
+@media (max-width: 1024px) {
+    .desktop-icons {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .desktop-icons {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 15px;
+        top: 10px;
+        left: 10px;
+    }
+    .desktop-icon { 
+        width: 70px; 
+    }
+    .desktop-icon .icon { 
+        font-size: 1.8rem; 
+    }
+    .desktop-icon span { 
+        font-size: 0.75rem; 
+    }
+    .dock { 
+        bottom: 10px; 
+        padding: 8px 15px; 
+    }
+    .dock-icon { 
+        font-size: 1.5rem; 
+    }
+    .window { 
+        width: 95vw; 
+        height: 70vh; 
+    }
+    .window-header { 
+        padding: 10px 15px; 
+    }
+    .window-control { 
+        width: 10px; 
+        height: 10px; 
+    }
 }
 
 /* О нас стили */
@@ -115,6 +160,22 @@ body { overflow: hidden; background: #000; color: #fff; height: 100vh; width: 10
 .social-icon:hover { transform: scale(1.1); }
 .support-button { padding: 10px 20px; background: linear-gradient(45deg,#4ecdc4,#45b7d1); border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer; transition: all .3s; }
 .support-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(78,205,196,0.3); }
+
+/* Мобильное перетаскивание */
+.mobile-drag-indicator {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 2px;
+    display: none;
+}
+.window.mobile-dragging .mobile-drag-indicator {
+    display: block;
+}
 </style>
 </head>
 <body>
@@ -149,45 +210,47 @@ body { overflow: hidden; background: #000; color: #fff; height: 100vh; width: 10
 <div id="desktop" class="desktop" aria-hidden="true">
     <div class="wallpaper" id="wallpaper"></div>
 
+    <!-- ИКОНКИ РАБОЧЕГО СТОЛА В 3 КОЛОНКИ -->
     <div class="desktop-icons" id="desktop-icons">
-        <div class="desktop-icons-column">
-            <div class="desktop-icon" data-app="ai" onclick="openApp('ai')" oncontextmenu="return showContextMenu(event,'ai','desktop')">
-                <div class="icon">🧠</div><span>Neuron AI</span>
-            </div>
-            <div class="desktop-icon" data-app="notes" onclick="openApp('notes')" oncontextmenu="return showContextMenu(event,'notes','desktop')">
-                <div class="icon">📝</div><span>Neuron Notes</span>
-            </div>
-            <div class="desktop-icon" data-app="converter" onclick="openApp('converter')" oncontextmenu="return showContextMenu(event,'converter','desktop')">
-                <div class="icon">🔄</div><span>Neuron Converter</span>
-            </div>
-            <div class="desktop-icon" data-app="budget" onclick="openApp('budget')" oncontextmenu="return showContextMenu(event,'budget','desktop')">
-                <div class="icon">💰</div><span>Neuron Budget</span>
-            </div>
+        <!-- Первая колонка -->
+        <div class="desktop-icon" data-app="ai" onclick="openApp('ai')" oncontextmenu="return showContextMenu(event,'ai','desktop')">
+            <div class="icon">🧠</div><span>Neuron AI</span>
         </div>
-        <div class="desktop-icons-column">
-            <div class="desktop-icon" data-app="synapse" onclick="openApp('synapse')" oncontextmenu="return showContextMenu(event,'synapse','desktop')">
-                <div class="icon">🌐</div><span>Synapse</span>
-            </div>
-            <div class="desktop-icon" data-app="study" onclick="openApp('study')" oncontextmenu="return showContextMenu(event,'study','desktop')">
-                <div class="icon">📚</div><span>Neuron Study</span>
-            </div>
-            <div class="desktop-icon" data-app="password" onclick="openApp('password')" oncontextmenu="return showContextMenu(event,'password','desktop')">
-                <div class="icon">🔐</div><span>Password Generator</span>
-            </div>
-            <div class="desktop-icon" data-app="tools" onclick="openApp('tools')" oncontextmenu="return showContextMenu(event,'tools','desktop')">
-                <div class="icon">🧰</div><span>Neuron Tools</span>
-            </div>
+        <div class="desktop-icon" data-app="notes" onclick="openApp('notes')" oncontextmenu="return showContextMenu(event,'notes','desktop')">
+            <div class="icon">📝</div><span>Neuron Notes</span>
         </div>
-        <div class="desktop-icons-column">
-            <div class="desktop-icon" data-app="games" onclick="openApp('games')" oncontextmenu="return showContextMenu(event,'games','desktop')">
-                <div class="icon">🎮</div><span>Game Hub</span>
-            </div>
-            <div class="desktop-icon" data-app="browser" onclick="openApp('browser')" oncontextmenu="return showContextMenu(event,'browser','desktop')">
-                <div class="icon">🌐</div><span>Интернет</span>
-            </div>
-            <div class="desktop-icon" data-app="settings" onclick="openApp('settings')" oncontextmenu="return showContextMenu(event,'settings','desktop')">
-                <div class="icon">⚙️</div><span>Настройки</span>
-            </div>
+        <div class="desktop-icon" data-app="converter" onclick="openApp('converter')" oncontextmenu="return showContextMenu(event,'converter','desktop')">
+            <div class="icon">🔄</div><span>Neuron Converter</span>
+        </div>
+        
+        <!-- Вторая колонка -->
+        <div class="desktop-icon" data-app="budget" onclick="openApp('budget')" oncontextmenu="return showContextMenu(event,'budget','desktop')">
+            <div class="icon">💰</div><span>Neuron Budget</span>
+        </div>
+        <div class="desktop-icon" data-app="synapse" onclick="openApp('synapse')" oncontextmenu="return showContextMenu(event,'synapse','desktop')">
+            <div class="icon">🌐</div><span>Synapse</span>
+        </div>
+        <div class="desktop-icon" data-app="study" onclick="openApp('study')" oncontextmenu="return showContextMenu(event,'study','desktop')">
+            <div class="icon">📚</div><span>Neuron Study</span>
+        </div>
+        
+        <!-- Третья колонка -->
+        <div class="desktop-icon" data-app="password" onclick="openApp('password')" oncontextmenu="return showContextMenu(event,'password','desktop')">
+            <div class="icon">🔐</div><span>Password Generator</span>
+        </div>
+        <div class="desktop-icon" data-app="tools" onclick="openApp('tools')" oncontextmenu="return showContextMenu(event,'tools','desktop')">
+            <div class="icon">🧰</div><span>Neuron Tools</span>
+        </div>
+        <div class="desktop-icon" data-app="games" onclick="openApp('games')" oncontextmenu="return showContextMenu(event,'games','desktop')">
+            <div class="icon">🎮</div><span>Game Hub</span>
+        </div>
+        
+        <!-- Четвертая колонка -->
+        <div class="desktop-icon" data-app="browser" onclick="openApp('browser')" oncontextmenu="return showContextMenu(event,'browser','desktop')">
+            <div class="icon">🌐</div><span>Интернет</span>
+        </div>
+        <div class="desktop-icon" data-app="settings" onclick="openApp('settings')" oncontextmenu="return showContextMenu(event,'settings','desktop')">
+            <div class="icon">⚙️</div><span>Настройки</span>
         </div>
     </div>
 
@@ -247,7 +310,8 @@ const state = {
     transientDock: {},     // временные иконки для открытых (не закреплённых) приложений
     activeApp: null,
     isDemoMode: false,
-    userDocUnsub: null
+    userDocUnsub: null,
+    mobileDragMode: false  // режим перетаскивания для мобильных
 };
 
 /* Приложения */
@@ -600,6 +664,9 @@ function createAppWindow(appId) {
     win.className = 'window';
     win.dataset.app = appId;
 
+    // Добавляем индикатор для мобильного перетаскивания
+    const mobileDragIndicator = '<div class="mobile-drag-indicator"></div>';
+
     const headerHtml = `
         <div class="window-header" onmousedown="startDrag(event,'${appId}')" ontouchstart="handleTouchStart(event,'${appId}')">
             <div class="window-title"><span>${app.icon}</span><span>${app.name}</span></div>
@@ -609,6 +676,7 @@ function createAppWindow(appId) {
                 <div class="window-control close" title="Закрыть" onclick="closeApp('${appId}')"></div>
             </div>
         </div>
+        ${mobileDragIndicator}
     `;
     const contentHtml = app.builtin ? `<div class="window-content">${getBuiltinAppContent(appId)}</div>` : `<div class="window-content"><iframe src="${app.url}" frameborder="0"></iframe></div>`;
 
@@ -911,6 +979,8 @@ function makeWindowDraggable(win) {
     
     let isDragging = false, offsetX = 0, offsetY = 0;
     let touchStartTime = 0;
+    let lastTouchTime = 0;
+    let touchCount = 0;
     
     // Mouse events
     header.addEventListener('mousedown', (e) => {
@@ -921,21 +991,38 @@ function makeWindowDraggable(win) {
         e.preventDefault();
     });
     
-    // Touch events for mobile
+    // Touch events for mobile - двойное нажатие для активации перетаскивания
     header.addEventListener('touchstart', (e) => {
-        touchStartTime = Date.now();
-        const touch = e.touches[0];
-        offsetX = touch.clientX - win.offsetLeft;
-        offsetY = touch.clientY - win.offsetTop;
-        bringWindowToFront(win.dataset.app);
-    });
-    
-    header.addEventListener('touchend', (e) => {
-        // Double tap detection for mobile
-        const touchEndTime = Date.now();
-        if (touchEndTime - touchStartTime < 300) {
+        const now = Date.now();
+        touchCount++;
+        
+        if (now - lastTouchTime < 300 && touchCount === 2) {
+            // Двойное нажатие - активируем режим перетаскивания
             isDragging = true;
+            state.mobileDragMode = true;
+            const touch = e.touches[0];
+            offsetX = touch.clientX - win.offsetLeft;
+            offsetY = touch.clientY - win.offsetTop;
+            bringWindowToFront(win.dataset.app);
+            
+            // Показываем индикатор перетаскивания
+            win.classList.add('mobile-dragging');
+            touchCount = 0;
+        } else {
+            // Одиночное нажатие
+            touchStartTime = now;
+            const touch = e.touches[0];
+            offsetX = touch.clientX - win.offsetLeft;
+            offsetY = touch.clientY - win.offsetTop;
+            bringWindowToFront(win.dataset.app);
         }
+        
+        lastTouchTime = now;
+        
+        // Сбрасываем счетчик через 1 секунду
+        setTimeout(() => {
+            touchCount = 0;
+        }, 1000);
     });
     
     document.addEventListener('mousemove', (e) => {
@@ -960,23 +1047,22 @@ function makeWindowDraggable(win) {
         e.preventDefault();
     });
     
-    document.addEventListener('mouseup', () => isDragging = false);
-    document.addEventListener('touchend', () => isDragging = false);
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        state.mobileDragMode = false;
+        win.classList.remove('mobile-dragging');
+    });
+    
+    document.addEventListener('touchend', () => {
+        isDragging = false;
+        state.mobileDragMode = false;
+        win.classList.remove('mobile-dragging');
+    });
 }
 
 function handleTouchStart(e, appId) {
-    // Double tap to start dragging on mobile
-    if (e.touches.length === 1) {
-        const now = Date.now();
-        if (now - (window.lastTouchTime || 0) < 300) {
-            // Double tap detected
-            const win = state.openWindows[appId];
-            if (win) {
-                bringWindowToFront(appId);
-            }
-        }
-        window.lastTouchTime = now;
-    }
+    // Функция для совместимости с inline handlers
+    bringWindowToFront(appId);
 }
 
 function startDrag(e, appId) {
