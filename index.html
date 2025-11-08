@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuron OS - Fixed</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
+    <style>
+        /* --- Основные стили --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            -webkit-user-drag: none;
+        }
+
+        body {
+            overflow: hidden;
+            background: #000;
+            color: #fff;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* --- Модальное окно авторизации --- */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .login-window {
+            background: rgba(30, 30, 40, 0.9);
+            border-radius: 20px;
+            padding: 40px;
+            width: 400px;
+            max-width: 90vw;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            animation: scaleIn 0.5s ease;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-header p {
+            color: #ccc;
+            font-size: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(78, 205, 196, 0.3);
+        }
+
+        .google-login-button {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .google-login-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .register-link {
+            text-align: center;
+            color: #ccc;
+        }
+
+        .register-link a {
+            color: #4ecdc4;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .demo-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+            z-index: 1001;
+        }
+
+        /* --- Рабочий стол --- */
+        .desktop {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: none;
+        }
+
+        /* 7. Настроить корректное отображение стандартных обоев */
+        .wallpaper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Default background set in JS: applyWallpaper('default') */
+            z-index: -1;
+            transition: background 0.5s ease;
+        }
+
+        /* Иконки рабочего стола: 3. Сделать корректное отображение сервисов */
+        .desktop-icons {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 80px); /* Two columns for wide screens */
+            gap: 20px;
+        }
+
+        .desktop-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80px;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+            text-align: center;
+        }
+
+        .desktop-icon:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        .desktop-icon .icon {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .desktop-icon span {
+            font-size: 0.8rem;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        /* --- Панель задач (Dock) --- */
+        .dock {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(40, 40, 50, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 10px 20px;
+            display: flex;
+            gap: 15px;
+            z-index: 999;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .dock-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative; /* For indicator dot */
+        }
+
+        .dock-icon:hover {
+            transform: translateY(-5px) scale(1.1);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .dock-icon .app-icon {
+            font-size: 1.5rem;
+        }
+
+        /* 8. Индикатор свернутого/активного сервиса */
+        .dock-icon::after {
+            content: '';
+            position: absolute;
+            bottom: -8px; /* Позиция точки */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px; /* Размер точки */
+            height: 6px;
+            background-color: #4ecdc4; /* Цвет активности */
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .dock-icon.active::after,
+        .dock-icon.minimized::after {
+            opacity: 1; /* Точка видна, когда активно или свернуто */
+        }
+        
+        /* --- Окно приложения (Window) --- */
+        .window {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 600px;
+            height: 400px;
+            min-width: 300px;
+            min-height: 200px;
+            background: rgba(40, 40, 50, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            transform: translate(-50%, -50%) scale(1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: transform 0.3s ease, top 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease, border-radius 0.3s ease;
+            animation: windowOpen 0.3s ease;
+            z-index: 10;
+        }
+
+        .window.minimized {
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* 6. Развернуть на весь экран */
+        .window.maximized {
+            width: 100vw !important;
+            height: 100vh !important;
+            top: 0 !important;
+            left: 0 !important;
+            transform: none !important;
+            border-radius: 0 !important;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+        }
+
+        .window-title-bar {
+            cursor: grab;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .window.maximized .window-title-bar {
+            border-radius: 0;
+        }
+
+        .window-title-bar .title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .window-controls button {
+            width: 18px;
+            height: 18px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.7rem;
+            color: black;
+            font-weight: bold;
+            transition: all 0.1s ease;
+        }
+
+        .window-controls .close-btn { background: #ff5f56; }
+        .window-controls .minimize-btn { background: #ffbd2e; }
+        .window-controls .maximize-btn { background: #27c93f; }
+
+        .window-controls button:hover {
+            opacity: 0.7;
+        }
+        
+        .window-content {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        /* --- Контекстное меню (Right-Click) --- */
+        .context-menu {
+            position: fixed;
+            background: rgba(50, 50, 60, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 1000;
+            padding: 5px 0;
+            min-width: 200px;
+            /* 3. Корректное отображение меню */
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .context-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .context-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- Стили для окна настроек (Settings) --- */
+        .settings-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .settings-group h3 {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            color: #4ecdc4;
+        }
+        
+        .wallpaper-preview-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .wallpaper-preview {
+            border: 3px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+        
+        .wallpaper-preview.selected {
+            border-color: #4ecdc4;
+            box-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+        }
+        
+        .logout-button {
+            width: 100%;
+            padding: 12px;
+            background: #ff6b6b;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+        
+        .logout-button:hover {
+            background: #e65c5c;
+        }
+
+        /* --- Анимации --- */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes windowOpen {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .desktop-icons { top: 10px; left: 10px; gap: 15px; }
+            .desktop-icon { width: 60px; }
+            .desktop-icon .icon { font-size: 1.5rem; }
+            .desktop-icon span { font-size: 0.7rem; }
+            .dock { bottom: 10px; padding: 8px 15px; }
+            .dock-icon { font-size: 1.5rem; }
+            .window { width: 95vw; height: 70vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="modal" id="login-modal">
+        <div class="login-window">
+            <div class="login-header">
+                <h2>🧠 Neuron OS</h2>
+                <p>Добро пожаловать. Введите данные для входа.</p>
+            </div>
+            <form onsubmit="handleLogin(); return false;">
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required placeholder="name@example.com">
+                </div>
+                <div class="input-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" id="login-btn" class="login-button">Войти</button>
+            </form>
+            <button class="google-login-button" onclick="handleGoogleLogin()">
+                Войти через Google
+            </button>
+            <div class="register-link">
+                <p>Нет аккаунта? <a href="#" onclick="alert('Регистрация: введите желаемый email и пароль и нажмите Войти');">Зарегистрироваться</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <button class="demo-button" onclick="activateDemoMode()">Демо-вход</button>
+
+    <div class="desktop" id="desktop">
+        <div class="wallpaper" id="wallpaper"></div>
+
+        <div class="desktop-icons" id="desktop-icons">
+            <div class="desktop-icon" data-app="ai" onclick="openApp('ai')">
+                <div class="icon">🤖</div> <span>Neuron AI</span>
+            </div>
+            <div class="desktop-icon" data-app="notes" onclick="openApp('notes')">
+                <div class="icon">📝</div> <span>Notes</span>
+            </div>
+            <div class="desktop-icon" data-app="converter" onclick="openApp('converter')">
+                <div class="icon">🔄</div> <span>Converter</span>
+            </div>
+            <div class="desktop-icon" data-app="budget" onclick="openApp('budget')">
+                <div class="icon">💰</div> <span>Budget</span>
+            </div>
+            <div class="desktop-icon" data-app="settings" onclick="openApp('settings')">
+                <div class="icon">⚙️</div> <span>Настройки</span>
+            </div>
+            </div>
+    </div>
+
+    <div class="dock">
+        <div id="dock-icons" class="dock-icons">
+            </div>
+    </div>
+
+    <div class="context-menu" id="context-menu">
+        <div class="context-item" onclick="openApp(document.getElementById('context-menu').dataset.targetApp)">Открыть</div>
+        <div class="context-item" id="context-pin" onclick="handleContextMenuAction('pin')">Закрепить на панели задач</div>
+        <div class="context-item" id="context-unpin" onclick="handleContextMenuAction('unpin')" style="display: none;">Открепить от панели задач</div>
+        <div class="context-item" onclick="handleContextMenuAction('ask-ai')">Спросить об этом у AI</div>
+        <div class="context-item" onclick="closeApp(document.getElementById('context-menu').dataset.targetApp)">Закрыть</div>
+    </div>
+
+    <script>
+        // --- Глобальное состояние ---
+        const state = {
+            currentUser: null,
+            users: {
+                'demo@user.com': { password: 'password', uid: 'demo_123' }
+            },
+            openWindows: {}, // { appId: windowElement }
+            dockApps: ['ai', 'settings', 'notes'], // Apps that are permanently pinned
+            maxZIndex: 10,
+            userData: {}, // For storing dock/wallpaper preference
+        };
+
+        const apps = {
+            'ai': { name: 'Neuron AI', icon: '🤖', content: '<h2>Neuron AI</h2><p>Ваш личный помощник с искусственным интеллектом.</p><p><input type="text" id="ai-input" placeholder="Спросите что-нибудь..." style="width: 100%; padding: 10px; margin-top: 10px; border-radius: 5px; border: none; background: rgba(255,255,255,0.1); color: white;"></p>' },
+            'settings': { name: 'Настройки', icon: '⚙️', content: `
+                <h2>Настройки</h2>
+                <div class="settings-content">
+                    <div class="settings-group">
+                        <h3>Обои</h3>
+                        <p>Выберите фоновое изображение для рабочего стола.</p>
+                        <div class="wallpaper-preview-container" id="wallpaper-selector">
+                            <div class="wallpaper-preview selected" data-wallpaper="default" style="width: 120px; height: 80px; background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%); border-radius: 10px; cursor: pointer;" onclick="selectWallpaper('default', this)"></div>
+                            <div class="wallpaper-preview" data-wallpaper="abstract" style="width: 120px; height: 80px; background: linear-gradient(135deg, #0d324d 0%, #7f5a83 100%); border-radius: 10px; cursor: pointer;" onclick="selectWallpaper('abstract', this)"></div>
+                            <div class="wallpaper-preview" data-wallpaper="nature" style="width: 120px; height: 80px; background: linear-gradient(135deg, #134E5E 0%, #71B280 100%); border-radius: 10px; cursor: pointer;" onclick="selectWallpaper('nature', this)"></div>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <h3>Аккаунт</h3>
+                        <button class="logout-button" onclick="logout()">Выйти из аккаунта</button>
+                    </div>
+                </div>
+            `},
+            'notes': { name: 'Notes', icon: '📝', content: '<h2>Заметки</h2><textarea style="width: 100%; height: 250px; padding: 10px; background: rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; color: white;">Начните писать свою заметку здесь...</textarea>' },
+            'converter': { name: 'Converter', icon: '🔄', content: '<h2>Neuron Converter</h2><p>Конвертер валют и единиц измерения.</p>' },
+            'budget': { name: 'Neuron Budget', icon: '💰', content: '<h2>Neuron Budget</h2><p>Отслеживание личных финансов.</p>' },
+        };
+
+        // --- Аутентификация и инициализация ---
+
+        function checkLoginState() {
+            const user = localStorage.getItem('neuron_current_user');
+            if (user) {
+                state.currentUser = JSON.parse(user);
+                showDesktop();
+            } else {
+                document.getElementById('login-modal').style.display = 'flex';
+                document.getElementById('desktop').style.display = 'none';
+            }
+        }
+
+        // 1. Корректная авторизация (Логин)
+        function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('login-btn');
+            loginBtn.textContent = 'Вход...';
+            loginBtn.disabled = true;
+
+            // Локальная аутентификация (для демо)
+            setTimeout(() => {
+                const user = state.users[email];
+                if (user && user.password === password) {
+                    state.currentUser = { email, uid: user.uid };
+                    localStorage.setItem('neuron_current_user', JSON.stringify(state.currentUser));
+                    showDesktop();
+                } else if (email === 'demo@user.com' && password === 'password') {
+                    // Fallback for easy demo
+                    state.currentUser = { email, uid: 'demo_123' };
+                    localStorage.setItem('neuron_current_user', JSON.stringify(state.currentUser));
+                    showDesktop();
+                } else {
+                    alert('Неверный email или пароль. (Для демо используйте: demo@user.com/password)');
+                }
+                loginBtn.textContent = 'Войти';
+                loginBtn.disabled = false;
+            }, 1000);
+        }
+        
+        // 1. Корректная авторизация (Google - Mock)
+        function handleGoogleLogin() {
+            console.log('Google login initiated (mock)');
+            // Здесь должна быть реальная интеграция с Firebase Auth (Google Provider)
+            // Для целей демонстрации, имитируем успешный вход
+            setTimeout(() => {
+                state.currentUser = { email: 'google_user@os.com', uid: 'google_mock_uid', name: 'Google User' };
+                localStorage.setItem('neuron_current_user', JSON.stringify(state.currentUser));
+                showDesktop();
+            }, 1000);
+        }
+
+        function activateDemoMode() {
+            state.currentUser = { email: 'demo@os.com', uid: 'demo_mode', name: 'Demo User' };
+            localStorage.setItem('neuron_current_user', JSON.stringify(state.currentUser));
+            showDesktop();
+        }
+
+        // 2. Функция Выйти
+        function logout() {
+            state.currentUser = null;
+            localStorage.removeItem('neuron_current_user');
+            
+            // Закрыть все открытые окна
+            Object.keys(state.openWindows).forEach(appId => {
+                state.openWindows[appId].remove();
+                delete state.openWindows[appId];
+            });
+            
+            // Очистить Dock (кроме закрепленных по умолчанию, которые будут инициализированы позже)
+            state.dockApps = ['ai', 'settings', 'notes']; // сброс до закрепленных по умолчанию
+            initializeDock();
+            saveUserData();
+            
+            document.getElementById('login-modal').style.display = 'flex';
+            document.getElementById('desktop').style.display = 'none';
+            // Обновить вид кнопки входа
+            document.getElementById('login-btn').textContent = 'Войти';
+            document.getElementById('login-btn').disabled = false;
+        }
+
+        function showDesktop() {
+            document.getElementById('login-modal').style.display = 'none';
+            document.getElementById('desktop').style.display = 'block';
+            loadUserData();
+        }
+
+        // --- Управление приложениями и окнами ---
+
+        function updateZIndices() {
+            let z = 10;
+            const windows = document.querySelectorAll('.window');
+            // Устанавливаем z-index для всех открытых окон
+            windows.forEach(win => {
+                if (win.dataset.appId in state.openWindows) {
+                    win.style.zIndex = state.openWindows[win.dataset.appId].style.zIndex;
+                }
+            });
+            // Находим максимальный z-index
+            state.maxZIndex = Math.max(10, ...Array.from(windows).map(w => parseInt(w.style.zIndex) || 10));
+        }
+
+        function bringWindowToFront(appId) {
+            if (state.openWindows[appId]) {
+                state.maxZIndex++;
+                state.openWindows[appId].style.zIndex = state.maxZIndex;
+            }
+        }
+
+        // 5. Открытие приложения
+        function openApp(appId) {
+            if (!apps[appId]) {
+                alert('Приложение не найдено!');
+                return;
+            }
+            
+            // Если уже открыто, восстанавливаем и переносим на передний план
+            if (state.openWindows[appId]) {
+                const windowEl = state.openWindows[appId];
+                windowEl.classList.remove('minimized'); // Восстанавливаем окно
+                
+                // Обновляем классы Dock Icon
+                const dockIcon = document.querySelector(`.dock-icon[data-app="${appId}"]`);
+                if (dockIcon) {
+                    dockIcon.classList.add('active');
+                    dockIcon.classList.remove('minimized');
+                }
+
+                bringWindowToFront(appId);
+                return;
+            }
+
+            // Создаем окно
+            createAppWindow(appId);
+
+            // 5. Управление иконкой в Dock: добавляем, только если не закреплено
+            let isPinned = state.dockApps.includes(appId);
+
+            if (!isPinned) {
+                // Добавляем временно, если не закреплено (не добавляем в state.dockApps)
+                if (!document.querySelector(`.dock-icon[data-app="${appId}"]`)) {
+                    addAppToDock(appId, true); // true = temporary
+                }
+            }
+            
+            // Обновляем активный индикатор
+            updateActiveIndicator(appId, true);
+        }
+        
+        function closeApp(appId) {
+            const windowEl = state.openWindows[appId];
+            if (windowEl) {
+                windowEl.remove();
+                delete state.openWindows[appId];
+
+                // 5. Удаление временной иконки из Dock
+                const dockIcon = document.querySelector(`.dock-icon[data-app="${appId}"]`);
+                if (dockIcon) {
+                    let isPinned = state.dockApps.includes(appId);
+                    
+                    if (!isPinned) {
+                        dockIcon.remove(); // Удаляем, если не закреплено
+                    } else {
+                        updateActiveIndicator(appId, false); // Если закреплено, просто убираем индикатор активности
+                    }
+                }
+                
+                updateZIndices();
+            }
+        }
+
+        // 8. Свернуть приложение
+        function minimizeApp(appId) {
+            const windowEl = state.openWindows[appId];
+            if (windowEl) {
+                windowEl.classList.add('minimized');
+                
+                // Устанавливаем класс 'minimized' для иконки в Dock, чтобы оставить точку
+                const dockIcon = document.querySelector(`.dock-icon[data-app="${appId}"]`);
+                if (dockIcon) {
+                    dockIcon.classList.remove('active');
+                    dockIcon.classList.add('minimized');
+                }
+            }
+        }
+
+        // 6. Развернуть приложение
+        function maximizeApp(appId) {
+            const windowEl = state.openWindows[appId];
+            if (windowEl) {
+                windowEl.classList.toggle('maximized');
+                // Меняем иконку кнопки развернуть
+                const maximizeBtn = windowEl.querySelector('.window-controls .maximize-btn');
+                if (windowEl.classList.contains('maximized')) {
+                    maximizeBtn.innerHTML = '❐'; // Иконка восстановления
+                    windowEl.style.top = '0px'; // Фиксируем положение
+                    windowEl.style.left = '0px';
+                } else {
+                    maximizeBtn.innerHTML = '▢'; // Иконка развертывания
+                    // Восстанавливаем положение (можно использовать сохраненное или просто центрировать)
+                    windowEl.style.top = '50%';
+                    windowEl.style.left = '50%';
+                }
+                bringWindowToFront(appId);
+            }
+        }
+
+        function toggleAppWindow(appId) {
+            if (state.openWindows[appId]) {
+                const windowEl = state.openWindows[appId];
+                if (windowEl.classList.contains('minimized')) {
+                    // Восстановить
+                    windowEl.classList.remove('minimized');
+                    bringWindowToFront(appId);
+                    updateActiveIndicator(appId, true); // Снова активен
+                    
+                    const dockIcon = document.querySelector(`.dock-icon[data-app="${appId}"]`);
+                    if (dockIcon) dockIcon.classList.remove('minimized');
+
+                } else {
+                    // Свернуть
+                    minimizeApp(appId);
+                }
+            } else {
+                // Открыть
+                openApp(appId);
+            }
+        }
+
+        function createAppWindow(appId) {
+            const app = apps[appId];
+            const desktop = document.getElementById('desktop');
+            const windowEl = document.createElement('div');
+            windowEl.className = 'window';
+            windowEl.dataset.appId = appId;
+            windowEl.style.zIndex = ++state.maxZIndex;
+            windowEl.style.left = `${50 + Math.floor(Math.random() * 10 - 5)}%`; // Смещение для каскада
+            windowEl.style.top = `${50 + Math.floor(Math.random() * 10 - 5)}%`;
+
+            windowEl.innerHTML = `
+                <div class="window-title-bar">
+                    <div class="title">${app.icon} ${app.name}</div>
+                    <div class="window-controls">
+                        <button class="minimize-btn" onclick="minimizeApp('${appId}')">–</button>
+                        <button class="maximize-btn" onclick="maximizeApp('${appId}')">▢</button>
+                        <button class="close-btn" onclick="closeApp('${appId}')">×</button>
+                    </div>
+                </div>
+                <div class="window-content">${app.content}</div>
+            `;
+            
+            desktop.appendChild(windowEl);
+            state.openWindows[appId] = windowEl;
+
+            // Сделать окно перетаскиваемым
+            makeDraggable(windowEl);
+            
+            // Перенести на передний план по клику
+            windowEl.addEventListener('mousedown', () => bringWindowToFront(appId));
+        }
+        
+        function makeDraggable(windowEl) {
+            const titleBar = windowEl.querySelector('.window-title-bar');
+            let isDragging = false;
+            let offset = { x: 0, y: 0 };
+
+            titleBar.onmousedown = (e) => {
+                // Не перетаскивать при клике на кнопки управления
+                if (e.target.closest('.window-controls')) return;
+                
+                isDragging = true;
+                bringWindowToFront(windowEl.dataset.appId);
+                
+                // Преобразуем процентные координаты в пиксели
+                const rect = windowEl.getBoundingClientRect();
+                const style = window.getComputedStyle(windowEl);
+                let currentX = parseFloat(style.left);
+                let currentY = parseFloat(style.top);
+                
+                // Если не развернуто, начинаем перетаскивать
+                if (!windowEl.classList.contains('maximized')) {
+                    offset.x = e.clientX - rect.left;
+                    offset.y = e.clientY - rect.top;
+                    titleBar.style.cursor = 'grabbing';
+                }
+            };
+
+            document.onmouseup = () => {
+                isDragging = false;
+                titleBar.style.cursor = 'grab';
+            };
+
+            document.onmousemove = (e) => {
+                if (!isDragging || windowEl.classList.contains('maximized')) return;
+                
+                let newX = e.clientX - offset.x;
+                let newY = e.clientY - offset.y;
+                
+                // Ограничение границ (простое)
+                const desktopRect = document.getElementById('desktop').getBoundingClientRect();
+                const windowRect = windowEl.getBoundingClientRect();
+
+                newX = Math.max(desktopRect.left, newX);
+                newY = Math.max(desktopRect.top, newY);
+                newX = Math.min(desktopRect.right - windowRect.width, newX);
+                newY = Math.min(desktopRect.bottom - windowRect.height, newY);
+                
+                windowEl.style.left = newX + 'px';
+                windowEl.style.top = newY + 'px';
+            };
+        }
+
+        // --- Управление Dock ---
+        
+        function addAppToDock(appId, isTemporary = false) {
+            const dock = document.getElementById('dock-icons');
+            const app = apps[appId];
+            
+            let dockIcon = document.querySelector(`.dock-icon[data-app="${appId}"]`);
+            if (dockIcon) return;
+
+            dockIcon = document.createElement('div');
+            dockIcon.className = 'dock-icon';
+            dockIcon.dataset.app = appId;
+            dockIcon.innerHTML = `<div class="app-icon">${app.icon}</div>`;
+            dockIcon.setAttribute('title', app.name);
+
+            dockIcon.onclick = () => toggleAppWindow(appId);
+            
+            // 4. Добавление слушателя правой кнопки мыши
+            addDockContextMenuListener(dockIcon, appId);
+            
+            dock.appendChild(dockIcon);
+        }
+        
+        // 5. & 8. Индикатор активности
+        function updateActiveIndicator(appId, isActive) {
+            const dockIcon = document.querySelector(`.dock-icon[data-app="${appId}"]`);
+            if (dockIcon) {
+                if (isActive) {
+                    dockIcon.classList.add('active');
+                    dockIcon.classList.remove('minimized');
+                } else {
+                    // Приложение закрыто
+                    dockIcon.classList.remove('active');
+                    dockIcon.classList.remove('minimized');
+                    
+                    // 5. Если иконка не закреплена, ее нужно удалить при закрытии
+                    if (!state.dockApps.includes(appId)) {
+                        dockIcon.remove();
+                    }
+                }
+            }
+        }
+
+        function initializeDock() {
+            const dock = document.getElementById('dock-icons');
+            dock.innerHTML = ''; // Очистка
+            state.dockApps.forEach(appId => {
+                addAppToDock(appId);
+            });
+            // Добавляем обработчики для иконок на рабочем столе
+            document.querySelectorAll('.desktop-icon').forEach(icon => {
+                icon.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    showContextMenu(e, e.currentTarget.dataset.app, false); // false = desktop
+                });
+            });
+        }
+        
+        // 4. Обработчик контекстного меню для Dock
+        function addDockContextMenuListener(dockIcon, appId) {
+            dockIcon.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                // Проверяем, закреплено ли приложение
+                const isPinned = state.dockApps.includes(appId);
+                
+                if (isPinned) {
+                    showContextMenu(e, appId, true); // true = dock
+                } else {
+                    // Для незакрепленного, но открытого приложения, показываем упрощенное меню
+                    // или используем стандартное, но скрываем/показываем опции
+                    showContextMenu(e, appId, false, true); // isDock=false, isOpenButNotPinned=true
+                }
+            });
+        }
+
+
+        // --- Контекстное меню ---
+        
+        // 3. & 4. Показ контекстного меню
+        function showContextMenu(e, appId, isDock = false, isOpenButNotPinned = false) {
+            e.preventDefault();
+            const contextMenu = document.getElementById('context-menu');
+            const desktopPinOption = document.getElementById('context-pin');
+            const dockUnpinOption = document.getElementById('context-unpin');
+            const isPinned = state.dockApps.includes(appId);
+
+            // 4. Настройка опций "Закрепить/Открепить"
+            if (isDock || isPinned) {
+                // Если клик был на закрепленной иконке в Dock
+                desktopPinOption.style.display = 'none';
+                dockUnpinOption.style.display = 'block';
+            } else if (isOpenButNotPinned) {
+                 // Если клик был на временной иконке (приложение открыто, но не закреплено)
+                desktopPinOption.style.display = 'block'; // Можно закрепить
+                dockUnpinOption.style.display = 'none';
+            } else {
+                // Если клик был на иконке на рабочем столе
+                desktopPinOption.style.display = isPinned ? 'none' : 'block';
+                dockUnpinOption.style.display = 'none';
+            }
+
+            contextMenu.dataset.targetApp = appId;
+            contextMenu.style.display = 'block';
+
+            let x = e.clientX;
+            let y = e.clientY;
+
+            // 3. Проверка границ экрана
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const menuWidth = contextMenu.offsetWidth;
+            const menuHeight = contextMenu.offsetHeight;
+
+            if (x + menuWidth > viewportWidth) {
+                x = viewportWidth - menuWidth - 5;
+            }
+            if (y + menuHeight > viewportHeight) {
+                y = viewportHeight - menuHeight - 5;
+            }
+
+            contextMenu.style.left = `${x}px`;
+            contextMenu.style.top = `${y}px`;
+        }
+
+        function hideContextMenu() {
+            document.getElementById('context-menu').style.display = 'none';
+        }
+
+        function handleContextMenuAction(action) {
+            const contextMenu = document.getElementById('context-menu');
+            const appId = contextMenu.dataset.targetApp;
+            const app = apps[appId];
+            
+            switch(action) {
+                case 'pin':
+                    if (!state.dockApps.includes(appId)) {
+                        state.dockApps.push(appId);
+                        // Если приложение было открыто, его временная иконка станет закрепленной
+                        let dockIcon = document.querySelector(`.dock-icon[data-app="${appId}"]`);
+                        if (!dockIcon) {
+                           addAppToDock(appId);
+                        } else {
+                            // Если иконка уже есть (как временная), просто помечаем ее как закрепленную в состоянии
+                        }
+                        saveUserData();
+                    }
+                    break;
+                case 'unpin': // 4. Открепить от панели задач
+                    state.dockApps = state.dockApps.filter(id => id !== appId);
+                    saveUserData();
+                    
+                    // Если приложение не открыто, удаляем иконку сразу
+                    if (!state.openWindows[appId]) {
+                        document.querySelector(`.dock-icon[data-app="${appId}"]`).remove();
+                    } else {
+                        // Если открыто, иконка остается как временная (пока не закроют)
+                        updateActiveIndicator(appId, true); // Обновить, чтобы убрать статус pinned
+                    }
+                    break;
+                case 'ask-ai':
+                    openApp('ai');
+                    setTimeout(() => {
+                        const aiInput = document.getElementById('ai-input');
+                        if (aiInput) {
+                            aiInput.value = `Расскажи о приложении "${app.name}"`;
+                        }
+                    }, 100);
+                    break;
+                // 'open' и 'close' обрабатываются в onclick атрибутах
+            }
+            hideContextMenu();
+        }
+
+        // --- Управление обоями ---
+        
+        // 7. & 9. Применение обоев
+        function applyWallpaper(wallpaper) {
+            const wallpaperEl = document.getElementById('wallpaper');
+            
+            // Сброс стилей
+            wallpaperEl.style.backgroundImage = 'none';
+            wallpaperEl.style.backgroundColor = 'transparent';
+            wallpaperEl.style.backgroundSize = 'auto';
+            wallpaperEl.style.backgroundPosition = 'top left';
+
+            if (wallpaper === 'default') {
+                // 7. Стандартные обои (темный градиент)
+                wallpaperEl.style.background = 'linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%)';
+            } else if (wallpaper === 'abstract') {
+                wallpaperEl.style.background = 'linear-gradient(135deg, #0d324d 0%, #7f5a83 100%)';
+            } else if (wallpaper === 'nature') {
+                wallpaperEl.style.background = 'linear-gradient(135deg, #134E5E 0%, #71B280 100%)';
+            } else if (wallpaper === 'city') {
+                wallpaperEl.style.background = 'linear-gradient(135deg, #2C3E50 0%, #4CA1AF 100%)';
+            }
+            // Сохранение в настройках
+            state.userData.wallpaper = wallpaper;
+            saveUserData();
+            
+            // Обновление селектора
+            document.querySelectorAll('.wallpaper-preview').forEach(el => {
+                el.classList.remove('selected');
+                if (el.dataset.wallpaper === wallpaper) {
+                    el.classList.add('selected');
+                }
+            });
+        }
+        
+        function selectWallpaper(wallpaper, element) {
+            applyWallpaper(wallpaper);
+        }
+
+        // --- Сохранение/Загрузка данных ---
+
+        function loadUserData() {
+            const savedData = localStorage.getItem('neuron_user_data');
+            if (savedData) {
+                state.userData = JSON.parse(savedData);
+                applyUserPreferences();
+            } else {
+                // Применение настроек по умолчанию
+                applyWallpaper('default');
+                initializeDock();
+            }
+        }
+
+        function saveUserData() {
+            localStorage.setItem('neuron_user_data', JSON.stringify({
+                dockApps: state.dockApps,
+                wallpaper: state.userData.wallpaper || 'default',
+                lastUpdated: new Date()
+            }));
+        }
+
+        function applyUserPreferences() {
+            if (state.userData.dockApps) {
+                state.dockApps = state.userData.dockApps;
+            }
+            if (state.userData.wallpaper) {
+                applyWallpaper(state.userData.wallpaper);
+            }
+            initializeDock();
+        }
+
+        // --- Инициализация ---
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLoginState();
+            // Инициализация Dock после проверки состояния логина/загрузки данных
+            
+            // Обработчики контекстного меню для рабочего стола
+            document.getElementById('desktop').addEventListener('contextmenu', (e) => {
+                if (e.target.id === 'desktop' || e.target.classList.contains('wallpaper')) {
+                    e.preventDefault();
+                    // Можно показать контекстное меню рабочего стола, но пока просто скрываем
+                    hideContextMenu();
+                }
+            });
+            
+            // Закрытие контекстного меню по клику
+            document.addEventListener('click', hideContextMenu);
+        });
+
+        // Глобальные функции
+        window.openApp = openApp;
+        window.handleLogin = handleLogin;
+        window.handleGoogleLogin = handleGoogleLogin;
+        window.logout = logout; // Добавлено
+        window.handleContextMenuAction = handleContextMenuAction;
+        window.closeApp = closeApp;
+        window.minimizeApp = minimizeApp;
+        window.maximizeApp = maximizeApp;
+        window.selectWallpaper = selectWallpaper;
+        window.applyWallpaper = applyWallpaper;
+        window.activateDemoMode = activateDemoMode;
+
+    </script>
+</body>
+</html>
