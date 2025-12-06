@@ -17,6 +17,7 @@
             --accent-blue: #1d9bf0;
             --accent-pink: #f91880;
             --accent-green: #00ba7c;
+            --accent-red: #f4212e;
             --border-color: #2f3336;
             --radius-md: 12px;
             --radius-lg: 16px;
@@ -30,17 +31,24 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
         }
 
+        html, body {
+            height: 100%;
+            overflow: auto;
+        }
+
         body {
             background-color: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
             line-height: 1.5;
+            overflow-x: hidden;
         }
 
         .container {
             max-width: 600px;
             margin: 0 auto;
             padding: 0 16px;
+            min-height: calc(100vh - 140px);
         }
 
         /* Header */
@@ -48,7 +56,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background-color: rgba(0, 0, 0, 0.85);
+            background-color: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-color);
             padding: 12px 0;
@@ -107,6 +115,8 @@
             justify-content: center;
             z-index: 1000;
             backdrop-filter: blur(5px);
+            overflow-y: auto;
+            padding: 20px;
         }
 
         .modal-overlay.active {
@@ -121,6 +131,8 @@
             padding: 32px;
             box-shadow: var(--shadow);
             animation: modalSlide 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         @keyframes modalSlide {
@@ -222,6 +234,7 @@
             cursor: pointer;
             transition: all 0.2s;
             text-decoration: none;
+            white-space: nowrap;
         }
 
         .btn-primary {
@@ -245,7 +258,7 @@
         }
 
         .btn-danger {
-            background-color: #f4212e;
+            background-color: var(--accent-red);
             color: white;
         }
 
@@ -261,6 +274,11 @@
 
         .btn-google:hover {
             background-color: #f5f5f5;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
         }
 
         .divider {
@@ -305,6 +323,8 @@
         .avatar-upload {
             position: relative;
             cursor: pointer;
+            width: 80px;
+            height: 80px;
         }
 
         .avatar-upload input {
@@ -334,6 +354,7 @@
             display: flex;
             gap: 8px;
             margin-top: 8px;
+            flex-wrap: wrap;
         }
 
         .color-option {
@@ -354,6 +375,20 @@
             transform: scale(1.1);
         }
 
+        .nickname-status {
+            font-size: 12px;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .nickname-status.available {
+            color: var(--accent-green);
+        }
+
+        .nickname-status.taken {
+            color: var(--accent-red);
+        }
+
         /* Post Composer */
         .post-composer {
             background-color: var(--bg-card);
@@ -365,7 +400,7 @@
 
         .composer-header {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 12px;
             margin-bottom: 16px;
         }
@@ -382,7 +417,7 @@
         }
 
         .char-counter.error {
-            color: #f4212e;
+            color: var(--accent-red);
         }
 
         /* Feed */
@@ -425,6 +460,7 @@
             line-height: 1.6;
             margin-bottom: 16px;
             word-break: break-word;
+            white-space: pre-wrap;
         }
 
         .post-actions {
@@ -444,10 +480,13 @@
             font-size: 14px;
             cursor: pointer;
             transition: color 0.2s;
+            padding: 4px 8px;
+            border-radius: var(--radius-md);
         }
 
         .action-btn:hover {
             color: var(--text-primary);
+            background-color: rgba(255, 255, 255, 0.05);
         }
 
         .action-btn.liked {
@@ -469,6 +508,8 @@
             padding-top: 16px;
             border-top: 1px solid var(--border-color);
             display: none;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
         .replies-section.active {
@@ -477,13 +518,14 @@
 
         .reply-composer {
             display: flex;
-            gap: 12px;
+            gap: 8px;
             margin-bottom: 16px;
+            align-items: flex-start;
         }
 
         .reply-input {
             flex: 1;
-            padding: 12px 16px;
+            padding: 10px 14px;
             background-color: var(--bg-input);
             border: 2px solid transparent;
             border-radius: var(--radius-md);
@@ -491,7 +533,8 @@
             font-size: 14px;
             resize: none;
             min-height: 40px;
-            max-height: 120px;
+            max-height: 100px;
+            font-family: inherit;
         }
 
         .reply-input:focus {
@@ -511,6 +554,7 @@
             align-items: center;
             gap: 8px;
             margin-bottom: 6px;
+            flex-wrap: wrap;
         }
 
         .reply-author {
@@ -526,6 +570,8 @@
         .reply-content {
             font-size: 14px;
             line-height: 1.5;
+            word-break: break-word;
+            white-space: pre-wrap;
         }
 
         /* Navigation */
@@ -608,6 +654,36 @@
             .nav-item {
                 padding: 12px;
             }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+            }
+            
+            .replies-section {
+                max-height: 300px;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-card);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-input);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
         }
 
         /* Utility classes */
@@ -624,7 +700,7 @@
         .error-message {
             background-color: rgba(244, 33, 46, 0.1);
             border: 1px solid rgba(244, 33, 46, 0.3);
-            color: #f4212e;
+            color: var(--accent-red);
             padding: 12px;
             border-radius: var(--radius-md);
             margin-bottom: 16px;
@@ -639,6 +715,16 @@
             border-radius: var(--radius-md);
             margin-bottom: 16px;
             text-align: center;
+        }
+
+        .profile-color-preview {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-left: 8px;
+            vertical-align: middle;
+            border: 2px solid var(--border-color);
         }
     </style>
 </head>
@@ -659,6 +745,52 @@
             </div>
         </div>
     </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Post Composer -->
+        <div id="postComposer" class="post-composer hidden">
+            <div class="composer-header">
+                <img id="composerAvatar" class="avatar" alt="Аватар">
+                <div style="flex: 1;">
+                    <textarea id="postInput" class="input-field" 
+                              placeholder="Что у тебя на уме?" 
+                              rows="3" 
+                              maxlength="280"></textarea>
+                    <div id="charCounter" class="char-counter">0/280</div>
+                </div>
+            </div>
+            <button id="postSubmit" class="btn btn-primary" style="margin-left: auto; display: block; margin-top: 12px;">
+                Опубликовать
+            </button>
+        </div>
+
+        <!-- Feed -->
+        <div id="feed" class="feed">
+            <div class="loading" id="loading">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                <p style="margin-top: 16px;">Загрузка ленты...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-items">
+            <button class="nav-item active" data-page="feed">
+                <i class="fas fa-home nav-icon"></i>
+                <span class="nav-text">Лента</span>
+            </button>
+            <button class="nav-item" data-page="compose">
+                <i class="fas fa-plus-circle nav-icon"></i>
+                <span class="nav-text">Новый пост</span>
+            </button>
+            <button class="nav-item" data-page="profile">
+                <i class="fas fa-user nav-icon"></i>
+                <span class="nav-text">Профиль</span>
+            </button>
+        </div>
+    </nav>
 
     <!-- Auth Modal -->
     <div id="authModal" class="modal-overlay">
@@ -725,12 +857,17 @@
                 <div>
                     <h3 id="profileNickname" style="margin-bottom: 8px;"></h3>
                     <p style="color: var(--text-secondary); font-size: 14px;">ID: <span id="profileUserId"></span></p>
+                    <div id="currentColorPreview" style="margin-top: 4px; font-size: 12px; color: var(--text-secondary);">
+                        Цвет ника: <span id="currentColorText"></span>
+                        <div class="profile-color-preview" id="currentColorBox"></div>
+                    </div>
                 </div>
             </div>
             
             <div class="input-group">
-                <label class="input-label">Никнейм (макс. 16 символов)</label>
-                <input type="text" id="nicknameInput" class="input-field" maxlength="16" placeholder="Ваш никнейм">
+                <label class="input-label">Никнейм (макс. 17 символов)</label>
+                <input type="text" id="nicknameInput" class="input-field" maxlength="17" placeholder="Ваш никнейм">
+                <div id="nicknameStatus" class="nickname-status"></div>
             </div>
             
             <div class="input-group">
@@ -742,13 +879,19 @@
                     <div class="color-option" style="background-color: #ffd400;" data-color="#ffd400"></div>
                     <div class="color-option" style="background-color: #7856ff;" data-color="#7856ff"></div>
                     <div class="color-option" style="background-color: #ff7a00;" data-color="#ff7a00"></div>
+                    <div class="color-option" style="background-color: #00b4d8;" data-color="#00b4d8"></div>
+                    <div class="color-option" style="background-color: #ff5aac;" data-color="#ff5aac"></div>
+                    <div class="color-option" style="background-color: #52b788;" data-color="#52b788"></div>
                 </div>
             </div>
             
             <div class="input-group">
                 <button id="saveProfile" class="btn btn-primary">Сохранить изменения</button>
                 <button id="deletePosts" class="btn btn-danger" style="margin-top: 12px; width: 100%;">
-                    Удалить мои посты
+                    Удалить мои посты и комментарии
+                </button>
+                <button id="deleteAccount" class="btn btn-danger" style="margin-top: 12px; width: 100%;">
+                    Удалить аккаунт
                 </button>
                 <button id="logoutBtn" class="btn btn-outline" style="margin-top: 12px; width: 100%;">
                     Выйти из аккаунта
@@ -758,52 +901,6 @@
             <div id="profileMessage" class="success-message hidden"></div>
         </div>
     </div>
-
-    <!-- Main Content -->
-    <main class="container">
-        <!-- Post Composer -->
-        <div id="postComposer" class="post-composer hidden">
-            <div class="composer-header">
-                <img id="composerAvatar" class="avatar" alt="Аватар">
-                <div style="flex: 1;">
-                    <textarea id="postInput" class="input-field" 
-                              placeholder="Что у тебя на уме?" 
-                              rows="3" 
-                              maxlength="280"></textarea>
-                    <div id="charCounter" class="char-counter">0/280</div>
-                </div>
-            </div>
-            <button id="postSubmit" class="btn btn-primary" style="margin-left: auto; display: block; margin-top: 12px;">
-                Опубликовать
-            </button>
-        </div>
-
-        <!-- Feed -->
-        <div id="feed" class="feed">
-            <div class="loading" id="loading">
-                <i class="fas fa-spinner fa-spin fa-2x"></i>
-                <p style="margin-top: 16px;">Загрузка ленты...</p>
-            </div>
-        </div>
-    </main>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <div class="nav-items">
-            <button class="nav-item active" data-page="feed">
-                <i class="fas fa-home nav-icon"></i>
-                <span class="nav-text">Лента</span>
-            </button>
-            <button class="nav-item" data-page="compose">
-                <i class="fas fa-plus-circle nav-icon"></i>
-                <span class="nav-text">Новый пост</span>
-            </button>
-            <button class="nav-item" data-page="profile">
-                <i class="fas fa-user nav-icon"></i>
-                <span class="nav-text">Профиль</span>
-            </button>
-        </div>
-    </nav>
 
     <!-- Firebase SDK -->
     <script type="module">
@@ -826,7 +923,8 @@
             signInWithPopup,
             GoogleAuthProvider,
             signOut,
-            onAuthStateChanged
+            onAuthStateChanged,
+            deleteUser
         } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
         import { 
             initializeFirestore,
@@ -851,7 +949,8 @@
             getStorage,
             ref,
             uploadBytes,
-            getDownloadURL
+            getDownloadURL,
+            deleteObject
         } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-storage.js";
 
         // Initialize Firebase
@@ -868,6 +967,7 @@
         let currentUser = null;
         let userProfile = null;
         let selectedColor = "#1d9bf0";
+        let nicknameCheckTimeout = null;
 
         // DOM Elements
         const elements = {
@@ -896,12 +996,16 @@
             profileNickname: document.getElementById('profileNickname'),
             profileUserId: document.getElementById('profileUserId'),
             nicknameInput: document.getElementById('nicknameInput'),
+            nicknameStatus: document.getElementById('nicknameStatus'),
             colorOptions: document.querySelectorAll('.color-option'),
             avatarInput: document.getElementById('avatarInput'),
             saveProfile: document.getElementById('saveProfile'),
             deletePosts: document.getElementById('deletePosts'),
+            deleteAccount: document.getElementById('deleteAccount'),
             logoutBtn: document.getElementById('logoutBtn'),
             profileMessage: document.getElementById('profileMessage'),
+            currentColorText: document.getElementById('currentColorText'),
+            currentColorBox: document.getElementById('currentColorBox'),
             
             // Post composer
             postComposer: document.getElementById('postComposer'),
@@ -924,6 +1028,7 @@
         function init() {
             setupEventListeners();
             setupAuthStateListener();
+            setupScrollFix();
         }
 
         function setupEventListeners() {
@@ -950,13 +1055,18 @@
                     elements.colorOptions.forEach(o => o.classList.remove('selected'));
                     option.classList.add('selected');
                     selectedColor = option.dataset.color;
+                    updateColorPreview();
                 });
             });
             
             elements.avatarInput.addEventListener('change', handleAvatarUpload);
             elements.saveProfile.addEventListener('click', saveProfile);
             elements.deletePosts.addEventListener('click', confirmDeletePosts);
+            elements.deleteAccount.addEventListener('click', confirmDeleteAccount);
             elements.logoutBtn.addEventListener('click', logout);
+            
+            // Nickname availability check
+            elements.nicknameInput.addEventListener('input', checkNicknameAvailability);
             
             // Post composer
             elements.postInput.addEventListener('input', updateCharCounter);
@@ -977,6 +1087,36 @@
                         modal.classList.remove('active');
                     }
                 });
+            });
+            
+            // Close modals on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+                        modal.classList.remove('active');
+                    });
+                }
+            });
+        }
+
+        function setupScrollFix() {
+            // Fix for mobile scroll
+            document.body.style.overflow = 'auto';
+            document.documentElement.style.overflow = 'auto';
+            
+            // Prevent body scroll when modal is open
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.attributeName === 'class') {
+                        const hasActiveModal = document.querySelector('.modal-overlay.active');
+                        document.body.style.overflow = hasActiveModal ? 'hidden' : 'auto';
+                        document.documentElement.style.overflow = hasActiveModal ? 'hidden' : 'auto';
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                observer.observe(modal, { attributes: true });
             });
         }
 
@@ -1008,6 +1148,8 @@
             try {
                 await signInWithEmailAndPassword(auth, email, password);
                 elements.authModal.classList.remove('active');
+                elements.loginEmail.value = '';
+                elements.loginPassword.value = '';
             } catch (error) {
                 showAuthMessage(getAuthErrorMessage(error.code));
             }
@@ -1031,6 +1173,8 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 await createUserProfile(userCredential.user);
                 elements.authModal.classList.remove('active');
+                elements.registerEmail.value = '';
+                elements.registerPassword.value = '';
             } catch (error) {
                 showAuthMessage(getAuthErrorMessage(error.code));
             }
@@ -1049,6 +1193,9 @@
         function showAuthMessage(message) {
             elements.authMessage.textContent = message;
             elements.authMessage.classList.remove('hidden');
+            setTimeout(() => {
+                elements.authMessage.classList.add('hidden');
+            }, 5000);
         }
 
         function getAuthErrorMessage(code) {
@@ -1092,8 +1239,82 @@
                     elements.colorOptions.forEach(option => {
                         option.classList.toggle('selected', option.dataset.color === profile.color);
                     });
+                    updateColorPreview();
                 }
+                
+                // Check nickname availability
+                checkNicknameAvailability();
             }
+        }
+
+        async function checkNicknameAvailability() {
+            const nickname = elements.nicknameInput.value.trim();
+            
+            if (!nickname) {
+                elements.nicknameStatus.textContent = '';
+                elements.nicknameStatus.className = 'nickname-status';
+                return;
+            }
+            
+            if (nickname.length > 17) {
+                elements.nicknameStatus.textContent = 'Максимум 17 символов';
+                elements.nicknameStatus.className = 'nickname-status taken';
+                return;
+            }
+            
+            // Clear previous timeout
+            if (nicknameCheckTimeout) {
+                clearTimeout(nicknameCheckTimeout);
+            }
+            
+            // Debounce the check
+            nicknameCheckTimeout = setTimeout(async () => {
+                try {
+                    // Check if nickname is the same as current user's nickname
+                    if (userProfile && userProfile.nickname === nickname) {
+                        elements.nicknameStatus.textContent = 'Текущий ник';
+                        elements.nicknameStatus.className = 'nickname-status available';
+                        return;
+                    }
+                    
+                    // Query Firestore for users with this nickname
+                    const usersQuery = query(
+                        collection(db, 'users'),
+                        where('nickname', '==', nickname)
+                    );
+                    
+                    const querySnapshot = await getDocs(usersQuery);
+                    
+                    if (querySnapshot.empty) {
+                        elements.nicknameStatus.textContent = 'Ник свободен';
+                        elements.nicknameStatus.className = 'nickname-status available';
+                    } else {
+                        elements.nicknameStatus.textContent = 'Данный ник занят';
+                        elements.nicknameStatus.className = 'nickname-status taken';
+                    }
+                } catch (error) {
+                    console.error('Error checking nickname:', error);
+                    elements.nicknameStatus.textContent = 'Ошибка проверки';
+                    elements.nicknameStatus.className = 'nickname-status taken';
+                }
+            }, 500);
+        }
+
+        function updateColorPreview() {
+            const colorNames = {
+                '#1d9bf0': 'Синий',
+                '#f91880': 'Розовый',
+                '#00ba7c': 'Зеленый',
+                '#ffd400': 'Желтый',
+                '#7856ff': 'Фиолетовый',
+                '#ff7a00': 'Оранжевый',
+                '#00b4d8': 'Голубой',
+                '#ff5aac': 'Ярко-розовый',
+                '#52b788': 'Салатовый'
+            };
+            
+            elements.currentColorText.textContent = colorNames[selectedColor] || selectedColor;
+            elements.currentColorBox.style.backgroundColor = selectedColor;
         }
 
         async function createUserProfile(user) {
@@ -1103,10 +1324,11 @@
             if (!profileSnap.exists()) {
                 const nickname = user.displayName || `user_${user.uid.slice(0, 6)}`;
                 await setDoc(profileRef, {
-                    nickname: nickname.substring(0, 16),
+                    nickname: nickname.substring(0, 17),
                     color: selectedColor,
                     createdAt: serverTimestamp(),
-                    email: user.email
+                    email: user.email,
+                    avatarUrl: user.photoURL || null
                 });
             }
         }
@@ -1137,6 +1359,9 @@
             }
             
             try {
+                // Show loading
+                showProfileMessage('Загрузка аватара...');
+                
                 // Upload to Firebase Storage
                 const storageRef = ref(storage, `avatars/${currentUser.uid}`);
                 await uploadBytes(storageRef, file);
@@ -1145,7 +1370,8 @@
                 // Update profile
                 const profileRef = doc(db, 'users', currentUser.uid);
                 await updateDoc(profileRef, {
-                    avatarUrl: downloadURL
+                    avatarUrl: downloadURL,
+                    updatedAt: serverTimestamp()
                 });
                 
                 // Update UI
@@ -1154,6 +1380,9 @@
                 elements.headerAvatar.src = downloadURL;
                 
                 showProfileMessage('Аватар обновлен!');
+                
+                // Update user profile in state
+                userProfile = await getUserProfile(currentUser.uid);
             } catch (error) {
                 console.error('Error uploading avatar:', error);
                 showProfileMessage('Ошибка загрузки аватара');
@@ -1169,10 +1398,29 @@
                 return;
             }
             
+            if (nickname.length > 17) {
+                showProfileMessage('Максимум 17 символов');
+                return;
+            }
+            
+            // Check if nickname is taken (unless it's the current user's nickname)
+            if (nickname !== userProfile?.nickname) {
+                const usersQuery = query(
+                    collection(db, 'users'),
+                    where('nickname', '==', nickname)
+                );
+                
+                const querySnapshot = await getDocs(usersQuery);
+                if (!querySnapshot.empty) {
+                    showProfileMessage('Этот никнейм уже занят');
+                    return;
+                }
+            }
+            
             try {
                 const profileRef = doc(db, 'users', currentUser.uid);
                 await updateDoc(profileRef, {
-                    nickname: nickname.substring(0, 16),
+                    nickname: nickname.substring(0, 17),
                     color: selectedColor,
                     updatedAt: serverTimestamp()
                 });
@@ -1180,20 +1428,78 @@
                 userProfile = await getUserProfile(currentUser.uid);
                 updateUI();
                 showProfileMessage('Профиль сохранен!');
+                
+                // Update all user's posts and comments with new nickname and color
+                await updateUserPostsAndComments(nickname, selectedColor);
             } catch (error) {
                 console.error('Error saving profile:', error);
                 showProfileMessage('Ошибка сохранения профиля');
             }
         }
 
+        async function updateUserPostsAndComments(nickname, color) {
+            try {
+                // Update posts
+                const postsQuery = query(
+                    collection(db, 'posts'),
+                    where('authorId', '==', currentUser.uid)
+                );
+                
+                const postsSnapshot = await getDocs(postsQuery);
+                const batch = writeBatch(db);
+                
+                postsSnapshot.forEach((postDoc) => {
+                    batch.update(postDoc.ref, {
+                        authorNickname: nickname,
+                        authorColor: color
+                    });
+                    
+                    // Also update comments within this post
+                    const commentsRef = collection(db, 'posts', postDoc.id, 'comments');
+                    // Note: We can't batch across subcollections easily, so we'll handle comments separately
+                });
+                
+                await batch.commit();
+                
+                // Update comments in all posts
+                const allPostsQuery = query(collection(db, 'posts'));
+                const allPostsSnapshot = await getDocs(allPostsQuery);
+                
+                for (const postDoc of allPostsSnapshot.docs) {
+                    const commentsQuery = query(
+                        collection(db, 'posts', postDoc.id, 'comments'),
+                        where('authorId', '==', currentUser.uid)
+                    );
+                    
+                    const commentsSnapshot = await getDocs(commentsQuery);
+                    const commentBatch = writeBatch(db);
+                    
+                    commentsSnapshot.forEach((commentDoc) => {
+                        commentBatch.update(commentDoc.ref, {
+                            authorNickname: nickname,
+                            authorColor: color
+                        });
+                    });
+                    
+                    if (commentsSnapshot.size > 0) {
+                        await commentBatch.commit();
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating user posts and comments:', error);
+            }
+        }
+
         async function confirmDeletePosts() {
             if (!currentUser) return;
             
-            if (!confirm('Вы уверены? Все ваши посты будут удалены безвозвратно.')) {
+            if (!confirm('Вы уверены? Все ваши посты и комментарии будут удалены безвозвратно.')) {
                 return;
             }
             
             try {
+                showProfileMessage('Удаление постов и комментариев...');
+                
                 // Get all user's posts
                 const postsQuery = query(
                     collection(db, 'posts'),
@@ -1201,17 +1507,154 @@
                 );
                 
                 const querySnapshot = await getDocs(postsQuery);
+                let deletedCount = 0;
+                
+                // Delete each post and its comments
+                for (const docSnap of querySnapshot.docs) {
+                    const postId = docSnap.id;
+                    
+                    // Delete all comments in this post
+                    const commentsQuery = query(collection(db, 'posts', postId, 'comments'));
+                    const commentsSnapshot = await getDocs(commentsQuery);
+                    
+                    const batch = writeBatch(db);
+                    
+                    // Delete post
+                    batch.delete(docSnap.ref);
+                    
+                    // Delete all comments in this post
+                    commentsSnapshot.forEach((commentDoc) => {
+                        batch.delete(commentDoc.ref);
+                    });
+                    
+                    await batch.commit();
+                    deletedCount++;
+                }
+                
+                // Also delete user's comments in other posts
+                const allPostsQuery = query(collection(db, 'posts'));
+                const allPostsSnapshot = await getDocs(allPostsQuery);
+                
+                for (const postDoc of allPostsSnapshot.docs) {
+                    const userCommentsQuery = query(
+                        collection(db, 'posts', postDoc.id, 'comments'),
+                        where('authorId', '==', currentUser.uid)
+                    );
+                    
+                    const userCommentsSnapshot = await getDocs(userCommentsQuery);
+                    
+                    if (userCommentsSnapshot.size > 0) {
+                        const batch = writeBatch(db);
+                        userCommentsSnapshot.forEach((commentDoc) => {
+                            batch.delete(commentDoc.ref);
+                        });
+                        await batch.commit();
+                        deletedCount += userCommentsSnapshot.size;
+                    }
+                }
+                
+                showProfileMessage(`Удалено ${deletedCount} постов и комментариев`);
+            } catch (error) {
+                console.error('Error deleting posts:', error);
+                showProfileMessage('Ошибка удаления');
+            }
+        }
+
+        async function confirmDeleteAccount() {
+            if (!currentUser) return;
+            
+            if (!confirm('ВНИМАНИЕ: Вы собираетесь удалить свой аккаунт. Это действие нельзя отменить. Все ваши посты, комментарии и данные будут удалены навсегда. Вы уверены?')) {
+                return;
+            }
+            
+            if (!confirm('Это последнее предупреждение. Вы точно хотите удалить аккаунт?')) {
+                return;
+            }
+            
+            try {
+                showProfileMessage('Удаление аккаунта...');
+                
+                // Delete all user's posts and comments first
+                await deleteAllUserData();
+                
+                // Delete user's avatar from storage if exists
+                try {
+                    const avatarRef = ref(storage, `avatars/${currentUser.uid}`);
+                    await deleteObject(avatarRef);
+                } catch (error) {
+                    // Avatar might not exist, that's okay
+                    console.log('No avatar to delete or error:', error);
+                }
+                
+                // Delete user's profile from Firestore
+                const profileRef = doc(db, 'users', currentUser.uid);
+                await deleteDoc(profileRef);
+                
+                // Delete user from Firebase Auth
+                await deleteUser(currentUser);
+                
+                // Sign out
+                await signOut(auth);
+                
+                showProfileMessage('Аккаунт успешно удален');
+                setTimeout(() => {
+                    elements.profileModal.classList.remove('active');
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Error deleting account:', error);
+                showProfileMessage('Ошибка удаления аккаунта. Попробуйте выйти и войти снова, затем повторите.');
+            }
+        }
+
+        async function deleteAllUserData() {
+            // Delete all user's posts and their comments
+            const postsQuery = query(
+                collection(db, 'posts'),
+                where('authorId', '==', currentUser.uid)
+            );
+            
+            const querySnapshot = await getDocs(postsQuery);
+            
+            for (const docSnap of querySnapshot.docs) {
+                const postId = docSnap.id;
+                
+                // Delete all comments in this post
+                const commentsQuery = query(collection(db, 'posts', postId, 'comments'));
+                const commentsSnapshot = await getDocs(commentsQuery);
+                
                 const batch = writeBatch(db);
                 
-                querySnapshot.forEach((doc) => {
-                    batch.delete(doc.ref);
+                // Delete post
+                batch.delete(docSnap.ref);
+                
+                // Delete all comments in this post
+                commentsSnapshot.forEach((commentDoc) => {
+                    batch.delete(commentDoc.ref);
                 });
                 
                 await batch.commit();
-                showProfileMessage('Все ваши посты удалены');
-            } catch (error) {
-                console.error('Error deleting posts:', error);
-                showProfileMessage('Ошибка удаления постов');
+            }
+            
+            // Delete user's comments in other posts
+            const allPostsQuery = query(collection(db, 'posts'));
+            const allPostsSnapshot = await getDocs(allPostsQuery);
+            
+            for (const postDoc of allPostsSnapshot.docs) {
+                const userCommentsQuery = query(
+                    collection(db, 'posts', postDoc.id, 'comments'),
+                    where('authorId', '==', currentUser.uid)
+                );
+                
+                const userCommentsSnapshot = await getDocs(userCommentsQuery);
+                
+                if (userCommentsSnapshot.size > 0) {
+                    const batch = writeBatch(db);
+                    userCommentsSnapshot.forEach((commentDoc) => {
+                        batch.delete(commentDoc.ref);
+                    });
+                    await batch.commit();
+                }
             }
         }
 
@@ -1220,7 +1663,7 @@
             elements.profileMessage.classList.remove('hidden');
             setTimeout(() => {
                 elements.profileMessage.classList.add('hidden');
-            }, 3000);
+            }, 5000);
         }
 
         // Post functions
@@ -1260,6 +1703,7 @@
                     authorId: currentUser.uid,
                     authorNickname: userProfile?.nickname || 'Аноним',
                     authorColor: userProfile?.color || '#1d9bf0',
+                    authorAvatarUrl: userProfile?.avatarUrl || null,
                     likes: [],
                     likesCount: 0,
                     commentsCount: 0,
@@ -1270,6 +1714,9 @@
                 elements.postInput.value = '';
                 updateCharCounter();
                 switchPage('feed');
+                
+                // Scroll to top of feed to see new post
+                document.querySelector('.feed').scrollIntoView({ behavior: 'smooth' });
             } catch (error) {
                 console.error('Error creating post:', error);
                 alert('Ошибка при публикации поста');
@@ -1350,7 +1797,7 @@
                 <div class="replies-section" id="replies-${postId}">
                     <div class="reply-composer">
                         <textarea class="reply-input" placeholder="Написать ответ..." maxlength="280"></textarea>
-                        <button class="btn btn-primary" data-action="send-reply">Отправить</button>
+                        <button class="btn btn-primary btn-small" data-action="send-reply">Ответить</button>
                     </div>
                     <div class="replies-list" id="replies-list-${postId}"></div>
                 </div>
@@ -1360,10 +1807,19 @@
             const likeBtn = postElement.querySelector('[data-action="like"]');
             const replyBtn = postElement.querySelector('[data-action="reply"]');
             const sendReplyBtn = postElement.querySelector('[data-action="send-reply"]');
+            const replyInput = postElement.querySelector('.reply-input');
             
             likeBtn.addEventListener('click', () => toggleLike(postId, post));
             replyBtn.addEventListener('click', () => toggleReplies(postId));
             sendReplyBtn.addEventListener('click', () => sendReply(postId));
+            
+            // Add enter key support for reply input
+            replyInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendReply(postId);
+                }
+            });
             
             // Load replies for this post
             loadReplies(postId);
@@ -1403,6 +1859,10 @@
             
             if (repliesSection.classList.contains('active')) {
                 loadReplies(postId);
+                // Scroll to replies section
+                setTimeout(() => {
+                    repliesSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
             }
         }
 
@@ -1428,6 +1888,11 @@
                     const replyElement = createReplyElement(reply);
                     repliesList.appendChild(replyElement);
                 });
+                
+                // Scroll to bottom of replies
+                setTimeout(() => {
+                    repliesList.scrollTop = repliesList.scrollHeight;
+                }, 100);
             });
         }
 
@@ -1467,6 +1932,11 @@
                 return;
             }
             
+            if (content.length > 280) {
+                alert('Ответ не должен превышать 280 символов');
+                return;
+            }
+            
             try {
                 // Add reply
                 await addDoc(collection(db, 'posts', postId, 'comments'), {
@@ -1489,6 +1959,7 @@
                 });
                 
                 replyInput.value = '';
+                replyInput.focus();
             } catch (error) {
                 console.error('Error sending reply:', error);
                 alert('Ошибка при отправке ответа');
@@ -1527,6 +1998,11 @@
                 elements.composerAvatar.src = avatarUrl;
             }
             
+            // Update header nickname color
+            if (userProfile?.color) {
+                elements.profileNickname.style.color = userProfile.color;
+            }
+            
             // Show post composer
             elements.postComposer.classList.remove('hidden');
             
@@ -1553,6 +2029,10 @@
             
             // Reset navigation
             switchPage('feed');
+            
+            // Clear form fields
+            elements.postInput.value = '';
+            updateCharCounter();
         }
 
         function switchPage(page) {
@@ -1563,9 +2043,22 @@
             
             // Show/hide appropriate sections
             if (page === 'compose') {
+                if (!currentUser) {
+                    showAuthModal();
+                    switchPage('feed');
+                    return;
+                }
                 elements.postInput.focus();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else if (page === 'profile') {
+                if (!currentUser) {
+                    showAuthModal();
+                    switchPage('feed');
+                    return;
+                }
                 showProfileModal();
+            } else if (page === 'feed') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
 
@@ -1582,7 +2075,8 @@
         function getDefaultAvatar(text) {
             const colors = ['#1d9bf0', '#f91880', '#00ba7c', '#ffd400', '#7856ff', '#ff7a00'];
             const color = colors[text.charCodeAt(0) % colors.length];
-            return `https://ui-avatars.com/api/?name=${encodeURIComponent(text)}&background=${color.replace('#', '')}&color=fff&size=128`;
+            const name = text.substring(0, 2).toUpperCase();
+            return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${color.replace('#', '')}&color=fff&size=128`;
         }
 
         function formatTimeAgo(date) {
