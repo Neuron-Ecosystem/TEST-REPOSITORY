@@ -33,7 +33,6 @@
 
         html, body {
             height: 100%;
-            overflow: auto;
         }
 
         body {
@@ -41,20 +40,24 @@
             color: var(--text-primary);
             min-height: 100vh;
             line-height: 1.5;
-            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .container {
             max-width: 600px;
             margin: 0 auto;
             padding: 0 16px;
-            min-height: calc(100vh - 140px);
+            flex: 1;
+            width: 100%;
         }
 
-        /* Header */
+        /* Header - FIXED AT TOP */
         header {
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            right: 0;
             z-index: 100;
             background-color: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(10px);
@@ -62,7 +65,10 @@
             padding: 12px 0;
         }
 
-        .header-content {
+        .header-inner {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -102,6 +108,15 @@
                         linear-gradient(90deg, var(--accent-blue), var(--accent-pink)) border-box;
         }
 
+        /* Main content - with padding for fixed header */
+        main {
+            flex: 1;
+            padding-top: 70px; /* Height of header + spacing */
+            padding-bottom: 70px; /* Height of bottom nav */
+            display: flex;
+            flex-direction: column;
+        }
+
         /* Auth Modal */
         .modal-overlay {
             position: fixed;
@@ -115,7 +130,6 @@
             justify-content: center;
             z-index: 1000;
             backdrop-filter: blur(5px);
-            overflow-y: auto;
             padding: 20px;
         }
 
@@ -422,7 +436,8 @@
 
         /* Feed */
         .feed {
-            margin: 20px 0 80px;
+            margin: 20px 0;
+            flex: 1;
         }
 
         .post-card {
@@ -586,11 +601,15 @@
             z-index: 90;
         }
 
+        .nav-inner {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
         .nav-items {
             display: flex;
             justify-content: space-around;
-            max-width: 600px;
-            margin: 0 auto;
         }
 
         .nav-item {
@@ -627,7 +646,7 @@
 
         /* Mobile optimizations */
         @media (max-width: 600px) {
-            .container {
+            .container, .header-inner, .nav-inner {
                 padding: 0 12px;
             }
             
@@ -663,6 +682,11 @@
             
             .replies-section {
                 max-height: 300px;
+            }
+            
+            main {
+                padding-top: 60px;
+                padding-bottom: 60px;
             }
         }
 
@@ -726,12 +750,22 @@
             vertical-align: middle;
             border: 2px solid var(--border-color);
         }
+        
+        /* Guest view notification */
+        .guest-notification {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- Header - FIXED AT TOP -->
     <header>
-        <div class="container header-content">
+        <div class="header-inner">
             <div class="logo">
                 <i class="fas fa-comment-dots"></i>
                 True Talk
@@ -747,48 +781,64 @@
     </header>
 
     <!-- Main Content -->
-    <main class="container">
-        <!-- Post Composer -->
-        <div id="postComposer" class="post-composer hidden">
-            <div class="composer-header">
-                <img id="composerAvatar" class="avatar" alt="Аватар">
-                <div style="flex: 1;">
-                    <textarea id="postInput" class="input-field" 
-                              placeholder="Что у тебя на уме?" 
-                              rows="3" 
-                              maxlength="280"></textarea>
-                    <div id="charCounter" class="char-counter">0/280</div>
+    <main>
+        <div class="container">
+            <!-- Post Composer - shown only when logged in -->
+            <div id="postComposer" class="post-composer hidden">
+                <div class="composer-header">
+                    <img id="composerAvatar" class="avatar" alt="Аватар">
+                    <div style="flex: 1;">
+                        <textarea id="postInput" class="input-field" 
+                                  placeholder="Что у тебя на уме?" 
+                                  rows="3" 
+                                  maxlength="280"></textarea>
+                        <div id="charCounter" class="char-counter">0/280</div>
+                    </div>
                 </div>
+                <button id="postSubmit" class="btn btn-primary" style="margin-left: auto; display: block; margin-top: 12px;">
+                    Опубликовать
+                </button>
             </div>
-            <button id="postSubmit" class="btn btn-primary" style="margin-left: auto; display: block; margin-top: 12px;">
-                Опубликовать
-            </button>
-        </div>
 
-        <!-- Feed -->
-        <div id="feed" class="feed">
-            <div class="loading" id="loading">
-                <i class="fas fa-spinner fa-spin fa-2x"></i>
-                <p style="margin-top: 16px;">Загрузка ленты...</p>
+            <!-- Guest notification -->
+            <div id="guestNotification" class="guest-notification hidden">
+                <i class="fas fa-users fa-2x" style="color: var(--accent-blue); margin-bottom: 16px;"></i>
+                <h3>Привет, гость!</h3>
+                <p style="color: var(--text-secondary); margin: 8px 0 16px;">
+                    Вы можете просматривать ленту и комментарии, но для создания постов, лайков и комментариев необходимо войти в аккаунт.
+                </p>
+                <button id="guestLoginBtn" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Войти или зарегистрироваться
+                </button>
+            </div>
+
+            <!-- Feed -->
+            <div id="feed" class="feed">
+                <div class="loading" id="loading">
+                    <i class="fas fa-spinner fa-spin fa-2x"></i>
+                    <p style="margin-top: 16px;">Загрузка ленты...</p>
+                </div>
             </div>
         </div>
     </main>
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <div class="nav-items">
-            <button class="nav-item active" data-page="feed">
-                <i class="fas fa-home nav-icon"></i>
-                <span class="nav-text">Лента</span>
-            </button>
-            <button class="nav-item" data-page="compose">
-                <i class="fas fa-plus-circle nav-icon"></i>
-                <span class="nav-text">Новый пост</span>
-            </button>
-            <button class="nav-item" data-page="profile">
-                <i class="fas fa-user nav-icon"></i>
-                <span class="nav-text">Профиль</span>
-            </button>
+        <div class="nav-inner">
+            <div class="nav-items">
+                <button class="nav-item active" data-page="feed">
+                    <i class="fas fa-home nav-icon"></i>
+                    <span class="nav-text">Лента</span>
+                </button>
+                <button class="nav-item" data-page="compose">
+                    <i class="fas fa-plus-circle nav-icon"></i>
+                    <span class="nav-text">Новый пост</span>
+                </button>
+                <button class="nav-item" data-page="profile">
+                    <i class="fas fa-user nav-icon"></i>
+                    <span class="nav-text">Профиль</span>
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -1014,6 +1064,10 @@
             postSubmit: document.getElementById('postSubmit'),
             charCounter: document.getElementById('charCounter'),
             
+            // Guest elements
+            guestNotification: document.getElementById('guestNotification'),
+            guestLoginBtn: document.getElementById('guestLoginBtn'),
+            
             // Feed
             feed: document.getElementById('feed'),
             loading: document.getElementById('loading'),
@@ -1028,13 +1082,14 @@
         function init() {
             setupEventListeners();
             setupAuthStateListener();
-            setupScrollFix();
+            setupFeedListener(); // Load feed for everyone, including guests
         }
 
         function setupEventListeners() {
             // Auth buttons
             elements.authBtn.addEventListener('click', () => showAuthModal());
             elements.profileBtn.addEventListener('click', () => showProfileModal());
+            elements.guestLoginBtn.addEventListener('click', () => showAuthModal());
             
             // Auth tabs
             elements.authTabs.forEach(tab => {
@@ -1096,27 +1151,6 @@
                         modal.classList.remove('active');
                     });
                 }
-            });
-        }
-
-        function setupScrollFix() {
-            // Fix for mobile scroll
-            document.body.style.overflow = 'auto';
-            document.documentElement.style.overflow = 'auto';
-            
-            // Prevent body scroll when modal is open
-            const observer = new MutationObserver((mutations) => {
-                mutations.forEach((mutation) => {
-                    if (mutation.attributeName === 'class') {
-                        const hasActiveModal = document.querySelector('.modal-overlay.active');
-                        document.body.style.overflow = hasActiveModal ? 'hidden' : 'auto';
-                        document.documentElement.style.overflow = hasActiveModal ? 'hidden' : 'auto';
-                    }
-                });
-            });
-            
-            document.querySelectorAll('.modal-overlay').forEach(modal => {
-                observer.observe(modal, { attributes: true });
             });
         }
 
@@ -1213,7 +1247,10 @@
 
         // Profile functions
         function showProfileModal() {
-            if (!currentUser) return;
+            if (!currentUser) {
+                showAuthModal();
+                return;
+            }
             
             elements.profileModal.classList.add('active');
             loadProfileData();
@@ -1453,10 +1490,6 @@
                         authorNickname: nickname,
                         authorColor: color
                     });
-                    
-                    // Also update comments within this post
-                    const commentsRef = collection(db, 'posts', postDoc.id, 'comments');
-                    // Note: We can't batch across subcollections easily, so we'll handle comments separately
                 });
                 
                 await batch.commit();
@@ -1723,7 +1756,7 @@
             }
         }
 
-        // Feed functions
+        // Feed functions - LOAD FOR EVERYONE (including guests)
         function setupFeedListener() {
             const postsQuery = query(
                 collection(db, 'posts'),
@@ -1766,7 +1799,7 @@
             postElement.className = 'post-card';
             postElement.dataset.postId = postId;
             
-            const isLiked = post.likes?.includes(currentUser?.uid) || false;
+            const isLiked = currentUser ? (post.likes?.includes(currentUser.uid) || false) : false;
             const likeClass = isLiked ? 'action-btn liked' : 'action-btn';
             const likeIcon = isLiked ? 'fas fa-heart' : 'far fa-heart';
             
@@ -1785,20 +1818,28 @@
                 </div>
                 <div class="post-content">${escapeHtml(post.content)}</div>
                 <div class="post-actions">
-                    <button class="${likeClass}" data-action="like">
+                    <button class="${likeClass}" data-action="like" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
                         <i class="${likeIcon}"></i>
                         <span>${post.likesCount || 0}</span>
                     </button>
-                    <button class="action-btn" data-action="reply">
+                    <button class="action-btn" data-action="reply" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
                         <i class="far fa-comment"></i>
                         <span>${post.commentsCount || 0}</span>
                     </button>
                 </div>
                 <div class="replies-section" id="replies-${postId}">
+                    ${currentUser ? `
                     <div class="reply-composer">
                         <textarea class="reply-input" placeholder="Написать ответ..." maxlength="280"></textarea>
                         <button class="btn btn-primary btn-small" data-action="send-reply">Ответить</button>
                     </div>
+                    ` : `
+                    <div class="reply-composer" style="justify-content: center;">
+                        <p style="color: var(--text-secondary); text-align: center; width: 100%;">
+                            <i class="fas fa-sign-in-alt"></i> Войдите, чтобы ответить
+                        </p>
+                    </div>
+                    `}
                     <div class="replies-list" id="replies-list-${postId}"></div>
                 </div>
             `;
@@ -1809,19 +1850,29 @@
             const sendReplyBtn = postElement.querySelector('[data-action="send-reply"]');
             const replyInput = postElement.querySelector('.reply-input');
             
-            likeBtn.addEventListener('click', () => toggleLike(postId, post));
-            replyBtn.addEventListener('click', () => toggleReplies(postId));
-            sendReplyBtn.addEventListener('click', () => sendReply(postId));
-            
-            // Add enter key support for reply input
-            replyInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendReply(postId);
+            if (currentUser) {
+                likeBtn.addEventListener('click', () => toggleLike(postId, post));
+                replyBtn.addEventListener('click', () => toggleReplies(postId));
+                if (sendReplyBtn) {
+                    sendReplyBtn.addEventListener('click', () => sendReply(postId));
                 }
-            });
+                
+                // Add enter key support for reply input
+                if (replyInput) {
+                    replyInput.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            sendReply(postId);
+                        }
+                    });
+                }
+            } else {
+                // For guests, show auth modal when clicking like or reply
+                likeBtn.addEventListener('click', () => showAuthModal());
+                replyBtn.addEventListener('click', () => showAuthModal());
+            }
             
-            // Load replies for this post
+            // Load replies for this post (for everyone, including guests)
             loadReplies(postId);
             
             return postElement;
@@ -1854,6 +1905,11 @@
         }
 
         function toggleReplies(postId) {
+            if (!currentUser) {
+                showAuthModal();
+                return;
+            }
+            
             const repliesSection = document.getElementById(`replies-${postId}`);
             repliesSection.classList.toggle('active');
             
@@ -1889,10 +1945,12 @@
                     repliesList.appendChild(replyElement);
                 });
                 
-                // Scroll to bottom of replies
-                setTimeout(() => {
-                    repliesList.scrollTop = repliesList.scrollHeight;
-                }, 100);
+                // Scroll to bottom of replies if section is active
+                if (document.getElementById(`replies-${postId}`).classList.contains('active')) {
+                    setTimeout(() => {
+                        repliesList.scrollTop = repliesList.scrollHeight;
+                    }, 100);
+                }
             });
         }
 
@@ -1975,7 +2033,6 @@
                     // User is signed in
                     userProfile = await getUserProfile(user.uid);
                     updateUI();
-                    setupFeedListener();
                 } else {
                     // User is signed out
                     resetUI();
@@ -2003,8 +2060,9 @@
                 elements.profileNickname.style.color = userProfile.color;
             }
             
-            // Show post composer
+            // Show post composer and hide guest notification
             elements.postComposer.classList.remove('hidden');
+            elements.guestNotification.classList.add('hidden');
             
             // Update navigation
             switchPage('feed');
@@ -2016,12 +2074,9 @@
             elements.profileBtn.classList.add('hidden');
             elements.headerAvatar.classList.add('hidden');
             
-            // Hide post composer
+            // Hide post composer and show guest notification
             elements.postComposer.classList.add('hidden');
-            
-            // Clear feed
-            elements.feed.innerHTML = '<div class="loading" id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i><p style="margin-top: 16px;">Загрузка ленты...</p></div>';
-            elements.loading = document.getElementById('loading');
+            elements.guestNotification.classList.remove('hidden');
             
             // Close modals
             elements.authModal.classList.remove('active');
