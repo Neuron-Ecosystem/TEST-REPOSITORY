@@ -940,9 +940,6 @@
                 <button id="deletePosts" class="btn btn-danger" style="margin-top: 12px; width: 100%;">
                     Удалить мои посты и комментарии
                 </button>
-                <button id="deleteAccount" class="btn btn-danger" style="margin-top: 12px; width: 100%;">
-                    Удалить аккаунт
-                </button>
                 <button id="logoutBtn" class="btn btn-outline" style="margin-top: 12px; width: 100%;">
                     Выйти из аккаунта
                 </button>
@@ -973,8 +970,7 @@
             signInWithPopup,
             GoogleAuthProvider,
             signOut,
-            onAuthStateChanged,
-            deleteUser
+            onAuthStateChanged
         } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
         import { 
             initializeFirestore,
@@ -999,8 +995,7 @@
             getStorage,
             ref,
             uploadBytes,
-            getDownloadURL,
-            deleteObject
+            getDownloadURL
         } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-storage.js";
 
         // Initialize Firebase
@@ -1051,7 +1046,6 @@
             avatarInput: document.getElementById('avatarInput'),
             saveProfile: document.getElementById('saveProfile'),
             deletePosts: document.getElementById('deletePosts'),
-            deleteAccount: document.getElementById('deleteAccount'),
             logoutBtn: document.getElementById('logoutBtn'),
             profileMessage: document.getElementById('profileMessage'),
             currentColorText: document.getElementById('currentColorText'),
@@ -1117,7 +1111,6 @@
             elements.avatarInput.addEventListener('change', handleAvatarUpload);
             elements.saveProfile.addEventListener('click', saveProfile);
             elements.deletePosts.addEventListener('click', confirmDeletePosts);
-            elements.deleteAccount.addEventListener('click', confirmDeleteAccount);
             elements.logoutBtn.addEventListener('click', logout);
             
             // Nickname availability check
@@ -1399,8 +1392,12 @@
                 // Show loading
                 showProfileMessage('Загрузка аватара...');
                 
-                // Upload to Firebase Storage
-                const storageRef = ref(storage, `avatars/${currentUser.uid}`);
+                // Create a unique filename
+                const fileExtension = file.name.split('.').pop();
+                const fileName = `avatar_${Date.now()}.${fileExtension}`;
+                
+                // Upload to Firebase Storage with unique name
+                const storageRef = ref(storage, `avatars/${currentUser.uid}/${fileName}`);
                 await uploadBytes(storageRef, file);
                 const downloadURL = await getDownloadURL(storageRef);
                 
@@ -1420,9 +1417,60 @@
                 
                 // Update user profile in state
                 userProfile = await getUserProfile(currentUser.uid);
+                
+                // Also update all user's posts and comments with new avatar
+                await updateUserPostsAndCommentsWithAvatar(downloadURL);
+                
             } catch (error) {
                 console.error('Error uploading avatar:', error);
-                showProfileMessage('Ошибка загрузки аватара');
+                showProfileMessage('Ошибка загрузки аватара: ' + error.message);
+            }
+        }
+
+        async function updateUserPostsAndCommentsWithAvatar(avatarUrl) {
+            try {
+                // Update posts
+                const postsQuery = query(
+                    collection(db, 'posts'),
+                    where('authorId', '==', currentUser.uid)
+                );
+                
+                const postsSnapshot = await getDocs(postsQuery);
+                const batch = writeBatch(db);
+                
+                postsSnapshot.forEach((postDoc) => {
+                    batch.update(postDoc.ref, {
+                        authorAvatarUrl: avatarUrl
+                    });
+                });
+                
+                await batch.commit();
+                
+                // Update comments in all posts
+                const allPostsQuery = query(collection(db, 'posts'));
+                const allPostsSnapshot = await getDocs(allPostsQuery);
+                
+                for (const postDoc of allPostsSnapshot.docs) {
+                    const commentsQuery = query(
+                        collection(db, 'posts', postDoc.id, 'comments'),
+                        where('authorId', '==', currentUser.uid)
+                    );
+                    
+                    const commentsSnapshot = await getDocs(commentsQuery);
+                    const commentBatch = writeBatch(db);
+                    
+                    commentsSnapshot.forEach((commentDoc) => {
+                        commentBatch.update(commentDoc.ref, {
+                            authorAvatarUrl: avatarUrl
+                        });
+                    });
+                    
+                    if (commentsSnapshot.size > 0) {
+                        await commentBatch.commit();
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating user posts and comments with avatar:', error);
             }
         }
 
@@ -1590,104 +1638,6 @@
             } catch (error) {
                 console.error('Error deleting posts:', error);
                 showProfileMessage('Ошибка удаления');
-            }
-        }
-
-        async function confirmDeleteAccount() {
-            if (!currentUser) return;
-            
-            if (!confirm('ВНИМАНИЕ: Вы собираетесь удалить свой аккаунт. Это действие нельзя отменить. Все ваши посты, комментарии и данные будут удалены навсегда. Вы уверены?')) {
-                return;
-            }
-            
-            if (!confirm('Это последнее предупреждение. Вы точно хотите удалить аккаунт?')) {
-                return;
-            }
-            
-            try {
-                showProfileMessage('Удаление аккаунта...');
-                
-                // Delete all user's posts and comments first
-                await deleteAllUserData();
-                
-                // Delete user's avatar from storage if exists
-                try {
-                    const avatarRef = ref(storage, `avatars/${currentUser.uid}`);
-                    await deleteObject(avatarRef);
-                } catch (error) {
-                    // Avatar might not exist, that's okay
-                    console.log('No avatar to delete or error:', error);
-                }
-                
-                // Delete user's profile from Firestore
-                const profileRef = doc(db, 'users', currentUser.uid);
-                await deleteDoc(profileRef);
-                
-                // Delete user from Firebase Auth
-                await deleteUser(currentUser);
-                
-                // Sign out
-                await signOut(auth);
-                
-                showProfileMessage('Аккаунт успешно удален');
-                setTimeout(() => {
-                    elements.profileModal.classList.remove('active');
-                }, 2000);
-                
-            } catch (error) {
-                console.error('Error deleting account:', error);
-                showProfileMessage('Ошибка удаления аккаунта. Попробуйте выйти и войти снова, затем повторите.');
-            }
-        }
-
-        async function deleteAllUserData() {
-            // Delete all user's posts and their comments
-            const postsQuery = query(
-                collection(db, 'posts'),
-                where('authorId', '==', currentUser.uid)
-            );
-            
-            const querySnapshot = await getDocs(postsQuery);
-            
-            for (const docSnap of querySnapshot.docs) {
-                const postId = docSnap.id;
-                
-                // Delete all comments in this post
-                const commentsQuery = query(collection(db, 'posts', postId, 'comments'));
-                const commentsSnapshot = await getDocs(commentsQuery);
-                
-                const batch = writeBatch(db);
-                
-                // Delete post
-                batch.delete(docSnap.ref);
-                
-                // Delete all comments in this post
-                commentsSnapshot.forEach((commentDoc) => {
-                    batch.delete(commentDoc.ref);
-                });
-                
-                await batch.commit();
-            }
-            
-            // Delete user's comments in other posts
-            const allPostsQuery = query(collection(db, 'posts'));
-            const allPostsSnapshot = await getDocs(allPostsQuery);
-            
-            for (const postDoc of allPostsSnapshot.docs) {
-                const userCommentsQuery = query(
-                    collection(db, 'posts', postDoc.id, 'comments'),
-                    where('authorId', '==', currentUser.uid)
-                );
-                
-                const userCommentsSnapshot = await getDocs(userCommentsQuery);
-                
-                if (userCommentsSnapshot.size > 0) {
-                    const batch = writeBatch(db);
-                    userCommentsSnapshot.forEach((commentDoc) => {
-                        batch.delete(commentDoc.ref);
-                    });
-                    await batch.commit();
-                }
             }
         }
 
