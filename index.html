@@ -1,321 +1,403 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>True Talk</title>
-<style>
-  /* --- Базовые стили --- */
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #121212;
-    color: #fff;
-  }
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: #1f1f1f;
-  }
-  header h1 {
-    margin: 0;
-    font-size: 1.5rem;
-  }
-  button {
-    cursor: pointer;
-  }
-  main {
-    padding: 10px 20px;
-  }
-  #post-form {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
-  }
-  #post-input {
-    padding: 10px;
-    font-size: 1rem;
-    border-radius: 5px;
-    border: none;
-    resize: none;
-    margin-bottom: 5px;
-  }
-  #post-button {
-    padding: 10px;
-    font-size: 1rem;
-    border-radius: 5px;
-    border: none;
-    background-color: #6200ee;
-    color: #fff;
-    transition: 0.2s;
-  }
-  #post-button:hover {
-    background-color: #3700b3;
-  }
-  .post {
-    background-color: #1f1f1f;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    animation: fadeIn 0.3s ease;
-  }
-  .post .nick {
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  .post .text {
-    margin-bottom: 5px;
-  }
-  .post .actions {
-    display: flex;
-    gap: 10px;
-  }
-  .comment-section {
-    margin-top: 5px;
-  }
-  .comment {
-    margin-left: 10px;
-    font-size: 0.9rem;
-    margin-bottom: 2px;
-  }
-  #profile {
-    margin-bottom: 20px;
-  }
-  #profile input {
-    margin-right: 5px;
-    padding: 5px;
-    border-radius: 5px;
-    border: none;
-  }
-
-  @keyframes fadeIn {
-    from {opacity: 0;}
-    to {opacity:1;}
-  }
-
-  @media(max-width: 600px){
-    header h1 {font-size:1.2rem;}
-    #post-input {font-size:0.9rem;}
-    #post-button {font-size:0.9rem;}
-  }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>True Talk — анонимная лента мыслей (MVP)</title>
+  <meta name="description" content="Минималистичная анонимная соцсеть — True Talk. Email/Google вход, посты, лайки, комментарии, сортировка, мобильная адаптация." />
+  <style>
+    :root{
+      --bg:#0b0c0f;
+      --card:#0f1114;
+      --muted:#9aa3ad;
+      --accent:#8ab4f8;
+      --text:#e6eef6;
+      --glass: rgba(255,255,255,0.02);
+    }
+    [data-theme="light"]{ --bg:#f6f8fb; --card:#ffffff; --muted:#6b7280; --accent:#2563eb; --text:#0f1724; --glass: rgba(0,0,0,0.03);} 
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, Roboto, system-ui, -apple-system, "Segoe UI", Arial; background:var(--bg); color:var(--text);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#2563eb,#8ab4f8);display:flex;align-items:center;justify-content:center;font-weight:700}
+    h1{font-size:18px;margin:0}
+    main{display:flex;gap:18px;padding:16px;max-width:1000px;margin:0 auto}
+    .left{flex:1;min-width:260px}
+    .feed{flex:2;min-width:320px}
+    .controls{display:flex;gap:8px;align-items:center}
+    select,input[type=search]{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:var(--card);color:var(--text)}
+    .card{background:var(--card);border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 4px 20px rgba(2,6,23,0.6)}
+    .post{padding:12px;border-radius:10px}
+    .meta{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .nick{font-weight:700}
+    .post-text{white-space:pre-wrap;margin-bottom:8px}
+    .actions{display:flex;gap:10px;align-items:center}
+    button{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 10px;border-radius:10px;color:var(--text);cursor:pointer}
+    .btn-primary{background:var(--accent);border:none;color:#fff;padding:8px 12px;border-radius:10px}
+    .floating{position:fixed;right:18px;bottom:22px;width:60px;height:60px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 10px 30px rgba(2,6,23,0.6);border:none}
+    .new-post-box textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text);min-height:80px}
+    .comments{margin-top:8px;border-top:1px dashed rgba(255,255,255,0.03);padding-top:8px}
+    .comment{padding:8px;border-radius:8px;margin-bottom:6px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
+    .small{font-size:13px;color:var(--muted)}
+    .profile{display:flex;gap:10px;align-items:center}
+    .avatar{width:44px;height:44px;border-radius:8px;background:var(--glass);display:flex;align-items:center;justify-content:center}
+    footer{padding:12px;text-align:center;color:var(--muted)}
+    /* mobile */
+    @media (max-width:800px){main{flex-direction:column;padding:12px} .left{order:2} .feed{order:1}}
+  </style>
 </head>
-<body>
-<header>
-  <h1>True Talk</h1>
-  <div>
-    <button id="logout-btn" style="display:none;">Выйти</button>
-  </div>
-</header>
-<main>
-  <div id="auth-section">
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Пароль">
-    <button id="login-btn">Войти / Зарегистрироваться</button>
-    <button id="google-btn">Войти через Google</button>
-  </div>
+<body data-theme="dark">
+  <header>
+    <div class="brand">
+      <div class="logo">TT</div>
+      <div>
+        <h1>True Talk</h1>
+        <div class="small">Анонимные честные мысли • MVP</div>
+      </div>
+    </div>
+    <div class="controls">
+      <select id="sortSelect" aria-label="Сортировка">
+        <option value="popular">Самые популярные</option>
+        <option value="least">Менее популярные</option>
+        <option value="new">Новые</option>
+        <option value="old">Старые</option>
+      </select>
+      <button id="themeToggle" title="Тема">Тема</button>
+      <button id="authBtn">Войти</button>
+    </div>
+  </header>
 
-  <div id="profile" style="display:none;">
-    Ник: <input type="text" id="nick-input" placeholder="Ваш ник">
-    Цвет ника: <input type="color" id="color-input" value="#ff0000">
-    <button id="save-profile">Сохранить</button>
-  </div>
+  <main>
+    <div class="feed">
+      <div class="card new-post-box" id="newPostCard" style="display:none">
+        <div class="meta">
+          <div id="meAvatar" class="avatar">?</div>
+          <div>
+            <div id="meNick" class="nick">anon</div>
+            <div class="small">Напиши мысль — она будет публичной и анонимной.</div>
+          </div>
+        </div>
+        <textarea id="newPostText" placeholder="Что у тебя на уме?" maxlength="1000"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+          <div class="small"><span id="charCount">0</span>/1000</div>
+          <div>
+            <button id="postBtn" class="btn-primary">Опубликовать</button>
+          </div>
+        </div>
+      </div>
 
-  <form id="post-form" style="display:none;">
-    <textarea id="post-input" rows="3" placeholder="Что у тебя на уме? (макс 280 символов)"></textarea>
-    <button type="submit" id="post-button">Опубликовать</button>
-    <small id="timeout-msg" style="color:#ff5555;"></small>
-  </form>
+      <div id="feedContainer" class="card" style="min-height:200px">
+        <div id="feedLoading">Загрузка ленты...</div>
+        <div id="posts"></div>
+      </div>
+    </div>
 
-  <div>
-    Сортировка:
-    <select id="sort-select">
-      <option value="new">Новые</option>
-      <option value="old">Старые</option>
-      <option value="popular">Самые популярные</option>
-      <option value="less-popular">Менее популярные</option>
-    </select>
-  </div>
+    <aside class="left">
+      <div class="card">
+        <div class="profile">
+          <div id="sidebarAvatar" class="avatar">TT</div>
+          <div>
+            <div id="sidebarNick" class="nick">Гость</div>
+            <div id="sidebarEmail" class="small">-</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button id="openProfile" style="flex:1">Профиль</button>
+          <button id="logoutBtn" style="display:none">Выйти</button>
+        </div>
+      </div>
 
-  <div id="posts"></div>
-</main>
+      <div class="card small">
+        <strong>Правила MVP</strong>
+        <ul>
+          <li>Минимум данных — ник и цвет</li>
+          <li>Посты публичны и анонимны</li>
+          <li>Без сложных рейтингов и алгоритмов</li>
+        </ul>
+      </div>
+    </aside>
+  </main>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, getDocs, onSnapshot, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+  <button id="openNew" class="floating btn-primary">+</button>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDOaDVzzPjyYm4HWMND2XYWjLy_h4wty5s",
-  authDomain: "neuron-ecosystem-2025.firebaseapp.com",
-  projectId: "neuron-ecosystem-2025",
-  storageBucket: "neuron-ecosystem-2025.firebasestorage.app",
-  messagingSenderId: "589834476565",
-  appId: "1:589834476565:web:f657c13be1cbf8f3dd421c",
-  measurementId: "G-G4NKXZX1ZX"
-};
+  <footer>
+    Neuron Ecosystem — True Talk MVP
+  </footer>
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-const db = getFirestore();
+  <!-- Firebase init script (user provided). Paste this before using Firebase services -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
 
-let lastPostTime = 0;
-let currentUser = null;
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyDOaDVzzPjyYm4HWMND2XYWjLy_h4wty5s",
+      authDomain: "neuron-ecosystem-2025.firebaseapp.com",
+      projectId: "neuron-ecosystem-2025",
+      storageBucket: "neuron-ecosystem-2025.firebasestorage.app",
+      messagingSenderId: "589834476565",
+      appId: "1:589834476565:web:f657c13be1cbf8f3dd421c",
+      measurementId: "G-G4NKXZX1ZX"
+    };
 
-const loginBtn = document.getElementById("login-btn");
-const googleBtn = document.getElementById("google-btn");
-const logoutBtn = document.getElementById("logout-btn");
-const authSection = document.getElementById("auth-section");
-const postForm = document.getElementById("post-form");
-const postInput = document.getElementById("post-input");
-const postsDiv = document.getElementById("posts");
-const nickInput = document.getElementById("nick-input");
-const colorInput = document.getElementById("color-input");
-const saveProfileBtn = document.getElementById("save-profile");
-const profileDiv = document.getElementById("profile");
-const timeoutMsg = document.getElementById("timeout-msg");
-const sortSelect = document.getElementById("sort-select");
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+  </script>
 
-function renderPost(postData, postId) {
-  const postEl = document.createElement("div");
-  postEl.classList.add("post");
-  postEl.id = postId;
+  <!-- Main app script: uses modular Firebase (v12). -->
+  <script type="module">
+    import { getApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, serverTimestamp, updateDoc, arrayUnion, arrayRemove, getDoc, where, limit, getDocs, runTransaction, deleteDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-  const nickEl = document.createElement("div");
-  nickEl.classList.add("nick");
-  nickEl.textContent = postData.nick;
-  nickEl.style.color = postData.color;
+    const app = getApp();
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-  const textEl = document.createElement("div");
-  textEl.classList.add("text");
-  textEl.textContent = postData.text;
+    // DOM
+    const authBtn = document.getElementById('authBtn');
+    const openNew = document.getElementById('openNew');
+    const newPostCard = document.getElementById('newPostCard');
+    const postBtn = document.getElementById('postBtn');
+    const newPostText = document.getElementById('newPostText');
+    const charCount = document.getElementById('charCount');
+    const postsRoot = document.getElementById('posts');
+    const feedLoading = document.getElementById('feedLoading');
+    const sortSelect = document.getElementById('sortSelect');
+    const themeToggle = document.getElementById('themeToggle');
+    const meAvatar = document.getElementById('meAvatar');
+    const meNick = document.getElementById('meNick');
+    const sidebarNick = document.getElementById('sidebarNick');
+    const sidebarEmail = document.getElementById('sidebarEmail');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const openProfile = document.getElementById('openProfile');
 
-  const actionsEl = document.createElement("div");
-  actionsEl.classList.add("actions");
+    // state
+    let currentUser = null;
+    let postsUnsub = null;
+    let currentSort = sortSelect.value;
 
-  const likeBtn = document.createElement("button");
-  likeBtn.textContent = `👍 ${postData.likes || 0}`;
-  likeBtn.onclick = async () => {
-    const postRef = doc(db, "posts", postId);
-    await updateDoc(postRef, { likes: increment(1) });
-  };
+    // helpers
+    function uidShort(uid){ return uid ? uid.slice(0,6) : 'anon'; }
 
-  const commentBtn = document.createElement("button");
-  commentBtn.textContent = `💬 ${postData.comments ? postData.comments.length : 0}`;
-  commentBtn.onclick = () => {
-    const commentText = prompt("Ваш комментарий:");
-    if (commentText) {
-      addDoc(collection(db, "comments"), { postId, userId: currentUser.uid, text: commentText, created_at: new Date(), nick: nickInput.value, color: colorInput.value });
+    function formatDate(ts){ if(!ts) return ''; const d = ts.toDate ? ts.toDate() : new Date(ts); return d.toLocaleString(); }
+
+    function renderPost(docSnap){
+      const data = docSnap.data();
+      const id = docSnap.id;
+      const el = document.createElement('div');
+      el.className = 'post card';
+      el.dataset.id = id;
+
+      const authorColor = data.authorColor || '#777';
+      const nickEl = `<div class="meta"><div class="avatar" style="background:${authorColor};color:#000;font-weight:700">${(data.authorNick||'anon').slice(0,2).toUpperCase()}</div><div><div class="nick" style="color:${authorColor}">${escapeHtml(data.authorNick||('anon'+uidShort(data.authorId)))}</div><div class="small">${formatDate(data.createdAt && data.createdAt)}</div></div></div>`;
+
+      el.innerHTML = `${nickEl}<div class="post-text">${escapeHtml(data.text)}</div>
+        <div class="actions">
+          <button class="likeBtn">❤ <span class="likeCount">${data.likesCount||0}</span></button>
+          <button class="commentsToggle">💬 <span class="cCount">${data.commentsCount||0}</span></button>
+          <button class="small viewComments">Показать комментарии</button>
+        </div>
+        <div class="comments" style="display:none"></div>
+      `;
+
+      // handlers
+      const likeBtn = el.querySelector('.likeBtn');
+      const commentsToggle = el.querySelector('.commentsToggle');
+      const commentsWrap = el.querySelector('.comments');
+      const viewComments = el.querySelector('.viewComments');
+
+      likeBtn.onclick = async ()=>{
+        if(!currentUser){ alert('Войдите, чтобы ставить лайки'); return; }
+        const postRef = doc(db,'posts',id);
+        await runTransaction(db, async (t)=>{
+          const snap = await t.get(postRef);
+          if(!snap.exists()) throw new Error('Пост удалён');
+          const likes = snap.data().likes || [];
+          const uid = currentUser.uid;
+          if(likes.includes(uid)){
+            t.update(postRef, { likes: arrayRemove(uid), likesCount: (snap.data().likesCount||0)-1 });
+          } else {
+            t.update(postRef, { likes: arrayUnion(uid), likesCount: (snap.data().likesCount||0)+1 });
+          }
+        }).catch(e=>{console.error('like error',e)});
+      };
+
+      commentsToggle.onclick = ()=>{ commentsWrap.style.display = commentsWrap.style.display==='none' ? 'block' : 'none'; loadComments(id, commentsWrap); };
+      viewComments.onclick = ()=>{ commentsWrap.style.display = commentsWrap.style.display==='none' ? 'block' : 'none'; loadComments(id, commentsWrap); };
+
+      return el;
     }
-  };
 
-  actionsEl.appendChild(likeBtn);
-  actionsEl.appendChild(commentBtn);
+    function escapeHtml(str){ if(!str) return ''; return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
-  postEl.appendChild(nickEl);
-  postEl.appendChild(textEl);
-  postEl.appendChild(actionsEl);
+    // listen posts with different orders
+    function attachFeed(){
+      if(postsUnsub) postsUnsub();
+      feedLoading.style.display = '';
+      postsRoot.innerHTML = '';
 
-  postsDiv.appendChild(postEl);
-}
+      let q;
+      if(currentSort === 'popular') q = query(collection(db,'posts'), orderBy('likesCount','desc'), orderBy('createdAt','desc'));
+      else if(currentSort === 'least') q = query(collection(db,'posts'), orderBy('likesCount','asc'), orderBy('createdAt','desc'));
+      else if(currentSort === 'new') q = query(collection(db,'posts'), orderBy('createdAt','desc'));
+      else q = query(collection(db,'posts'), orderBy('createdAt','asc'));
 
-async function loadPosts() {
-  postsDiv.innerHTML = "";
-  const postsCollection = collection(db, "posts");
-  let q;
-  const sortValue = sortSelect.value;
-  if(sortValue==="new"){
-    q = query(postsCollection, orderBy("created_at","desc"));
-  } else if(sortValue==="old"){
-    q = query(postsCollection, orderBy("created_at","asc"));
-  } else if(sortValue==="popular"){
-    q = query(postsCollection, orderBy("likes","desc"));
-  } else if(sortValue==="less-popular"){
-    q = query(postsCollection, orderBy("likes","asc"));
-  } else{
-    q = query(postsCollection, orderBy("created_at","desc"));
-  }
-
-  onSnapshot(q, async (snapshot)=>{
-    postsDiv.innerHTML="";
-    for(const docSnap of snapshot.docs){
-      const postData = docSnap.data();
-      const commentsSnapshot = await getDocs(collection(db,"comments"));
-      postData.comments = commentsSnapshot.docs.filter(c=>c.data().postId===docSnap.id).map(c=>c.data());
-      renderPost(postData, docSnap.id);
+      postsUnsub = onSnapshot(q, (snap)=>{
+        feedLoading.style.display = 'none';
+        postsRoot.innerHTML = '';
+        snap.forEach(docSnap=>{
+          postsRoot.appendChild(renderPost(docSnap));
+        });
+      }, (e)=>{ console.error(e); feedLoading.innerText = 'Ошибка при загрузке ленты'; });
     }
-  });
-}
 
-sortSelect.onchange = loadPosts;
+    // create post
+    postBtn.onclick = async ()=>{
+      const text = newPostText.value.trim();
+      if(!currentUser){ alert('Войдите, чтобы публиковать'); return; }
+      if(!text) return;
+      const me = await getUserDoc(currentUser.uid);
+      const post = {
+        text,
+        authorId: currentUser.uid,
+        authorNick: me.nick || ('anon'+uidShort(currentUser.uid)),
+        authorColor: me.color || '#8ab4f8',
+        createdAt: serverTimestamp(),
+        likesCount: 0,
+        commentsCount: 0,
+        likes: []
+      };
+      await addDoc(collection(db,'posts'), post);
+      newPostText.value = '';
+      charCount.innerText = '0';
+    };
 
-loginBtn.onclick = async ()=>{
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  try{
-    await signInWithEmailAndPassword(auth,email,password);
-  }catch(e){
-    await createUserWithEmailAndPassword(auth,email,password);
-  }
-};
+    // comments load and add
+    async function loadComments(postId, container){
+      container.innerHTML = '<div class="small">Загрузка комментариев...</div>';
+      const commentsRef = collection(db,'posts',postId,'comments');
+      const snap = await getDocs(query(commentsRef, orderBy('createdAt','asc')));
+      container.innerHTML = '';
+      // add composer
+      const composer = document.createElement('div');
+      composer.style.marginBottom = '8px';
+      composer.innerHTML = `<textarea placeholder="Оставить комментарий" style="width:100%;min-height:50px;border-radius:8px;padding:8px"></textarea><div style="display:flex;justify-content:flex-end;margin-top:6px"><button class="btn-primary">Отправить</button></div>`;
+      container.appendChild(composer);
+      const textarea = composer.querySelector('textarea');
+      const sendBtn = composer.querySelector('button');
+      sendBtn.onclick = async ()=>{
+        if(!currentUser){ alert('Войдите, чтобы комментировать'); return; }
+        const txt = textarea.value.trim(); if(!txt) return;
+        const me = await getUserDoc(currentUser.uid);
+        await addDoc(commentsRef, { text: txt, authorId: currentUser.uid, authorNick: me.nick, authorColor: me.color, createdAt: serverTimestamp() });
+        // increment commentsCount on post
+        const postRef = doc(db,'posts',postId);
+        await updateDoc(postRef, { commentsCount: ( (await (await getDoc(postRef)).data())?.commentsCount || 0 ) + 1 });
+        textarea.value = '';
+        loadComments(postId, container);
+      };
 
-googleBtn.onclick = async ()=>{
-  const provider = new GoogleAuthProvider();
-  await signInWithPopup(auth,provider);
-};
+      snap.forEach(docSnap=>{
+        const c = document.createElement('div');
+        c.className = 'comment';
+        const d = docSnap.data();
+        c.innerHTML = `<div style="display:flex;gap:8px;align-items:center"><div style="width:36px;height:36px;border-radius:8px;background:${d.authorColor||'#999'};display:flex;align-items:center;justify-content:center;color:#000;font-weight:700">${(d.authorNick||'an').slice(0,2).toUpperCase()}</div><div><div style="font-weight:700">${escapeHtml(d.authorNick||'anon')}</div><div class="small">${formatDate(d.createdAt && d.createdAt)}</div></div></div><div style="margin-top:6px">${escapeHtml(d.text)}</div>`;
+        container.appendChild(c);
+      });
+    }
 
-logoutBtn.onclick = async ()=>{
-  await signOut(auth);
-};
+    // user doc helpers
+    async function getUserDoc(uid){
+      const uRef = doc(db,'users',uid);
+      const snap = await getDoc(uRef);
+      if(snap.exists()) return snap.data();
+      const nick = 'anon'+uidShort(uid);
+      const color = randomColor();
+      await setDoc(uRef,{ nick, color });
+      return { nick, color };
+    }
 
-saveProfileBtn.onclick=async()=>{
-  if(currentUser){
-    await updateDoc(doc(db,"users",currentUser.uid),{nick:nickInput.value,color:colorInput.value});
-  }
-};
+    function randomColor(){ const colors=['#FFB86B','#8AB4F8','#A78BFA','#F87171','#34D399','#F59E0B']; return colors[Math.floor(Math.random()*colors.length)]; }
 
-postForm.onsubmit=async(e)=>{
-  e.preventDefault();
-  if(Date.now()-lastPostTime<30000){
-    timeoutMsg.textContent="Подождите 30 секунд перед новым постом";
-    return;
-  }
-  timeoutMsg.textContent="";
-  if(postInput.value.length===0||postInput.value.length>280){
-    alert("Сообщение должно быть от 1 до 280 символов");
-    return;
-  }
-  await addDoc(collection(db,"posts"),{
-    userId: currentUser.uid,
-    text: postInput.value,
-    created_at: new Date(),
-    nick: nickInput.value,
-    color: colorInput.value,
-    likes:0
-  });
-  postInput.value="";
-  lastPostTime=Date.now();
-};
+    // auth
+    authBtn.onclick = ()=>{ showAuthPrompt(); };
+    logoutBtn.onclick = ()=>{ signOut(auth); };
 
-onAuthStateChanged(auth,(user)=>{
-  if(user){
-    currentUser=user;
-    authSection.style.display="none";
-    postForm.style.display="block";
-    profileDiv.style.display="block";
-    logoutBtn.style.display="inline-block";
-    nickInput.value=user.displayName||"Аноним";
-    loadPosts();
-  }else{
-    currentUser=null;
-    authSection.style.display="block";
-    postForm.style.display="none";
-    profileDiv.style.display="none";
-    logoutBtn.style.display="none";
-  }
-});
-</script>
+    function showAuthPrompt(){
+      const email = prompt('Email (оставь пустым для Google входа):');
+      if(!email){ // google
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider).catch(e=>alert('Ошибка входа: '+e.message));
+      } else {
+        const pass = prompt('Пароль (минимум 6 симв.):');
+        if(!pass) return;
+        // try sign in, else create
+        signInWithEmailAndPassword(auth,email,pass).catch(async (e)=>{
+          if(e.code && e.code.includes('user-not-found')){
+            try{ await createUserWithEmailAndPassword(auth,email,pass); }
+            catch(er){ alert('Не удалось создать пользователя: '+er.message); }
+          } else alert('Ошибка входа: '+e.message);
+        });
+      }
+    }
+
+    onAuthStateChanged(auth, async (user)=>{
+      currentUser = user;
+      if(user){
+        authBtn.style.display='none';
+        logoutBtn.style.display='inline-block';
+        newPostCard.style.display = 'block';
+        // load user doc
+        const u = await getUserDoc(user.uid);
+        meNick.innerText = u.nick || 'anon';
+        meAvatar.innerText = (u.nick||'AN').slice(0,2).toUpperCase();
+        meAvatar.style.background = u.color || '#8ab4f8';
+        sidebarNick.innerText = u.nick || 'anon';
+        sidebarEmail.innerText = user.email || '(Google)';
+      } else {
+        authBtn.style.display='inline-block';
+        logoutBtn.style.display='none';
+        newPostCard.style.display = 'none';
+        meNick.innerText = 'anon';
+        meAvatar.innerText = '?';
+        sidebarNick.innerText = 'Гость';
+        sidebarEmail.innerText = '-';
+      }
+    });
+
+    // UI
+    openNew.onclick = ()=>{ if(!currentUser){ alert('Войдите чтобы писать'); return; } newPostCard.style.display = newPostCard.style.display==='none' ? 'block' : 'none'; newPostText.focus(); };
+    newPostText.oninput = ()=>{ charCount.innerText = newPostText.value.length; };
+    sortSelect.onchange = ()=>{ currentSort = sortSelect.value; attachFeed(); };
+    themeToggle.onclick = ()=>{ const root = document.body; const t = root.getAttribute('data-theme'); root.setAttribute('data-theme', t==='light' ? 'dark' : 'light'); };
+
+    // profile editor (simple prompt)
+    openProfile.onclick = async ()=>{
+      if(!currentUser){ alert('Войдите чтобы редактировать профиль'); return; }
+      const me = await getUserDoc(currentUser.uid);
+      const newNick = prompt('Ник (минимум 2 символа):', me.nick);
+      const newColor = prompt('Цвет ника (HEX), например #8ab4f8 :', me.color);
+      if(newNick) await setDoc(doc(db,'users',currentUser.uid), { nick: newNick, color: newColor||me.color }, { merge:true });
+      const u = await getUserDoc(currentUser.uid);
+      sidebarNick.innerText = u.nick; meNick.innerText = u.nick; meAvatar.innerText = (u.nick||'AN').slice(0,2).toUpperCase(); meAvatar.style.background = u.color;
+    };
+
+    // initial feed attach
+    attachFeed();
+
+    // small utilities
+    // runTransaction wrapper for modular import
+    async function runTransaction(dbRef, updateFunc){
+      // we imported runTransaction above; but name conflict avoided by using imported runTransaction
+      return await (await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js')).runTransaction(dbRef, updateFunc);
+    }
+
+  </script>
 </body>
 </html>
