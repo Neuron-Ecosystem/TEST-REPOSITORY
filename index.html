@@ -306,6 +306,13 @@
             border-radius: 8px;
         }
 
+        .btn-reply {
+            padding: 8px 16px;
+            font-size: 14px;
+            height: 44px;
+            min-width: 90px;
+        }
+
         .divider {
             display: flex;
             align-items: center;
@@ -445,6 +452,47 @@
             color: var(--accent-red);
         }
 
+        /* Reply Composer */
+        .reply-to-post {
+            background-color: var(--bg-input);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin-bottom: 16px;
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .reply-to-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .reply-to-author {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .reply-to-content {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .reply-to-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 16px;
+        }
+
         /* Feed */
         .feed {
             margin: 20px 0;
@@ -561,7 +609,7 @@
             color: var(--text-primary);
             font-size: 14px;
             resize: none;
-            min-height: 40px;
+            min-height: 60px;
             max-height: 150px;
             font-family: inherit;
             line-height: 1.5;
@@ -578,6 +626,11 @@
             padding: 12px 16px;
             margin-bottom: 12px;
             animation: slideIn 0.3s ease;
+            border-left: 3px solid var(--border-color);
+        }
+
+        .reply-card:hover {
+            border-left-color: var(--accent-blue);
         }
 
         .reply-header {
@@ -669,7 +722,7 @@
             font-weight: 600;
         }
 
-        /* Рейтинг честности */
+        /* Рейтинг честности - ОБНОВЛЁННЫЙ */
         .honesty-buttons {
             display: flex;
             gap: 10px;
@@ -772,7 +825,7 @@
             50% { opacity: 1; }
         }
 
-        /* Мысль дня */
+        /* Мысль дня - ОБНОВЛЁННЫЙ */
         .thought-of-day {
             background-color: var(--bg-card);
             border-radius: var(--radius-lg);
@@ -885,7 +938,7 @@
             font-size: 13px;
         }
 
-        /* Микрочелленджи */
+        /* Микрочелленджи - ОБНОВЛЁННЫЙ */
         .challenge-card {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
@@ -1099,39 +1152,6 @@
 
         .section-content.active {
             display: block;
-        }
-
-        /* Ответ на пост */
-        .reply-to-post {
-            background-color: var(--bg-input);
-            border-radius: var(--radius-md);
-            padding: 12px;
-            margin-bottom: 12px;
-            border-left: 3px solid var(--accent-blue);
-            font-size: 14px;
-            opacity: 0.8;
-        }
-
-        .reply-to-post-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 4px;
-        }
-
-        .reply-to-post-author {
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .reply-to-post-content {
-            color: var(--text-secondary);
-            font-size: 13px;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
         }
 
         /* Анимации */
@@ -1382,12 +1402,15 @@
             margin-bottom: 16px;
         }
 
-        /* Reply button fix */
-        .reply-btn-fixed {
-            padding: 8px 12px !important;
-            min-width: 70px;
-            height: 40px;
-            align-self: flex-end;
+        /* User email in profile */
+        .user-email {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 4px;
+            background: var(--bg-input);
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
+            display: inline-block;
         }
     </style>
 </head>
@@ -1433,11 +1456,12 @@
                 <div class="composer-header">
                     <img id="composerAvatar" class="avatar" alt="Аватар">
                     <div style="flex: 1;">
+                        <div id="replyToContainer"></div>
                         <textarea id="postInput" class="input-field" 
                                   placeholder="Что у тебя на уме?" 
                                   rows="3" 
-                                  maxlength="280"></textarea>
-                        <div id="charCounter" class="char-counter">0/280</div>
+                                  maxlength="500"></textarea>
+                        <div id="charCounter" class="char-counter">0/500</div>
                     </div>
                 </div>
                 <button id="postSubmit" class="btn btn-primary" style="margin-left: auto; display: block; margin-top: 12px;">
@@ -1476,11 +1500,12 @@
                         <div class="composer-header">
                             <img id="honestyComposerAvatar" class="avatar hidden" alt="Аватар">
                             <div style="flex: 1;">
+                                <div id="honestyReplyToContainer"></div>
                                 <textarea id="honestyPostInput" class="input-field" 
                                           placeholder="Напишите утверждение для оценки честности..." 
                                           rows="2" 
-                                          maxlength="280"></textarea>
-                                <div id="honestyCharCounter" class="char-counter">0/280</div>
+                                          maxlength="500"></textarea>
+                                <div id="honestyCharCounter" class="char-counter">0/500</div>
                             </div>
                         </div>
                         <button id="honestyPostSubmit" class="btn btn-primary" style="margin-left: auto; display: block; margin-top: 12px;">
@@ -1489,7 +1514,7 @@
                     </div>
 
                     <div id="honestyFeed" class="feed">
-                        <!-- Посты с рейтингом честности будут загружаться через Firebase -->
+                        <!-- Посты рейтинга честности будут загружаться через Firebase -->
                         <div class="loading" id="honestyLoading">
                             <i class="fas fa-spinner fa-spin fa-2x"></i>
                             <p style="margin-top: 16px;">Загрузка голосований...</p>
@@ -1503,11 +1528,12 @@
                         <div class="composer-header">
                             <img id="thoughtComposerAvatar" class="avatar hidden" alt="Аватар">
                             <div style="flex: 1;">
+                                <div id="thoughtReplyToContainer"></div>
                                 <textarea id="thoughtInput" class="input-field" 
                                           placeholder="Поделитесь своей мыслью дня..." 
                                           rows="2" 
-                                          maxlength="280"></textarea>
-                                <div id="thoughtCharCounter" class="char-counter">0/280</div>
+                                          maxlength="500"></textarea>
+                                <div id="thoughtCharCounter" class="char-counter">0/500</div>
                             </div>
                         </div>
                         <button id="thoughtSubmit" class="btn btn-primary" style="margin-left: auto; display: block; margin-top: 12px;">
@@ -1519,7 +1545,7 @@
                         <!-- Мысли дня будут загружаться через Firebase -->
                         <div class="loading" id="thoughtLoading">
                             <i class="fas fa-spinner fa-spin fa-2x"></i>
-                            <p style="margin-top: 16px;">Загрузка мыслей дня...</p>
+                            <p style="margin-top: 16px;">Загрузка мыслей...</p>
                         </div>
                     </div>
                 </div>
@@ -1528,7 +1554,7 @@
                 <div id="challengesSection" class="section-content">
                     <h3 style="margin-bottom: 20px;">Сегодняшние челленджи</h3>
                     
-                    <div id="gratitudeChallenge" class="challenge-card active">
+                    <div class="challenge-card active">
                         <div class="challenge-header">
                             <div class="challenge-icon">🏆</div>
                             <div class="challenge-title">3 благодарности</div>
@@ -1544,18 +1570,18 @@
                         <div class="challenge-progress">
                             <div class="progress-text">
                                 <span>Прогресс</span>
-                                <span id="gratitudeProgress">0/3</span>
+                                <span id="challenge1Progress">0/3</span>
                             </div>
                             <div class="progress-bar-large">
-                                <div class="progress-fill-large" id="gratitudeProgressBar" style="width: 0%;"></div>
+                                <div class="progress-fill-large" style="width: 0%;" id="challenge1Bar"></div>
                             </div>
                         </div>
                         
                         <div class="challenge-actions">
-                            <button class="challenge-action-btn primary" data-challenge="1" id="gratitudeBtn">
+                            <button class="challenge-action-btn primary" data-challenge="1" id="challenge1Btn">
                                 <i class="fas fa-plus"></i> Добавить пост
                             </button>
-                            <button class="challenge-action-btn secondary" data-challenge="1" onclick="showChallengeInfo(1)">
+                            <button class="challenge-action-btn secondary" data-challenge="1">
                                 <i class="fas fa-info-circle"></i> Подробнее
                             </button>
                         </div>
@@ -1567,7 +1593,7 @@
                         </div>
                     </div>
 
-                    <div id="noComplaintChallenge" class="challenge-card">
+                    <div class="challenge-card active">
                         <div class="challenge-header">
                             <div class="challenge-icon">🎯</div>
                             <div class="challenge-title">7 дней без жалоб</div>
@@ -1583,29 +1609,29 @@
                         <div class="challenge-progress">
                             <div class="progress-text">
                                 <span>Прогресс</span>
-                                <span id="noComplaintProgress">0/7 дней</span>
+                                <span id="challenge2Progress">0/7 дней</span>
                             </div>
                             <div class="progress-bar-large">
-                                <div class="progress-fill-large" id="noComplaintProgressBar" style="width: 0%;"></div>
+                                <div class="progress-fill-large" style="width: 0%;" id="challenge2Bar"></div>
                             </div>
                         </div>
                         
                         <div class="challenge-actions">
-                            <button class="challenge-action-btn primary" data-challenge="2" id="noComplaintBtn">
+                            <button class="challenge-action-btn primary" data-challenge="2" id="challenge2Btn">
                                 Отметить день
                             </button>
-                            <button class="challenge-action-btn secondary" data-challenge="2" onclick="showChallengeInfo(2)">
+                            <button class="challenge-action-btn secondary" data-challenge="2">
                                 <i class="fas fa-info-circle"></i> Подробнее
                             </button>
                         </div>
                     </div>
 
-                    <div id="helpChallenge" class="challenge-card">
+                    <div class="challenge-card active">
                         <div class="challenge-header">
                             <div class="challenge-icon">💬</div>
                             <div class="challenge-title">Помоги 5 людям</div>
-                            <div style="color: var(--accent-green); font-weight: 600; font-size: 14px;" id="helpChallengeStatus">
-                                Не выполнен
+                            <div style="color: var(--accent-blue); font-weight: 600; font-size: 14px;">
+                                Недельный
                             </div>
                         </div>
                         
@@ -1616,16 +1642,19 @@
                         <div class="challenge-progress">
                             <div class="progress-text">
                                 <span>Прогресс</span>
-                                <span id="helpProgress">0/5</span>
+                                <span id="challenge3Progress">0/5</span>
                             </div>
                             <div class="progress-bar-large">
-                                <div class="progress-fill-large" id="helpProgressBar" style="width: 0%;"></div>
+                                <div class="progress-fill-large" style="width: 0%;" id="challenge3Bar"></div>
                             </div>
                         </div>
                         
                         <div class="challenge-actions">
-                            <button class="challenge-action-btn secondary" data-challenge="3" id="helpBtn">
-                                <i class="fas fa-comment"></i> Ответить на пост
+                            <button class="challenge-action-btn primary" data-challenge="3" id="challenge3Btn">
+                                Ответить на пост
+                            </button>
+                            <button class="challenge-action-btn secondary" data-challenge="3">
+                                <i class="fas fa-info-circle"></i> Подробнее
                             </button>
                         </div>
                     </div>
@@ -1718,8 +1747,8 @@
                 </div>
                 <div>
                     <h3 id="profileNickname" style="margin-bottom: 8px;"></h3>
-                    <p style="color: var(--text-secondary); font-size: 14px;">ID: <span id="profileUserId"></span></p>
-                    <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">Email: <span id="profileEmail"></span></p>
+                    <div class="user-email" id="profileEmail"></div>
+                    <p style="color: var(--text-secondary); font-size: 14px; margin-top: 8px;">ID: <span id="profileUserId"></span></p>
                     <div id="currentColorPreview" style="margin-top: 4px; font-size: 12px; color: var(--text-secondary);">
                         Цвет ника: <span id="currentColorText"></span>
                         <div class="profile-color-preview" id="currentColorBox"></div>
@@ -1803,7 +1832,7 @@
             where,
             getDocs,
             writeBatch,
-            Timestamp
+            increment
         } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
         import { 
             getStorage,
@@ -1829,12 +1858,11 @@
         let selectedColor = "#1d9bf0";
         let nicknameCheckTimeout = null;
         let currentSection = 'main';
-        let replyingToPost = null; // Для ответов на посты
-        let replyingToComment = null; // Для ответов на комментарии
-        let challenges = {
-            gratitude: { count: 0, completed: false },
-            noComplaint: { count: 0, completed: false },
-            help: { count: 0, completed: false }
+        let replyingTo = null;
+        let challengeData = {
+            challenge1: { current: 0, total: 3, type: 'gratitude', completed: false },
+            challenge2: { current: 0, total: 7, type: 'noComplaints', completed: false },
+            challenge3: { current: 0, total: 5, type: 'helpOthers', completed: false }
         };
 
         // DOM Elements
@@ -1887,6 +1915,7 @@
             postInput: document.getElementById('postInput'),
             postSubmit: document.getElementById('postSubmit'),
             charCounter: document.getElementById('charCounter'),
+            replyToContainer: document.getElementById('replyToContainer'),
             
             // Guest elements
             guestNotification: document.getElementById('guestNotification'),
@@ -1902,6 +1931,7 @@
             honestyCharCounter: document.getElementById('honestyCharCounter'),
             honestyPostSubmit: document.getElementById('honestyPostSubmit'),
             honestyFeed: document.getElementById('honestyFeed'),
+            honestyReplyToContainer: document.getElementById('honestyReplyToContainer'),
             honestyLoading: document.getElementById('honestyLoading'),
             
             // Thought section
@@ -1910,25 +1940,22 @@
             thoughtCharCounter: document.getElementById('thoughtCharCounter'),
             thoughtSubmit: document.getElementById('thoughtSubmit'),
             thoughtFeed: document.getElementById('thoughtFeed'),
+            thoughtReplyToContainer: document.getElementById('thoughtReplyToContainer'),
             thoughtLoading: document.getElementById('thoughtLoading'),
             
-            // Challenges
-            gratitudeChallenge: document.getElementById('gratitudeChallenge'),
-            noComplaintChallenge: document.getElementById('noComplaintChallenge'),
-            helpChallenge: document.getElementById('helpChallenge'),
-            gratitudeProgress: document.getElementById('gratitudeProgress'),
-            gratitudeProgressBar: document.getElementById('gratitudeProgressBar'),
-            noComplaintProgress: document.getElementById('noComplaintProgress'),
-            noComplaintProgressBar: document.getElementById('noComplaintProgressBar'),
-            helpProgress: document.getElementById('helpProgress'),
-            helpProgressBar: document.getElementById('helpProgressBar'),
-            helpChallengeStatus: document.getElementById('helpChallengeStatus'),
-            gratitudeBtn: document.getElementById('gratitudeBtn'),
-            noComplaintBtn: document.getElementById('noComplaintBtn'),
-            helpBtn: document.getElementById('helpBtn'),
-            
             // Navigation
-            navItems: document.querySelectorAll('.nav-item')
+            navItems: document.querySelectorAll('.nav-item'),
+            
+            // Challenges
+            challenge1Progress: document.getElementById('challenge1Progress'),
+            challenge1Bar: document.getElementById('challenge1Bar'),
+            challenge1Btn: document.getElementById('challenge1Btn'),
+            challenge2Progress: document.getElementById('challenge2Progress'),
+            challenge2Bar: document.getElementById('challenge2Bar'),
+            challenge2Btn: document.getElementById('challenge2Btn'),
+            challenge3Progress: document.getElementById('challenge3Progress'),
+            challenge3Bar: document.getElementById('challenge3Bar'),
+            challenge3Btn: document.getElementById('challenge3Btn')
         };
 
         // Initialize
@@ -1937,9 +1964,7 @@
         function init() {
             setupEventListeners();
             setupAuthStateListener();
-            setupFeedListener();
-            setupHonestyFeedListener();
-            setupThoughtFeedListener();
+            setupFeedListeners();
             setupInteractiveElements();
         }
 
@@ -1991,21 +2016,21 @@
             
             // Post composer
             elements.postInput.addEventListener('input', updateCharCounter);
-            elements.postSubmit.addEventListener('click', createPost);
+            elements.postSubmit.addEventListener('click', () => createPost('regular'));
             
             // Honesty section
             elements.honestyPostInput.addEventListener('input', () => {
                 const length = elements.honestyPostInput.value.length;
-                elements.honestyCharCounter.textContent = `${length}/280`;
+                elements.honestyCharCounter.textContent = `${length}/500`;
             });
-            elements.honestyPostSubmit.addEventListener('click', createHonestyPost);
+            elements.honestyPostSubmit.addEventListener('click', () => createPost('honesty'));
             
             // Thought section
             elements.thoughtInput.addEventListener('input', () => {
                 const length = elements.thoughtInput.value.length;
-                elements.thoughtCharCounter.textContent = `${length}/280`;
+                elements.thoughtCharCounter.textContent = `${length}/500`;
             });
-            elements.thoughtSubmit.addEventListener('click', createThought);
+            elements.thoughtSubmit.addEventListener('click', () => createPost('thought'));
             
             // Navigation
             elements.navItems.forEach(item => {
@@ -2032,31 +2057,59 @@
                     });
                 }
             });
-
+            
             // Challenge buttons
-            elements.gratitudeBtn.addEventListener('click', () => {
-                switchSection('main');
-                elements.postInput.focus();
-                elements.postInput.placeholder = "Напишите, за что вы благодарны сегодня...";
-            });
-
-            elements.noComplaintBtn.addEventListener('click', async () => {
-                if (!currentUser) {
-                    showAuthModal();
-                    return;
-                }
-                
-                await markNoComplaintDay();
-            });
-
-            elements.helpBtn.addEventListener('click', () => {
-                switchSection('main');
-                alert('Ответьте на пост, чтобы помочь кому-то!');
-            });
+            elements.challenge1Btn.addEventListener('click', () => handleChallengeClick(1));
+            elements.challenge2Btn.addEventListener('click', () => handleChallengeClick(2));
+            elements.challenge3Btn.addEventListener('click', () => handleChallengeClick(3));
         }
 
         function setupInteractiveElements() {
-            // Все обработчики будут добавляться динамически при рендере постов
+            // Honesty voting buttons
+            document.body.addEventListener('click', function(e) {
+                const honestyBtn = e.target.closest('.honesty-btn');
+                if (honestyBtn && !honestyBtn.classList.contains('voted')) {
+                    if (!currentUser) {
+                        showAuthModal();
+                        return;
+                    }
+                    
+                    const postId = honestyBtn.closest('.post-card').dataset.postId;
+                    const isTruth = honestyBtn.classList.contains('truth');
+                    handleHonestyVote(postId, isTruth, honestyBtn);
+                }
+                
+                // Thought reactions
+                const reactionBtn = e.target.closest('.reaction-btn');
+                if (reactionBtn) {
+                    if (!currentUser) {
+                        showAuthModal();
+                        return;
+                    }
+                    
+                    const postId = reactionBtn.closest('.post-card').dataset.postId;
+                    const reactionType = reactionBtn.classList.contains('laugh') ? 'laugh' :
+                                       reactionBtn.classList.contains('think') ? 'think' :
+                                       reactionBtn.classList.contains('support') ? 'support' : 'shock';
+                    handleReaction(postId, reactionType, reactionBtn);
+                }
+                
+                // Reply button
+                const replyBtn = e.target.closest('.action-btn[data-action="reply"]');
+                if (replyBtn) {
+                    if (!currentUser) {
+                        showAuthModal();
+                        return;
+                    }
+                    
+                    const postId = replyBtn.dataset.post;
+                    const postCard = replyBtn.closest('.post-card');
+                    const postContent = postCard.querySelector('.post-content').textContent;
+                    const postAuthor = postCard.querySelector('.post-author').textContent;
+                    
+                    setupReply(postId, postContent, postAuthor);
+                }
+            });
         }
 
         function switchSection(section) {
@@ -2187,7 +2240,7 @@
                 elements.profileNickname.textContent = profile.nickname || 'Без имени';
                 elements.nicknameInput.value = profile.nickname || '';
                 elements.profileUserId.textContent = currentUser.uid.slice(0, 8);
-                elements.profileEmail.textContent = currentUser.email || 'Не указан';
+                elements.profileEmail.textContent = currentUser.email;
                 
                 if (profile.avatarUrl) {
                     elements.profileAvatar.src = profile.avatarUrl;
@@ -2289,12 +2342,7 @@
                     color: selectedColor,
                     createdAt: serverTimestamp(),
                     email: user.email,
-                    avatarUrl: user.photoURL || null,
-                    challenges: {
-                        gratitude: 0,
-                        noComplaint: { streak: 0, lastDate: null },
-                        help: 0
-                    }
+                    avatarUrl: user.photoURL || null
                 });
             }
         }
@@ -2449,17 +2497,6 @@
                 });
                 
                 userProfile = await getUserProfile(currentUser.uid);
-                
-                // Update avatar if it's a default avatar
-                if (!userProfile.avatarUrl) {
-                    const newAvatarUrl = getDefaultAvatar(nickname, selectedColor);
-                    elements.profileAvatar.src = newAvatarUrl;
-                    elements.composerAvatar.src = newAvatarUrl;
-                    elements.headerAvatar.src = newAvatarUrl;
-                    elements.honestyComposerAvatar.src = newAvatarUrl;
-                    elements.thoughtComposerAvatar.src = newAvatarUrl;
-                }
-                
                 updateUI();
                 showProfileMessage('Профиль сохранен!');
                 
@@ -2601,31 +2638,79 @@
         // Post functions
         function updateCharCounter() {
             const length = elements.postInput.value.length;
-            elements.charCounter.textContent = `${length}/280`;
+            elements.charCounter.textContent = `${length}/500`;
             
             elements.charCounter.classList.remove('warning', 'error');
-            if (length > 250) {
+            if (length > 450) {
                 elements.charCounter.classList.add('warning');
             }
-            if (length > 280) {
+            if (length > 500) {
                 elements.charCounter.classList.add('error');
             }
         }
 
-        async function createPost() {
+        function setupReply(postId, postContent, postAuthor) {
+            replyingTo = postId;
+            
+            // Clear any existing reply setup
+            clearReplySetup();
+            
+            // Create reply UI for current section
+            const replyContainer = currentSection === 'honesty' ? elements.honestyReplyToContainer : 
+                                 currentSection === 'thought' ? elements.thoughtReplyToContainer : 
+                                 elements.replyToContainer;
+            
+            const postInput = currentSection === 'honesty' ? elements.honestyPostInput :
+                            currentSection === 'thought' ? elements.thoughtInput :
+                            elements.postInput;
+            
+            replyContainer.innerHTML = `
+                <div class="reply-to-post">
+                    <div class="reply-to-header">
+                        <span class="reply-to-author">Ответ для: ${postAuthor}</span>
+                        <button class="reply-to-close" onclick="clearReplySetup()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="reply-to-content">${postContent}</div>
+                </div>
+            `;
+            
+            postInput.focus();
+            postInput.placeholder = "Напишите ваш ответ...";
+            
+            // Scroll to composer
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function clearReplySetup() {
+            replyingTo = null;
+            elements.replyToContainer.innerHTML = '';
+            elements.honestyReplyToContainer.innerHTML = '';
+            elements.thoughtReplyToContainer.innerHTML = '';
+            
+            elements.postInput.placeholder = "Что у тебя на уме?";
+            elements.honestyPostInput.placeholder = "Напишите утверждение для оценки честности...";
+            elements.thoughtInput.placeholder = "Поделитесь своей мыслью дня...";
+        }
+
+        async function createPost(type) {
             if (!currentUser) {
                 showAuthModal();
                 return;
             }
             
-            const content = elements.postInput.value.trim();
+            const content = type === 'honesty' ? elements.honestyPostInput.value.trim() :
+                          type === 'thought' ? elements.thoughtInput.value.trim() :
+                          elements.postInput.value.trim();
+            
             if (!content) {
                 alert('Введите текст поста');
                 return;
             }
             
-            if (content.length > 280) {
-                alert('Пост не должен превышать 280 символов');
+            if (content.length > 500) {
+                alert('Пост не должен превышать 500 символов');
                 return;
             }
             
@@ -2635,40 +2720,79 @@
                     authorId: currentUser.uid,
                     authorNickname: userProfile?.nickname || 'Аноним',
                     authorColor: userProfile?.color || '#1d9bf0',
-                    authorAvatarUrl: userProfile?.avatarUrl || getDefaultAvatar(userProfile?.nickname || '?', userProfile?.color),
+                    authorAvatarUrl: userProfile?.avatarUrl || null,
                     likes: [],
                     likesCount: 0,
                     commentsCount: 0,
-                    type: 'regular',
+                    type: type,
                     createdAt: serverTimestamp(),
                     updatedAt: serverTimestamp()
                 };
                 
-                // Если это ответ на пост, добавляем информацию об ответе
-                if (replyingToPost) {
-                    postData.replyingTo = replyingToPost.id;
-                    postData.replyingToContent = replyingToPost.content.substring(0, 100);
-                    postData.replyingToAuthor = replyingToPost.authorNickname;
+                // Add reply information if replying
+                if (replyingTo) {
+                    postData.replyTo = replyingTo;
+                    // Get the original post to include its content
+                    const originalPostRef = doc(db, 'posts', replyingTo);
+                    const originalPostSnap = await getDoc(originalPostRef);
+                    if (originalPostSnap.exists()) {
+                        const originalPost = originalPostSnap.data();
+                        postData.replyToContent = originalPost.content.substring(0, 100) + '...';
+                        postData.replyToAuthor = originalPost.authorNickname;
+                    }
+                }
+                
+                // Add specific data for honesty posts
+                if (type === 'honesty') {
+                    postData.honestyVotes = { truth: [], lie: [] };
+                    postData.honestyPercentage = 50;
+                }
+                
+                // Add specific data for thought posts
+                if (type === 'thought') {
+                    postData.reactions = { 
+                        laugh: [], 
+                        think: [], 
+                        support: [], 
+                        shock: [] 
+                    };
+                    postData.popularity = 50;
                 }
                 
                 await addDoc(collection(db, 'posts'), postData);
                 
-                // Check if this is a gratitude post for challenge
-                if (content.toLowerCase().includes('благодарн') || content.toLowerCase().includes('спасибо')) {
-                    await updateGratitudeChallenge();
+                // Clear form
+                if (type === 'honesty') {
+                    elements.honestyPostInput.value = '';
+                    elements.honestyCharCounter.textContent = '0/500';
+                } else if (type === 'thought') {
+                    elements.thoughtInput.value = '';
+                    elements.thoughtCharCounter.textContent = '0/500';
+                } else {
+                    elements.postInput.value = '';
+                    updateCharCounter();
                 }
                 
-                elements.postInput.value = '';
-                updateCharCounter();
-                replyingToPost = null;
-                elements.postInput.placeholder = "Что у тебя на уме?";
+                clearReplySetup();
+                
+                // Update challenges
+                await updateChallenges(type, replyingTo);
                 
                 // Show success message
                 const successMsg = document.createElement('div');
                 successMsg.className = 'success-message';
-                successMsg.textContent = 'Пост опубликован!';
+                successMsg.textContent = type === 'honesty' ? 'Голосование создано!' : 
+                                       type === 'thought' ? 'Мысль опубликована!' : 'Пост опубликован!';
                 successMsg.style.animation = 'fadeIn 0.3s ease';
-                elements.feed.prepend(successMsg);
+                
+                if (type === 'honesty') {
+                    elements.honestyFeed.prepend(successMsg);
+                } else if (type === 'thought') {
+                    elements.thoughtFeed.prepend(successMsg);
+                } else {
+                    elements.feed.prepend(successMsg);
+                }
+                
                 setTimeout(() => successMsg.remove(), 3000);
                 
             } catch (error) {
@@ -2677,127 +2801,167 @@
             }
         }
 
-        async function createHonestyPost() {
-            if (!currentUser) {
-                showAuthModal();
-                return;
+        async function updateChallenges(type, isReply = false) {
+            if (!currentUser) return;
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const todayTimestamp = today.getTime();
+            
+            // Challenge 1: 3 gratitude posts
+            if (type === 'regular') {
+                // Check if post contains gratitude keywords
+                const gratitudeKeywords = ['спасибо', 'благодарен', 'благодарна', 'рад', 'рада', 'счастлив', 'счастлива'];
+                const content = type === 'honesty' ? elements.honestyPostInput.value.toLowerCase() :
+                              type === 'thought' ? elements.thoughtInput.value.toLowerCase() :
+                              elements.postInput.value.toLowerCase();
+                
+                const isGratitude = gratitudeKeywords.some(keyword => content.includes(keyword));
+                
+                if (isGratitude && !challengeData.challenge1.completed) {
+                    challengeData.challenge1.current++;
+                    updateChallengeUI(1);
+                    
+                    if (challengeData.challenge1.current >= challengeData.challenge1.total) {
+                        challengeData.challenge1.completed = true;
+                        completeChallenge(1);
+                    }
+                }
             }
             
-            const content = elements.honestyPostInput.value.trim();
-            if (!content) {
-                alert('Введите утверждение для оценки честности');
-                return;
+            // Challenge 3: Help 5 people (reply to posts)
+            if (isReply && !challengeData.challenge3.completed) {
+                challengeData.challenge3.current++;
+                updateChallengeUI(3);
+                
+                if (challengeData.challenge3.current >= challengeData.challenge3.total) {
+                    challengeData.challenge3.completed = true;
+                    completeChallenge(3);
+                }
             }
             
-            if (content.length > 280) {
-                alert('Утверждение не должно превышать 280 символов');
-                return;
-            }
+            // Save challenge progress
+            await saveChallengeProgress();
+        }
+
+        function updateChallengeUI(challengeNum) {
+            const data = challengeData[`challenge${challengeNum}`];
+            const progressElement = document.getElementById(`challenge${challengeNum}Progress`);
+            const barElement = document.getElementById(`challenge${challengeNum}Bar`);
+            const btnElement = document.getElementById(`challenge${challengeNum}Btn`);
             
-            try {
-                await addDoc(collection(db, 'posts'), {
-                    content: content,
-                    authorId: currentUser.uid,
-                    authorNickname: userProfile?.nickname || 'Аноним',
-                    authorColor: userProfile?.color || '#1d9bf0',
-                    authorAvatarUrl: userProfile?.avatarUrl || getDefaultAvatar(userProfile?.nickname || '?', userProfile?.color),
-                    likes: [],
-                    likesCount: 0,
-                    commentsCount: 0,
-                    type: 'honesty',
-                    honestyVotes: { truth: [], lie: [] },
-                    truthVotes: 0,
-                    lieVotes: 0,
-                    honestyPercentage: 50,
-                    createdAt: serverTimestamp(),
-                    updatedAt: serverTimestamp()
-                });
-                
-                elements.honestyPostInput.value = '';
-                elements.honestyCharCounter.textContent = '0/280';
-                
-                // Show success message
-                const successMsg = document.createElement('div');
-                successMsg.className = 'success-message';
-                successMsg.textContent = 'Голосование создано!';
-                successMsg.style.animation = 'fadeIn 0.3s ease';
-                elements.honestyFeed.prepend(successMsg);
-                setTimeout(() => successMsg.remove(), 3000);
-                
-            } catch (error) {
-                console.error('Error creating honesty post:', error);
-                alert('Ошибка при создании голосования');
+            const percentage = (data.current / data.total) * 100;
+            
+            progressElement.textContent = challengeNum === 2 ? 
+                `${data.current}/${data.total} дней` : 
+                `${data.current}/${data.total}`;
+            barElement.style.width = `${percentage}%`;
+            
+            if (data.completed) {
+                btnElement.disabled = true;
+                btnElement.innerHTML = '<i class="fas fa-medal"></i> Челлендж пройден!';
+                btnElement.style.background = 'var(--accent-green)';
             }
         }
 
-        async function createThought() {
+        function completeChallenge(challengeNum) {
+            const medal = document.getElementById(`medal${challengeNum}`);
+            if (medal) {
+                medal.classList.add('show');
+            }
+            
+            const card = document.querySelector(`[data-challenge="${challengeNum}"]`).closest('.challenge-card');
+            card.classList.add('completed');
+            card.classList.remove('active');
+            
+            // Show celebration
+            const celebration = document.createElement('div');
+            celebration.className = 'success-message';
+            celebration.textContent = '🎉 Челлендж пройден!';
+            celebration.style.marginTop = '10px';
+            card.appendChild(celebration);
+        }
+
+        async function saveChallengeProgress() {
+            if (!currentUser) return;
+            
+            try {
+                const profileRef = doc(db, 'users', currentUser.uid);
+                await updateDoc(profileRef, {
+                    challengeProgress: challengeData,
+                    updatedAt: serverTimestamp()
+                });
+            } catch (error) {
+                console.error('Error saving challenge progress:', error);
+            }
+        }
+
+        async function loadChallengeProgress() {
+            if (!currentUser) return;
+            
+            try {
+                const profile = await getUserProfile(currentUser.uid);
+                if (profile?.challengeProgress) {
+                    challengeData = profile.challengeProgress;
+                    
+                    // Update UI
+                    updateChallengeUI(1);
+                    updateChallengeUI(2);
+                    updateChallengeUI(3);
+                }
+            } catch (error) {
+                console.error('Error loading challenge progress:', error);
+            }
+        }
+
+        function handleChallengeClick(challengeNum) {
             if (!currentUser) {
                 showAuthModal();
                 return;
             }
             
-            const content = elements.thoughtInput.value.trim();
-            if (!content) {
-                alert('Введите свою мысль');
-                return;
-            }
-            
-            if (content.length > 280) {
-                alert('Мысль не должна превышать 280 символов');
-                return;
-            }
-            
-            try {
-                await addDoc(collection(db, 'posts'), {
-                    content: content,
-                    authorId: currentUser.uid,
-                    authorNickname: userProfile?.nickname || 'Аноним',
-                    authorColor: userProfile?.color || '#1d9bf0',
-                    authorAvatarUrl: userProfile?.avatarUrl || getDefaultAvatar(userProfile?.nickname || '?', userProfile?.color),
-                    likes: [],
-                    likesCount: 0,
-                    commentsCount: 0,
-                    type: 'thought',
-                    reactions: { laugh: [], think: [], support: [], shock: [] },
-                    laughCount: 0,
-                    thinkCount: 0,
-                    supportCount: 0,
-                    shockCount: 0,
-                    popularity: 50,
-                    createdAt: serverTimestamp(),
-                    updatedAt: serverTimestamp()
-                });
-                
-                elements.thoughtInput.value = '';
-                elements.thoughtCharCounter.textContent = '0/280';
-                
-                // Show success message
-                alert('Мысль опубликована в ленте!');
-                
-            } catch (error) {
-                console.error('Error creating thought:', error);
-                alert('Ошибка при публикации мысли');
+            switch (challengeNum) {
+                case 1:
+                    // Challenge 1: Add gratitude post
+                    switchPage('compose');
+                    break;
+                case 2:
+                    // Challenge 2: Mark no complaints day
+                    if (!challengeData.challenge2.completed) {
+                        challengeData.challenge2.current++;
+                        updateChallengeUI(2);
+                        
+                        if (challengeData.challenge2.current >= challengeData.challenge2.total) {
+                            challengeData.challenge2.completed = true;
+                            completeChallenge(2);
+                        }
+                        saveChallengeProgress();
+                    }
+                    break;
+                case 3:
+                    // Challenge 3: Reply to post
+                    switchSection('main');
+                    break;
             }
         }
 
         // Feed functions
-        function setupFeedListener() {
-            const postsQuery = query(
+        function setupFeedListeners() {
+            // Main feed
+            const mainQuery = query(
                 collection(db, 'posts'),
                 orderBy('createdAt', 'desc')
             );
             
-            onSnapshot(postsQuery, (snapshot) => {
+            onSnapshot(mainQuery, (snapshot) => {
                 elements.loading.classList.add('hidden');
-                renderPosts(snapshot);
-                loadChallenges();
+                renderPosts(snapshot, elements.feed, 'regular');
             }, (error) => {
                 console.error('Error loading posts:', error);
                 elements.loading.innerHTML = '<p>Ошибка загрузки ленты</p>';
             });
-        }
-
-        function setupHonestyFeedListener() {
+            
+            // Honesty feed
             const honestyQuery = query(
                 collection(db, 'posts'),
                 where('type', '==', 'honesty'),
@@ -2805,15 +2969,16 @@
             );
             
             onSnapshot(honestyQuery, (snapshot) => {
-                elements.honestyLoading.classList.add('hidden');
-                renderHonestyPosts(snapshot);
+                elements.honestyLoading?.classList.add('hidden');
+                renderPosts(snapshot, elements.honestyFeed, 'honesty');
             }, (error) => {
                 console.error('Error loading honesty posts:', error);
-                elements.honestyLoading.innerHTML = '<p>Ошибка загрузки голосований</p>';
+                if (elements.honestyLoading) {
+                    elements.honestyLoading.innerHTML = '<p>Ошибка загрузки голосований</p>';
+                }
             });
-        }
-
-        function setupThoughtFeedListener() {
+            
+            // Thought feed
             const thoughtQuery = query(
                 collection(db, 'posts'),
                 where('type', '==', 'thought'),
@@ -2821,19 +2986,23 @@
             );
             
             onSnapshot(thoughtQuery, (snapshot) => {
-                elements.thoughtLoading.classList.add('hidden');
-                renderThoughtPosts(snapshot);
+                elements.thoughtLoading?.classList.add('hidden');
+                renderPosts(snapshot, elements.thoughtFeed, 'thought');
             }, (error) => {
                 console.error('Error loading thought posts:', error);
-                elements.thoughtLoading.innerHTML = '<p>Ошибка загрузки мыслей</p>';
+                if (elements.thoughtLoading) {
+                    elements.thoughtLoading.innerHTML = '<p>Ошибка загрузки мыслей</p>';
+                }
             });
         }
 
-        function renderPosts(snapshot) {
-            elements.feed.innerHTML = '';
+        function renderPosts(snapshot, container, type) {
+            if (!container) return;
+            
+            container.innerHTML = '';
             
             if (snapshot.empty) {
-                elements.feed.innerHTML = `
+                container.innerHTML = `
                     <div class="post-card" style="text-align: center; padding: 40px;">
                         <i class="fas fa-comment-slash fa-3x" style="color: var(--text-secondary); margin-bottom: 16px;"></i>
                         <h3>Пока нет постов</h3>
@@ -2846,58 +3015,21 @@
             snapshot.forEach((doc) => {
                 const post = doc.data();
                 const postId = doc.id;
-                const postElement = createPostElement(postId, post);
-                elements.feed.appendChild(postElement);
+                
+                // Filter by type if needed
+                if (type === 'honesty' && post.type !== 'honesty') return;
+                if (type === 'thought' && post.type !== 'thought') return;
+                if (type === 'regular' && (post.type === 'honesty' || post.type === 'thought')) return;
+                
+                const postElement = createPostElement(postId, post, type);
+                container.appendChild(postElement);
             });
         }
 
-        function renderHonestyPosts(snapshot) {
-            elements.honestyFeed.innerHTML = '';
-            
-            if (snapshot.empty) {
-                elements.honestyFeed.innerHTML = `
-                    <div class="post-card" style="text-align: center; padding: 40px;">
-                        <i class="fas fa-star fa-3x" style="color: var(--text-secondary); margin-bottom: 16px;"></i>
-                        <h3>Пока нет голосований</h3>
-                        <p style="color: var(--text-secondary); margin-top: 8px;">Создайте первое голосование!</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            snapshot.forEach((doc) => {
-                const post = doc.data();
-                const postId = doc.id;
-                const postElement = createPostElement(postId, post);
-                elements.honestyFeed.appendChild(postElement);
-            });
-        }
-
-        function renderThoughtPosts(snapshot) {
-            elements.thoughtFeed.innerHTML = '';
-            
-            if (snapshot.empty) {
-                elements.thoughtFeed.innerHTML = `
-                    <div class="post-card" style="text-align: center; padding: 40px;">
-                        <i class="fas fa-lightbulb fa-3x" style="color: var(--text-secondary); margin-bottom: 16px;"></i>
-                        <h3>Пока нет мыслей дня</h3>
-                        <p style="color: var(--text-secondary); margin-top: 8px;">Поделитесь первой мыслью!</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            snapshot.forEach((doc) => {
-                const post = doc.data();
-                const postId = doc.id;
-                const postElement = createPostElement(postId, post);
-                elements.thoughtFeed.appendChild(postElement);
-            });
-        }
-
-        function createPostElement(postId, post) {
+        function createPostElement(postId, post, type) {
             const postElement = document.createElement('div');
             postElement.className = 'post-card';
+            if (type === 'honesty') postElement.classList.add('high-rated');
             postElement.dataset.postId = postId;
             
             const isLiked = currentUser ? (post.likes?.includes(currentUser.uid) || false) : false;
@@ -2907,49 +3039,46 @@
             const timeAgo = formatTimeAgo(post.createdAt?.toDate());
             const avatarUrl = post.authorAvatarUrl || getDefaultAvatar(post.authorNickname, post.authorColor);
             
-            // Check user's votes and reactions
-            const hasVotedTruth = currentUser && post.honestyVotes?.truth?.includes(currentUser.uid);
-            const hasVotedLie = currentUser && post.honestyVotes?.lie?.includes(currentUser.uid);
-            const userReaction = currentUser ? 
-                (post.reactions?.laugh?.includes(currentUser.uid) ? 'laugh' :
-                 post.reactions?.think?.includes(currentUser.uid) ? 'think' :
-                 post.reactions?.support?.includes(currentUser.uid) ? 'support' :
-                 post.reactions?.shock?.includes(currentUser.uid) ? 'shock' : null) : null;
-            
-            // Check if it's an honesty post to add voting buttons
-            const isHonestyPost = post.type === 'honesty';
-            const honestyPercentage = post.honestyPercentage || 50;
-            const truthVotes = post.truthVotes || 0;
-            const lieVotes = post.lieVotes || 0;
+            // Check user's votes/reactions
+            const userVotedTruth = currentUser && post.honestyVotes?.truth?.includes(currentUser.uid);
+            const userVotedLie = currentUser && post.honestyVotes?.lie?.includes(currentUser.uid);
+            const truthVotes = post.honestyVotes?.truth?.length || 0;
+            const lieVotes = post.honestyVotes?.lie?.length || 0;
             const totalVotes = truthVotes + lieVotes;
+            const honestyPercentage = totalVotes > 0 ? Math.round((truthVotes / totalVotes) * 100) : 50;
             
-            // Check if it's a thought post
-            const isThoughtPost = post.type === 'thought';
-            const laughCount = post.laughCount || 0;
-            const thinkCount = post.thinkCount || 0;
-            const supportCount = post.supportCount || 0;
-            const shockCount = post.shockCount || 0;
-            const totalReactions = laughCount + thinkCount + supportCount + shockCount;
-            const popularity = post.popularity || 50;
+            // Check user's reactions
+            const userReactions = {};
+            if (currentUser) {
+                userReactions.laugh = post.reactions?.laugh?.includes(currentUser.uid) || false;
+                userReactions.think = post.reactions?.think?.includes(currentUser.uid) || false;
+                userReactions.support = post.reactions?.support?.includes(currentUser.uid) || false;
+                userReactions.shock = post.reactions?.shock?.includes(currentUser.uid) || false;
+            }
             
-            // Check if it's a reply
-            const isReply = post.replyingTo;
+            const reactionCounts = {
+                laugh: post.reactions?.laugh?.length || 0,
+                think: post.reactions?.think?.length || 0,
+                support: post.reactions?.support?.length || 0,
+                shock: post.reactions?.shock?.length || 0
+            };
+            
+            // Reply info if this is a reply
+            let replyInfo = '';
+            if (post.replyTo) {
+                replyInfo = `
+                    <div class="reply-to-post" style="margin-bottom: 12px;">
+                        <div class="reply-to-header">
+                            <span class="reply-to-author">Ответ для: ${post.replyToAuthor || 'Аноним'}</span>
+                        </div>
+                        <div class="reply-to-content">${post.replyToContent || '...'}</div>
+                    </div>
+                `;
+            }
             
             postElement.innerHTML = `
-                ${isReply ? `
-                <div class="reply-to-post">
-                    <div class="reply-to-post-header">
-                        <i class="fas fa-reply" style="color: var(--accent-blue); font-size: 12px;"></i>
-                        <div class="reply-to-post-author" style="color: ${post.replyingToAuthorColor || '#1d9bf0'}">
-                            Ответ ${post.replyingToAuthor}
-                        </div>
-                    </div>
-                    <div class="reply-to-post-content">${escapeHtml(post.replyingToContent)}...</div>
-                </div>
-                ` : ''}
-                
                 <div class="post-header">
-                    <img src="${avatarUrl}" class="avatar" alt="Аватар" style="border-color: ${post.authorColor || '#1d9bf0'}">
+                    <img src="${avatarUrl}" class="avatar" alt="Аватар">
                     <div style="flex: 1;">
                         <div class="post-author" style="color: ${post.authorColor || '#1d9bf0'}">
                             ${post.authorNickname || 'Аноним'}
@@ -2957,14 +3086,17 @@
                         <div class="post-time">${timeAgo}</div>
                     </div>
                 </div>
+                
+                ${replyInfo}
+                
                 <div class="post-content">${escapeHtml(post.content)}</div>
                 
-                ${isHonestyPost ? `
+                ${post.type === 'honesty' ? `
                 <div class="honesty-buttons">
-                    <button class="honesty-btn truth ${hasVotedTruth ? 'voted' : ''}" data-post="${postId}" data-vote="truth">
+                    <button class="honesty-btn truth ${userVotedTruth ? 'voted' : ''}" data-post="${postId}">
                         ✓ Честно <span class="count">${truthVotes}</span>
                     </button>
-                    <button class="honesty-btn lie ${hasVotedLie ? 'voted' : ''}" data-post="${postId}" data-vote="lie">
+                    <button class="honesty-btn lie ${userVotedLie ? 'voted' : ''}" data-post="${postId}">
                         ✗ Не честно <span class="count">${lieVotes}</span>
                     </button>
                 </div>
@@ -2979,33 +3111,33 @@
                 </div>
                 ` : ''}
                 
-                ${isThoughtPost ? `
+                ${post.type === 'thought' ? `
                 <div class="thought-reactions">
-                    <button class="reaction-btn laugh ${userReaction === 'laugh' ? 'active' : ''}" data-post="${postId}" data-reaction="laugh">
+                    <button class="reaction-btn laugh ${userReactions.laugh ? 'active' : ''}" data-post="${postId}">
                         <i class="fas fa-laugh fa-lg"></i>
-                        <span class="reaction-count">${laughCount}</span>
+                        <span class="reaction-count">${reactionCounts.laugh}</span>
                     </button>
-                    <button class="reaction-btn think ${userReaction === 'think' ? 'active' : ''}" data-post="${postId}" data-reaction="think">
+                    <button class="reaction-btn think ${userReactions.think ? 'active' : ''}" data-post="${postId}">
                         <i class="fas fa-brain fa-lg"></i>
-                        <span class="reaction-count">${thinkCount}</span>
+                        <span class="reaction-count">${reactionCounts.think}</span>
                     </button>
-                    <button class="reaction-btn support ${userReaction === 'support' ? 'active' : ''}" data-post="${postId}" data-reaction="support">
+                    <button class="reaction-btn support ${userReactions.support ? 'active' : ''}" data-post="${postId}">
                         <i class="fas fa-heart fa-lg"></i>
-                        <span class="reaction-count">${supportCount}</span>
+                        <span class="reaction-count">${reactionCounts.support}</span>
                     </button>
-                    <button class="reaction-btn shock ${userReaction === 'shock' ? 'active' : ''}" data-post="${postId}" data-reaction="shock">
+                    <button class="reaction-btn shock ${userReactions.shock ? 'active' : ''}" data-post="${postId}">
                         <i class="fas fa-surprise fa-lg"></i>
-                        <span class="reaction-count">${shockCount}</span>
+                        <span class="reaction-count">${reactionCounts.shock}</span>
                     </button>
                 </div>
                 
                 <div class="thought-progress">
-                    <div class="thought-progress-fill" style="width: ${popularity}%;"></div>
+                    <div class="thought-progress-fill" style="width: ${post.popularity || 50}%;"></div>
                 </div>
                 
                 <div class="thought-stats">
-                    <span>Популярность: ${popularity}%</span>
-                    <span>${totalReactions} реакций</span>
+                    <span>Популярность: ${post.popularity || 50}%</span>
+                    <span>${Object.values(reactionCounts).reduce((a, b) => a + b, 0)} реакций</span>
                 </div>
                 ` : ''}
                 
@@ -3015,193 +3147,21 @@
                         <span>${post.likesCount || 0}</span>
                     </button>
                     <button class="action-btn" data-action="reply" data-post="${postId}" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
-                        <i class="fas fa-reply" style="transform: scaleX(-1);"></i>
-                        <span>${post.commentsCount || 0}</span>
+                        <i class="fas fa-reply"></i>
+                        <span>Ответить</span>
                     </button>
                     <button class="action-btn" data-action="share" data-post="${postId}">
                         <i class="far fa-share-square"></i>
                     </button>
                 </div>
-                
-                <div class="replies-section" id="replies-${postId}">
-                    ${currentUser ? `
-                    <div class="reply-composer">
-                        <textarea class="reply-input" placeholder="Написать ответ..." maxlength="280"></textarea>
-                        <button class="btn btn-primary btn-tiny reply-btn-fixed" data-action="send-reply" data-post="${postId}">Ответить</button>
-                    </div>
-                    ` : `
-                    <div class="reply-composer" style="justify-content: center;">
-                        <p style="color: var(--text-secondary); text-align: center; width: 100%;">
-                            <i class="fas fa-sign-in-alt"></i> Войдите, чтобы ответить
-                        </p>
-                    </div>
-                    `}
-                    <div class="replies-list" id="replies-list-${postId}"></div>
-                </div>
             `;
-            
-            // Add event listeners
-            const likeBtn = postElement.querySelector('[data-action="like"]');
-            const replyBtn = postElement.querySelector('[data-action="reply"]');
-            const sendReplyBtn = postElement.querySelector('[data-action="send-reply"]');
-            const replyInput = postElement.querySelector('.reply-input');
-            
-            if (currentUser) {
-                likeBtn.addEventListener('click', () => toggleLike(postId, post));
-                replyBtn.addEventListener('click', () => {
-                    if (post.authorId !== currentUser.uid) {
-                        // Update help challenge if replying to someone else's post
-                        updateHelpChallenge();
-                    }
-                    toggleReplies(postId);
-                });
-                if (sendReplyBtn) {
-                    sendReplyBtn.addEventListener('click', () => sendReply(postId));
-                }
-                
-                // Add enter key support for reply input
-                if (replyInput) {
-                    replyInput.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            sendReply(postId);
-                        }
-                    });
-                }
-                
-                // Add reply to post button
-                const replyToPostBtn = postElement.querySelector('[data-action="reply-post"]');
-                if (replyToPostBtn) {
-                    replyToPostBtn.addEventListener('click', () => {
-                        replyingToPost = {
-                            id: postId,
-                            content: post.content,
-                            authorNickname: post.authorNickname,
-                            authorColor: post.authorColor
-                        };
-                        
-                        switchPage('compose');
-                        elements.postInput.focus();
-                        elements.postInput.placeholder = `Ответ ${post.authorNickname}: ${post.content.substring(0, 50)}...`;
-                        
-                        // Scroll to composer
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    });
-                }
-            } else {
-                // For guests, show auth modal when clicking like or reply
-                likeBtn.addEventListener('click', () => showAuthModal());
-                replyBtn.addEventListener('click', () => showAuthModal());
-            }
-            
-            // Add honesty voting listeners
-            if (isHonestyPost) {
-                const truthBtn = postElement.querySelector('.honesty-btn.truth');
-                const lieBtn = postElement.querySelector('.honesty-btn.lie');
-                
-                [truthBtn, lieBtn].forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        if (!currentUser) {
-                            showAuthModal();
-                            return;
-                        }
-                        
-                        const voteType = this.dataset.vote;
-                        const hasVoted = this.classList.contains('voted');
-                        
-                        if (hasVoted) {
-                            // Remove vote
-                            handleHonestyVote(postId, voteType, true);
-                            this.classList.remove('voted');
-                            
-                            // Update count
-                            const countSpan = this.querySelector('.count');
-                            let currentCount = parseInt(countSpan.textContent);
-                            countSpan.textContent = Math.max(0, currentCount - 1);
-                        } else {
-                            // Add vote
-                            handleHonestyVote(postId, voteType, false);
-                            this.classList.add('voted');
-                            
-                            // Remove vote from other button if exists
-                            const otherBtn = voteType === 'truth' ? lieBtn : truthBtn;
-                            if (otherBtn.classList.contains('voted')) {
-                                otherBtn.classList.remove('voted');
-                                const otherCountSpan = otherBtn.querySelector('.count');
-                                let otherCount = parseInt(otherCountSpan.textContent);
-                                otherCountSpan.textContent = Math.max(0, otherCount - 1);
-                            }
-                            
-                            // Update count
-                            const countSpan = this.querySelector('.count');
-                            let currentCount = parseInt(countSpan.textContent);
-                            countSpan.textContent = currentCount + 1;
-                        }
-                        
-                        // Update progress
-                        updateHonestyProgress(postElement, postId);
-                    });
-                });
-            }
-            
-            // Add thought reaction listeners
-            if (isThoughtPost) {
-                const reactionBtns = postElement.querySelectorAll('.reaction-btn');
-                reactionBtns.forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        if (!currentUser) {
-                            showAuthModal();
-                            return;
-                        }
-                        
-                        const reactionType = this.dataset.reaction;
-                        const isActive = this.classList.contains('active');
-                        
-                        if (isActive) {
-                            // Remove reaction
-                            handleThoughtReaction(postId, reactionType, true);
-                            this.classList.remove('active');
-                            
-                            // Update count
-                            const countSpan = this.querySelector('.reaction-count');
-                            let currentCount = parseInt(countSpan.textContent);
-                            countSpan.textContent = Math.max(0, currentCount - 1);
-                        } else {
-                            // Add reaction
-                            handleThoughtReaction(postId, reactionType, false);
-                            
-                            // Remove active class from all buttons
-                            reactionBtns.forEach(b => b.classList.remove('active'));
-                            this.classList.add('active');
-                            
-                            // Update count for this button
-                            const countSpan = this.querySelector('.reaction-count');
-                            let currentCount = parseInt(countSpan.textContent);
-                            countSpan.textContent = currentCount + 1;
-                            
-                            // Decrease count for previously active button if any
-                            reactionBtns.forEach(b => {
-                                if (b !== this && b.classList.contains('active')) {
-                                    const prevCountSpan = b.querySelector('.reaction-count');
-                                    let prevCount = parseInt(prevCountSpan.textContent);
-                                    prevCountSpan.textContent = Math.max(0, prevCount - 1);
-                                }
-                            });
-                        }
-                        
-                        // Update progress
-                        updateThoughtProgress(postElement, postId);
-                    });
-                });
-            }
-            
-            // Load replies for this post
-            loadReplies(postId);
             
             return postElement;
         }
 
-        async function handleHonestyVote(postId, voteType, isRemove) {
+        async function handleHonestyVote(postId, isTruth, button) {
+            if (!currentUser) return;
+            
             try {
                 const postRef = doc(db, 'posts', postId);
                 const postSnap = await getDoc(postRef);
@@ -3210,43 +3170,42 @@
                 const truthVotes = postData.honestyVotes?.truth || [];
                 const lieVotes = postData.honestyVotes?.lie || [];
                 
-                if (isRemove) {
-                    // Remove vote
-                    if (voteType === 'truth') {
-                        const newTruthVotes = truthVotes.filter(id => id !== currentUser.uid);
+                const alreadyVotedTruth = truthVotes.includes(currentUser.uid);
+                const alreadyVotedLie = lieVotes.includes(currentUser.uid);
+                
+                if (isTruth) {
+                    if (alreadyVotedTruth) {
+                        // Remove truth vote
                         await updateDoc(postRef, {
-                            'honestyVotes.truth': newTruthVotes,
-                            truthVotes: newTruthVotes.length
+                            'honestyVotes.truth': arrayRemove(currentUser.uid)
                         });
                     } else {
-                        const newLieVotes = lieVotes.filter(id => id !== currentUser.uid);
+                        // Add truth vote, remove lie vote if exists
                         await updateDoc(postRef, {
-                            'honestyVotes.lie': newLieVotes,
-                            lieVotes: newLieVotes.length
+                            'honestyVotes.truth': arrayUnion(currentUser.uid)
                         });
+                        if (alreadyVotedLie) {
+                            await updateDoc(postRef, {
+                                'honestyVotes.lie': arrayRemove(currentUser.uid)
+                            });
+                        }
                     }
                 } else {
-                    // Add vote and remove from other type if exists
-                    if (voteType === 'truth') {
-                        const newTruthVotes = [...new Set([...truthVotes, currentUser.uid])];
-                        const newLieVotes = lieVotes.filter(id => id !== currentUser.uid);
-                        
+                    if (alreadyVotedLie) {
+                        // Remove lie vote
                         await updateDoc(postRef, {
-                            'honestyVotes.truth': newTruthVotes,
-                            'honestyVotes.lie': newLieVotes,
-                            truthVotes: newTruthVotes.length,
-                            lieVotes: newLieVotes.length
+                            'honestyVotes.lie': arrayRemove(currentUser.uid)
                         });
                     } else {
-                        const newLieVotes = [...new Set([...lieVotes, currentUser.uid])];
-                        const newTruthVotes = truthVotes.filter(id => id !== currentUser.uid);
-                        
+                        // Add lie vote, remove truth vote if exists
                         await updateDoc(postRef, {
-                            'honestyVotes.lie': newLieVotes,
-                            'honestyVotes.truth': newTruthVotes,
-                            lieVotes: newLieVotes.length,
-                            truthVotes: newTruthVotes.length
+                            'honestyVotes.lie': arrayUnion(currentUser.uid)
                         });
+                        if (alreadyVotedTruth) {
+                            await updateDoc(postRef, {
+                                'honestyVotes.truth': arrayRemove(currentUser.uid)
+                            });
+                        }
                     }
                 }
                 
@@ -3255,114 +3214,53 @@
             }
         }
 
-        async function handleThoughtReaction(postId, reactionType, isRemove) {
+        async function handleReaction(postId, reactionType, button) {
+            if (!currentUser) return;
+            
             try {
                 const postRef = doc(db, 'posts', postId);
                 const postSnap = await getDoc(postRef);
                 const postData = postSnap.data();
                 
-                const laughReactions = postData.reactions?.laugh || [];
-                const thinkReactions = postData.reactions?.think || [];
-                const supportReactions = postData.reactions?.support || [];
-                const shockReactions = postData.reactions?.shock || [];
+                const reactions = postData.reactions || {
+                    laugh: [],
+                    think: [],
+                    support: [],
+                    shock: []
+                };
                 
-                if (isRemove) {
-                    // Remove reaction
-                    const updateData = {};
-                    updateData[`reactions.${reactionType}`] = 
-                        reactionType === 'laugh' ? laughReactions.filter(id => id !== currentUser.uid) :
-                        reactionType === 'think' ? thinkReactions.filter(id => id !== currentUser.uid) :
-                        reactionType === 'support' ? supportReactions.filter(id => id !== currentUser.uid) :
-                        shockReactions.filter(id => id !== currentUser.uid);
-                    
-                    updateData[`${reactionType}Count`] = Math.max(0, 
-                        reactionType === 'laugh' ? laughReactions.length - 1 :
-                        reactionType === 'think' ? thinkReactions.length - 1 :
-                        reactionType === 'support' ? supportReactions.length - 1 :
-                        shockReactions.length - 1);
-                    
-                    await updateDoc(postRef, updateData);
-                } else {
-                    // Add reaction and remove from others
-                    const updateData = {
-                        'reactions.laugh': reactionType === 'laugh' ? 
-                            [...new Set([...laughReactions, currentUser.uid])] : 
-                            laughReactions.filter(id => id !== currentUser.uid),
-                        'reactions.think': reactionType === 'think' ? 
-                            [...new Set([...thinkReactions, currentUser.uid])] : 
-                            thinkReactions.filter(id => id !== currentUser.uid),
-                        'reactions.support': reactionType === 'support' ? 
-                            [...new Set([...supportReactions, currentUser.uid])] : 
-                            supportReactions.filter(id => id !== currentUser.uid),
-                        'reactions.shock': reactionType === 'shock' ? 
-                            [...new Set([...shockReactions, currentUser.uid])] : 
-                            shockReactions.filter(id => id !== currentUser.uid),
-                        laughCount: reactionType === 'laugh' ? 
-                            [...new Set([...laughReactions, currentUser.uid])].length : 
-                            Math.max(0, laughReactions.filter(id => id !== currentUser.uid).length),
-                        thinkCount: reactionType === 'think' ? 
-                            [...new Set([...thinkReactions, currentUser.uid])].length : 
-                            Math.max(0, thinkReactions.filter(id => id !== currentUser.uid).length),
-                        supportCount: reactionType === 'support' ? 
-                            [...new Set([...supportReactions, currentUser.uid])].length : 
-                            Math.max(0, supportReactions.filter(id => id !== currentUser.uid).length),
-                        shockCount: reactionType === 'shock' ? 
-                            [...new Set([...shockReactions, currentUser.uid])].length : 
-                            Math.max(0, shockReactions.filter(id => id !== currentUser.uid).length)
-                    };
-                    
-                    await updateDoc(postRef, updateData);
+                // Check if user already has this reaction
+                const hasReaction = reactions[reactionType]?.includes(currentUser.uid) || false;
+                
+                // Remove user from all reaction arrays first
+                for (const type of ['laugh', 'think', 'support', 'shock']) {
+                    if (reactions[type]?.includes(currentUser.uid)) {
+                        await updateDoc(postRef, {
+                            [`reactions.${type}`]: arrayRemove(currentUser.uid)
+                        });
+                    }
                 }
                 
-            } catch (error) {
-                console.error('Error handling thought reaction:', error);
-            }
-        }
-
-        async function updateHonestyProgress(postElement, postId) {
-            try {
-                const postRef = doc(db, 'posts', postId);
-                const postSnap = await getDoc(postRef);
-                const postData = postSnap.data();
+                // If user didn't have this reaction, add it
+                if (!hasReaction) {
+                    await updateDoc(postRef, {
+                        [`reactions.${reactionType}`]: arrayUnion(currentUser.uid)
+                    });
+                }
                 
-                const truthVotes = postData.truthVotes || 0;
-                const lieVotes = postData.lieVotes || 0;
-                const totalVotes = truthVotes + lieVotes;
-                const percentage = totalVotes > 0 ? Math.round((truthVotes / totalVotes) * 100) : 50;
+                // Update popularity based on total reactions
+                const updatedSnap = await getDoc(postRef);
+                const updatedData = updatedSnap.data();
+                const updatedReactions = updatedData.reactions || {};
+                const totalReactions = Object.values(updatedReactions).reduce((sum, arr) => sum + (arr?.length || 0), 0);
+                const popularity = Math.min(100, Math.round((totalReactions / 10) * 100));
                 
                 await updateDoc(postRef, {
-                    honestyPercentage: percentage,
-                    updatedAt: serverTimestamp()
+                    popularity: popularity
                 });
                 
             } catch (error) {
-                console.error('Error updating honesty progress:', error);
-            }
-        }
-
-        async function updateThoughtProgress(postElement, postId) {
-            try {
-                const postRef = doc(db, 'posts', postId);
-                const postSnap = await getDoc(postRef);
-                const postData = postSnap.data();
-                
-                const laughCount = postData.laughCount || 0;
-                const thinkCount = postData.thinkCount || 0;
-                const supportCount = postData.supportCount || 0;
-                const shockCount = postData.shockCount || 0;
-                const totalReactions = laughCount + thinkCount + supportCount + shockCount;
-                
-                // Calculate popularity based on reactions (simple algorithm)
-                const popularity = totalReactions > 0 ? 
-                    Math.round(((supportCount * 1.5 + thinkCount * 1.2 + laughCount + shockCount * 0.8) / (totalReactions * 1.5)) * 100) : 50;
-                
-                await updateDoc(postRef, {
-                    popularity: Math.min(100, Math.max(0, popularity)),
-                    updatedAt: serverTimestamp()
-                });
-                
-            } catch (error) {
-                console.error('Error updating thought progress:', error);
+                console.error('Error handling reaction:', error);
             }
         }
 
@@ -3379,410 +3277,17 @@
                 if (isLiked) {
                     await updateDoc(postRef, {
                         likes: arrayRemove(currentUser.uid),
-                        likesCount: (post.likesCount || 1) - 1
+                        likesCount: increment(-1)
                     });
                 } else {
                     await updateDoc(postRef, {
                         likes: arrayUnion(currentUser.uid),
-                        likesCount: (post.likesCount || 0) + 1
+                        likesCount: increment(1)
                     });
                 }
             } catch (error) {
                 console.error('Error toggling like:', error);
             }
-        }
-
-        function toggleReplies(postId) {
-            if (!currentUser) {
-                showAuthModal();
-                return;
-            }
-            
-            const repliesSection = document.getElementById(`replies-${postId}`);
-            repliesSection.classList.toggle('active');
-            
-            if (repliesSection.classList.contains('active')) {
-                loadReplies(postId);
-                // Scroll to replies section
-                setTimeout(() => {
-                    repliesSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }, 100);
-            }
-        }
-
-        async function loadReplies(postId) {
-            const repliesList = document.getElementById(`replies-list-${postId}`);
-            if (!repliesList) return;
-            
-            const repliesQuery = query(
-                collection(db, 'posts', postId, 'comments'),
-                orderBy('createdAt', 'asc')
-            );
-            
-            onSnapshot(repliesQuery, (snapshot) => {
-                repliesList.innerHTML = '';
-                
-                if (snapshot.empty) {
-                    repliesList.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 16px;">Пока нет ответов</p>';
-                    return;
-                }
-                
-                snapshot.forEach((doc) => {
-                    const reply = doc.data();
-                    const replyElement = createReplyElement(reply);
-                    repliesList.appendChild(replyElement);
-                });
-                
-                // Scroll to bottom of replies if section is active
-                if (document.getElementById(`replies-${postId}`).classList.contains('active')) {
-                    setTimeout(() => {
-                        repliesList.scrollTop = repliesList.scrollHeight;
-                    }, 100);
-                }
-            });
-        }
-
-        function createReplyElement(reply) {
-            const replyElement = document.createElement('div');
-            replyElement.className = 'reply-card';
-            
-            const timeAgo = formatTimeAgo(reply.createdAt?.toDate());
-            const avatarUrl = reply.authorAvatarUrl || getDefaultAvatar(reply.authorNickname, reply.authorColor);
-            
-            replyElement.innerHTML = `
-                <div class="reply-header">
-                    <img src="${avatarUrl}" style="width: 24px; height: 24px; border-radius: 50%;" alt="Аватар">
-                    <div class="reply-author" style="color: ${reply.authorColor || '#1d9bf0'}">
-                        ${reply.authorNickname || 'Аноним'}
-                    </div>
-                    <div class="reply-time">${timeAgo}</div>
-                </div>
-                <div class="reply-content">${escapeHtml(reply.content)}</div>
-            `;
-            
-            return replyElement;
-        }
-
-        async function sendReply(postId) {
-            if (!currentUser) {
-                showAuthModal();
-                return;
-            }
-            
-            const repliesSection = document.getElementById(`replies-${postId}`);
-            const replyInput = repliesSection.querySelector('.reply-input');
-            const content = replyInput.value.trim();
-            
-            if (!content) {
-                alert('Введите текст ответа');
-                return;
-            }
-            
-            if (content.length > 280) {
-                alert('Ответ не должен превышать 280 символов');
-                return;
-            }
-            
-            try {
-                // Add reply
-                await addDoc(collection(db, 'posts', postId, 'comments'), {
-                    content: content,
-                    authorId: currentUser.uid,
-                    authorNickname: userProfile?.nickname || 'Аноним',
-                    authorColor: userProfile?.color || '#1d9bf0',
-                    authorAvatarUrl: userProfile?.avatarUrl || getDefaultAvatar(userProfile?.nickname || '?', userProfile?.color),
-                    likesCount: 0,
-                    createdAt: serverTimestamp()
-                });
-                
-                // Update comments count
-                const postRef = doc(db, 'posts', postId);
-                const postSnap = await getDoc(postRef);
-                const currentCount = postSnap.data()?.commentsCount || 0;
-                
-                await updateDoc(postRef, {
-                    commentsCount: currentCount + 1,
-                    updatedAt: serverTimestamp()
-                });
-                
-                replyInput.value = '';
-                replyInput.focus();
-                
-                // Update help challenge
-                updateHelpChallenge();
-            } catch (error) {
-                console.error('Error sending reply:', error);
-                alert('Ошибка при отправке ответа');
-            }
-        }
-
-        // Challenge functions
-        async function loadChallenges() {
-            if (!currentUser) return;
-            
-            try {
-                const profile = await getUserProfile(currentUser.uid);
-                if (!profile) return;
-                
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                
-                // Gratitude challenge
-                const gratitudeQuery = query(
-                    collection(db, 'posts'),
-                    where('authorId', '==', currentUser.uid),
-                    where('type', '==', 'regular'),
-                    where('createdAt', '>=', Timestamp.fromDate(today))
-                );
-                
-                const gratitudeSnapshot = await getDocs(gratitudeQuery);
-                let gratitudeCount = 0;
-                
-                gratitudeSnapshot.forEach(doc => {
-                    const post = doc.data();
-                    if (post.content.toLowerCase().includes('благодарн') || 
-                        post.content.toLowerCase().includes('спасибо')) {
-                        gratitudeCount++;
-                    }
-                });
-                
-                challenges.gratitude.count = gratitudeCount;
-                challenges.gratitude.completed = gratitudeCount >= 3;
-                
-                // No complaint challenge
-                const noComplaintData = profile.challenges?.noComplaint || { streak: 0, lastDate: null };
-                const lastDate = noComplaintData.lastDate?.toDate();
-                const isToday = lastDate && 
-                    lastDate.getDate() === today.getDate() &&
-                    lastDate.getMonth() === today.getMonth() &&
-                    lastDate.getFullYear() === today.getFullYear();
-                
-                if (!isToday) {
-                    // Check if user posted complaints today
-                    const complaintQuery = query(
-                        collection(db, 'posts'),
-                        where('authorId', '==', currentUser.uid),
-                        where('type', '==', 'regular'),
-                        where('createdAt', '>=', Timestamp.fromDate(today))
-                    );
-                    
-                    const complaintSnapshot = await getDocs(complaintQuery);
-                    let hasComplaints = false;
-                    
-                    complaintSnapshot.forEach(doc => {
-                        const post = doc.data();
-                        const complaintWords = ['жалуюсь', 'плохо', 'устал', 'устала', 'надоело', 'ненавижу', 'злой', 'злая'];
-                        if (complaintWords.some(word => post.content.toLowerCase().includes(word))) {
-                            hasComplaints = true;
-                        }
-                    });
-                    
-                    if (!hasComplaints) {
-                        challenges.noComplaint.count = noComplaintData.streak + 1;
-                    } else {
-                        challenges.noComplaint.count = 0;
-                    }
-                } else {
-                    challenges.noComplaint.count = noComplaintData.streak;
-                }
-                
-                challenges.noComplaint.completed = challenges.noComplaint.count >= 7;
-                
-                // Help challenge
-                const helpCount = profile.challenges?.help || 0;
-                challenges.help.count = helpCount;
-                challenges.help.completed = helpCount >= 5;
-                
-                updateChallengesUI();
-                
-            } catch (error) {
-                console.error('Error loading challenges:', error);
-            }
-        }
-
-        function updateChallengesUI() {
-            // Gratitude challenge
-            elements.gratitudeProgress.textContent = `${challenges.gratitude.count}/3`;
-            elements.gratitudeProgressBar.style.width = `${(challenges.gratitude.count / 3) * 100}%`;
-            
-            if (challenges.gratitude.completed) {
-                elements.gratitudeChallenge.classList.add('completed');
-                elements.gratitudeChallenge.classList.remove('active');
-                elements.gratitudeBtn.innerHTML = '<i class="fas fa-medal"></i> Челлендж пройден!';
-                elements.gratitudeBtn.style.background = 'var(--accent-green)';
-                elements.gratitudeBtn.disabled = true;
-            }
-            
-            // No complaint challenge
-            elements.noComplaintProgress.textContent = `${challenges.noComplaint.count}/7 дней`;
-            elements.noComplaintProgressBar.style.width = `${(challenges.noComplaint.count / 7) * 100}%`;
-            
-            if (challenges.noComplaint.completed) {
-                elements.noComplaintChallenge.classList.add('completed');
-                elements.noComplaintChallenge.classList.remove('active');
-                elements.noComplaintBtn.innerHTML = '<i class="fas fa-medal"></i> Челлендж пройден!';
-                elements.noComplaintBtn.style.background = 'var(--accent-green)';
-                elements.noComplaintBtn.disabled = true;
-            }
-            
-            // Help challenge
-            elements.helpProgress.textContent = `${challenges.help.count}/5`;
-            elements.helpProgressBar.style.width = `${(challenges.help.count / 5) * 100}%`;
-            
-            if (challenges.help.completed) {
-                elements.helpChallenge.classList.add('completed');
-                elements.helpChallengeStatus.innerHTML = '<i class="fas fa-check-circle"></i> Выполнен';
-                elements.helpBtn.innerHTML = '<i class="fas fa-medal"></i> Челлендж пройден!';
-                elements.helpBtn.style.background = 'var(--accent-green)';
-                elements.helpBtn.disabled = true;
-            }
-        }
-
-        async function updateGratitudeChallenge() {
-            if (!currentUser) return;
-            
-            try {
-                const profileRef = doc(db, 'users', currentUser.uid);
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                
-                // Count gratitude posts for today
-                const gratitudeQuery = query(
-                    collection(db, 'posts'),
-                    where('authorId', '==', currentUser.uid),
-                    where('type', '==', 'regular'),
-                    where('createdAt', '>=', Timestamp.fromDate(today))
-                );
-                
-                const gratitudeSnapshot = await getDocs(gratitudeQuery);
-                let gratitudeCount = 0;
-                
-                gratitudeSnapshot.forEach(doc => {
-                    const post = doc.data();
-                    if (post.content.toLowerCase().includes('благодарн') || 
-                        post.content.toLowerCase().includes('спасибо')) {
-                        gratitudeCount++;
-                    }
-                });
-                
-                challenges.gratitude.count = gratitudeCount;
-                challenges.gratitude.completed = gratitudeCount >= 3;
-                
-                updateChallengesUI();
-                
-                // Show medal animation if completed
-                if (challenges.gratitude.completed && gratitudeCount === 3) {
-                    const medal = document.getElementById('medal1');
-                    medal.classList.add('show');
-                    setTimeout(() => {
-                        medal.classList.remove('show');
-                    }, 2000);
-                }
-                
-            } catch (error) {
-                console.error('Error updating gratitude challenge:', error);
-            }
-        }
-
-        async function markNoComplaintDay() {
-            if (!currentUser) return;
-            
-            try {
-                const profileRef = doc(db, 'users', currentUser.uid);
-                const profile = await getUserProfile(currentUser.uid);
-                const noComplaintData = profile.challenges?.noComplaint || { streak: 0, lastDate: null };
-                
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const lastDate = noComplaintData.lastDate?.toDate();
-                const isToday = lastDate && 
-                    lastDate.getDate() === today.getDate() &&
-                    lastDate.getMonth() === today.getMonth() &&
-                    lastDate.getFullYear() === today.getFullYear();
-                
-                if (!isToday) {
-                    // Check if user posted complaints today
-                    const complaintQuery = query(
-                        collection(db, 'posts'),
-                        where('authorId', '==', currentUser.uid),
-                        where('type', '==', 'regular'),
-                        where('createdAt', '>=', Timestamp.fromDate(today))
-                    );
-                    
-                    const complaintSnapshot = await getDocs(complaintQuery);
-                    let hasComplaints = false;
-                    
-                    complaintSnapshot.forEach(doc => {
-                        const post = doc.data();
-                        const complaintWords = ['жалуюсь', 'плохо', 'устал', 'устала', 'надоело', 'ненавижу', 'злой', 'злая'];
-                        if (complaintWords.some(word => post.content.toLowerCase().includes(word))) {
-                            hasComplaints = true;
-                        }
-                    });
-                    
-                    if (!hasComplaints) {
-                        const newStreak = noComplaintData.streak + 1;
-                        await updateDoc(profileRef, {
-                            'challenges.noComplaint': {
-                                streak: newStreak,
-                                lastDate: serverTimestamp()
-                            }
-                        });
-                        
-                        challenges.noComplaint.count = newStreak;
-                        challenges.noComplaint.completed = newStreak >= 7;
-                        
-                        updateChallengesUI();
-                        
-                        alert(`День без жалоб отмечен! Ваша серия: ${newStreak} дней.`);
-                    } else {
-                        alert('Вы не можете отметить день без жалоб, так как сегодня были жалобы в постах.');
-                    }
-                } else {
-                    alert('Вы уже отметили день без жалоб сегодня.');
-                }
-                
-            } catch (error) {
-                console.error('Error marking no complaint day:', error);
-                alert('Ошибка при отметке дня');
-            }
-        }
-
-        async function updateHelpChallenge() {
-            if (!currentUser) return;
-            
-            try {
-                const profileRef = doc(db, 'users', currentUser.uid);
-                const profile = await getUserProfile(currentUser.uid);
-                const currentHelpCount = profile.challenges?.help || 0;
-                const newHelpCount = currentHelpCount + 1;
-                
-                await updateDoc(profileRef, {
-                    'challenges.help': newHelpCount
-                });
-                
-                challenges.help.count = newHelpCount;
-                challenges.help.completed = newHelpCount >= 5;
-                
-                updateChallengesUI();
-                
-                if (newHelpCount === 5) {
-                    alert('Поздравляем! Вы помогли 5 людям и выполнили челлендж!');
-                }
-                
-            } catch (error) {
-                console.error('Error updating help challenge:', error);
-            }
-        }
-
-        function showChallengeInfo(challengeId) {
-            const messages = {
-                1: "Челлендж '3 благодарности':\n\nПубликуйте посты с благодарностью за что-либо в течение дня. Это помогает развивать позитивное мышление и благодарность к жизни.\n\nПосты должны содержать слова 'благодарен', 'благодарна', 'спасибо' или подобные.",
-                2: "Челлендж '7 дней без жалоб':\n\nНе жалуйтесь в постах в течение 7 дней подряд. Фокусируйтесь на решениях, а не на проблемах.\n\nКаждый день без жалоб увеличивает вашу серию. Если вы пожалуетесь, серия сбрасывается.",
-                3: "Челлендж 'Помоги 5 людям':\n\nОтвечайте на посты людей, которым нужна поддержка или совет. Помогая другим, вы не только делаете добро, но и развиваете эмпатию.\n\nКаждый ответ на чужой пост засчитывается как помощь."
-            };
-            
-            alert(messages[challengeId] || 'Информация о челлендже');
         }
 
         // UI functions
@@ -3794,7 +3299,7 @@
                     // User is signed in
                     userProfile = await getUserProfile(user.uid);
                     updateUI();
-                    loadChallenges();
+                    loadChallengeProgress();
                 } else {
                     // User is signed out
                     resetUI();
@@ -3808,14 +3313,16 @@
             elements.profileBtn.classList.remove('hidden');
             elements.headerAvatar.classList.remove('hidden');
             
-            const avatarUrl = userProfile?.avatarUrl || getDefaultAvatar(userProfile?.nickname || '?', userProfile?.color);
-            elements.headerAvatar.src = avatarUrl;
-            elements.composerAvatar.src = avatarUrl;
-            elements.honestyComposerAvatar.src = avatarUrl;
-            elements.thoughtComposerAvatar.src = avatarUrl;
-            
-            elements.honestyComposerAvatar.classList.remove('hidden');
-            elements.thoughtComposerAvatar.classList.remove('hidden');
+            if (userProfile) {
+                const avatarUrl = userProfile.avatarUrl || getDefaultAvatar(userProfile.nickname || '?', userProfile.color);
+                elements.headerAvatar.src = avatarUrl;
+                elements.composerAvatar.src = avatarUrl;
+                elements.honestyComposerAvatar.src = avatarUrl;
+                elements.thoughtComposerAvatar.src = avatarUrl;
+                
+                elements.honestyComposerAvatar.classList.remove('hidden');
+                elements.thoughtComposerAvatar.classList.remove('hidden');
+            }
             
             // Show post composer and hide guest notification
             elements.postComposer.classList.remove('hidden');
@@ -3850,17 +3357,12 @@
             elements.postInput.value = '';
             updateCharCounter();
             elements.honestyPostInput.value = '';
-            elements.honestyCharCounter.textContent = '0/280';
+            elements.honestyCharCounter.textContent = '0/500';
             elements.thoughtInput.value = '';
-            elements.thoughtCharCounter.textContent = '0/280';
+            elements.thoughtCharCounter.textContent = '0/500';
             
-            // Reset challenges
-            challenges = {
-                gratitude: { count: 0, completed: false },
-                noComplaint: { count: 0, completed: false },
-                help: { count: 0, completed: false }
-            };
-            updateChallengesUI();
+            // Clear reply setup
+            clearReplySetup();
         }
 
         function switchPage(page) {
@@ -3886,8 +3388,7 @@
                 }
                 showProfileModal();
             } else if (page === 'home') {
-                replyingToPost = null;
-                elements.postInput.placeholder = "Что у тебя на уме?";
+                switchSection('main');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
@@ -3905,7 +3406,7 @@
         function getDefaultAvatar(text, color = '#1d9bf0') {
             const colors = ['#1d9bf0', '#f91880', '#00ba7c', '#ffd400', '#7856ff', '#ff7a00', '#00b4d8', '#ff5aac', '#52b788'];
             const selectedColor = color || colors[text.charCodeAt(0) % colors.length];
-            const name = text.substring(0, 2).toUpperCase();
+            const name = text ? text.substring(0, 2).toUpperCase() : '??';
             return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${selectedColor.replace('#', '')}&color=fff&size=128`;
         }
 
@@ -3936,6 +3437,9 @@
             div.textContent = text;
             return div.innerHTML.replace(/\n/g, '<br>');
         }
+        
+        // Make clearReplySetup available globally
+        window.clearReplySetup = clearReplySetup;
     </script>
 </body>
 </html>
