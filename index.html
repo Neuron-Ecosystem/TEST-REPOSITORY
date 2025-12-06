@@ -116,6 +116,7 @@
             border: 2px solid transparent;
             background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
                         linear-gradient(90deg, var(--accent-blue), var(--accent-pink)) border-box;
+            cursor: pointer;
         }
 
         /* Main content - with padding for fixed header */
@@ -546,6 +547,12 @@
         .post-author {
             font-weight: 700;
             font-size: 16px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .post-author:hover {
+            opacity: 0.8;
         }
 
         .post-time {
@@ -567,6 +574,7 @@
             gap: 16px;
             padding-top: 12px;
             border-top: 1px solid var(--border-color);
+            align-items: center;
         }
 
         .action-btn {
@@ -651,6 +659,7 @@
             margin-bottom: 12px;
             animation: slideIn 0.3s ease;
             border-left: 3px solid var(--border-color);
+            position: relative;
         }
 
         .reply-card:hover {
@@ -668,6 +677,12 @@
         .reply-author {
             font-weight: 700;
             font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .reply-author:hover {
+            opacity: 0.8;
         }
 
         .reply-time {
@@ -1277,6 +1292,146 @@
             opacity: 1;
         }
 
+        /* User Profile Modal */
+        .user-profile-modal {
+            max-width: 500px;
+        }
+
+        .user-profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--accent-blue);
+            margin: 0 auto 20px;
+            display: block;
+        }
+
+        .user-profile-info {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .user-profile-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .user-profile-email {
+            color: var(--text-secondary);
+            font-size: 16px;
+            margin-bottom: 16px;
+            background: var(--bg-input);
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            display: inline-block;
+        }
+
+        .user-profile-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .user-stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Delete buttons */
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--accent-red);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: rgba(244, 67, 54, 0.1);
+        }
+
+        .reply-delete-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: none;
+            border: none;
+            color: var(--accent-red);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 4px;
+            border-radius: 4px;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+
+        .reply-card:hover .reply-delete-btn {
+            opacity: 1;
+        }
+
+        /* Original post quote */
+        .original-post-quote {
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin-bottom: 16px;
+            border-left: 3px solid var(--accent-blue);
+            position: relative;
+        }
+
+        .original-post-quote-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .original-post-author {
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .original-post-content {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .view-full-btn {
+            background: none;
+            border: none;
+            color: var(--accent-blue);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+
         /* Mobile optimizations */
         @media (max-width: 600px) {
             .container, .header-inner, .nav-inner {
@@ -1359,6 +1514,11 @@
             
             .reply-input {
                 min-height: 70px;
+            }
+            
+            .user-profile-stats {
+                flex-direction: column;
+                gap: 16px;
             }
         }
 
@@ -1476,6 +1636,16 @@
             padding: 6px 12px;
             border-radius: var(--radius-md);
             display: inline-block;
+        }
+
+        /* Comment icon update */
+        .comment-icon {
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }
+        
+        .comment-icon:hover {
+            color: var(--accent-blue);
         }
     </style>
 </head>
@@ -1646,48 +1816,12 @@
                             <button class="challenge-action-btn primary" data-challenge="1" id="challenge1Btn">
                                 <i class="fas fa-plus"></i> Добавить пост
                             </button>
-                            <button class="challenge-action-btn secondary" data-challenge="1">
-                                <i class="fas fa-info-circle"></i> Подробнее
-                            </button>
                         </div>
                         
                         <div class="medal-animation" id="medal1">
                             <div class="medal-icon">
                                 <i class="fas fa-medal"></i>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="challenge-card active">
-                        <div class="challenge-header">
-                            <div class="challenge-icon">🎯</div>
-                            <div class="challenge-title">7 дней без жалоб</div>
-                            <div style="color: var(--accent-blue); font-weight: 600; font-size: 14px;">
-                                Недельный
-                            </div>
-                        </div>
-                        
-                        <div class="challenge-description">
-                            Пройдите неделю, не жалуясь ни на что в постах. Фокусируйтесь на решении, а не на проблеме.
-                        </div>
-                        
-                        <div class="challenge-progress">
-                            <div class="progress-text">
-                                <span>Прогресс</span>
-                                <span id="challenge2Progress">0/7 дней</span>
-                            </div>
-                            <div class="progress-bar-large">
-                                <div class="progress-fill-large" style="width: 0%;" id="challenge2Bar"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="challenge-actions">
-                            <button class="challenge-action-btn primary" data-challenge="2" id="challenge2Btn">
-                                Отметить день
-                            </button>
-                            <button class="challenge-action-btn secondary" data-challenge="2">
-                                <i class="fas fa-info-circle"></i> Подробнее
-                            </button>
                         </div>
                     </div>
 
@@ -1717,9 +1851,6 @@
                         <div class="challenge-actions">
                             <button class="challenge-action-btn primary" data-challenge="3" id="challenge3Btn">
                                 Ответить на пост
-                            </button>
-                            <button class="challenge-action-btn secondary" data-challenge="3">
-                                <i class="fas fa-info-circle"></i> Подробнее
                             </button>
                         </div>
                     </div>
@@ -1856,6 +1987,41 @@
         </div>
     </div>
 
+    <!-- User Profile Modal -->
+    <div id="userProfileModal" class="modal-overlay">
+        <div class="modal user-profile-modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Профиль пользователя</h2>
+                <button class="reply-to-close" id="closeUserProfileModal" style="position: absolute; top: 20px; right: 20px;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <img id="userProfileAvatar" class="user-profile-avatar" alt="Аватар">
+            
+            <div class="user-profile-info">
+                <div id="userProfileName" class="user-profile-name"></div>
+                <div id="userProfileEmail" class="user-profile-email"></div>
+                <div id="userProfileRole" class="role-badge" style="display: inline-block; margin-top: 8px;"></div>
+            </div>
+            
+            <div class="user-profile-stats">
+                <div class="user-stat">
+                    <div id="userPostsCount" class="stat-value">0</div>
+                    <div class="stat-label">Постов</div>
+                </div>
+                <div class="user-stat">
+                    <div id="userCommentsCount" class="stat-value">0</div>
+                    <div class="stat-label">Комментариев</div>
+                </div>
+                <div class="user-stat">
+                    <div id="userLikesCount" class="stat-value">0</div>
+                    <div class="stat-label">Лайков</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase SDK -->
     <script type="module">
         // Firebase configuration
@@ -1928,7 +2094,6 @@
         let replyingTo = null;
         let challengeData = {
             challenge1: { current: 0, total: 3, type: 'gratitude', completed: false },
-            challenge2: { current: 0, total: 7, type: 'noComplaints', completed: false },
             challenge3: { current: 0, total: 5, type: 'helpOthers', completed: false }
         };
 
@@ -2017,12 +2182,20 @@
             challenge1Progress: document.getElementById('challenge1Progress'),
             challenge1Bar: document.getElementById('challenge1Bar'),
             challenge1Btn: document.getElementById('challenge1Btn'),
-            challenge2Progress: document.getElementById('challenge2Progress'),
-            challenge2Bar: document.getElementById('challenge2Bar'),
-            challenge2Btn: document.getElementById('challenge2Btn'),
             challenge3Progress: document.getElementById('challenge3Progress'),
             challenge3Bar: document.getElementById('challenge3Bar'),
-            challenge3Btn: document.getElementById('challenge3Btn')
+            challenge3Btn: document.getElementById('challenge3Btn'),
+            
+            // User profile modal
+            userProfileModal: document.getElementById('userProfileModal'),
+            closeUserProfileModal: document.getElementById('closeUserProfileModal'),
+            userProfileAvatar: document.getElementById('userProfileAvatar'),
+            userProfileName: document.getElementById('userProfileName'),
+            userProfileEmail: document.getElementById('userProfileEmail'),
+            userProfileRole: document.getElementById('userProfileRole'),
+            userPostsCount: document.getElementById('userPostsCount'),
+            userCommentsCount: document.getElementById('userCommentsCount'),
+            userLikesCount: document.getElementById('userLikesCount')
         };
 
         // Initialize
@@ -2127,8 +2300,18 @@
             
             // Challenge buttons
             elements.challenge1Btn.addEventListener('click', () => handleChallengeClick(1));
-            elements.challenge2Btn.addEventListener('click', () => handleChallengeClick(2));
             elements.challenge3Btn.addEventListener('click', () => handleChallengeClick(3));
+            
+            // User profile modal close button
+            elements.closeUserProfileModal.addEventListener('click', () => {
+                elements.userProfileModal.classList.remove('active');
+            });
+            
+            // Close reply button
+            const closeReplyBtn = document.querySelector('.reply-to-close');
+            if (closeReplyBtn) {
+                closeReplyBtn.addEventListener('click', clearReplySetup);
+            }
         }
 
         function setupInteractiveElements() {
@@ -2196,6 +2379,62 @@
                 const closeReplyBtn = e.target.closest('.reply-to-close');
                 if (closeReplyBtn) {
                     clearReplySetup();
+                }
+                
+                // User profile click (avatar or nickname)
+                const userAvatar = e.target.closest('.avatar');
+                const userName = e.target.closest('.post-author');
+                const replyAuthor = e.target.closest('.reply-author');
+                
+                if (userAvatar || userName || replyAuthor) {
+                    const card = userAvatar ? userAvatar.closest('.post-card') : 
+                                  userName ? userName.closest('.post-card') :
+                                  replyAuthor ? replyAuthor.closest('.reply-card') : null;
+                    
+                    if (card) {
+                        let userId = null;
+                        if (userAvatar || userName) {
+                            const postData = JSON.parse(card.dataset.postData || '{}');
+                            userId = postData.authorId;
+                        } else if (replyAuthor) {
+                            const commentData = JSON.parse(card.dataset.commentData || '{}');
+                            userId = commentData.authorId;
+                        }
+                        
+                        if (userId) {
+                            showUserProfile(userId);
+                        }
+                    }
+                }
+                
+                // Delete post button
+                const deletePostBtn = e.target.closest('.delete-btn[data-action="delete-post"]');
+                if (deletePostBtn) {
+                    if (!currentUser) {
+                        showAuthModal();
+                        return;
+                    }
+                    
+                    const postId = deletePostBtn.dataset.post;
+                    if (confirm('Вы уверены, что хотите удалить этот пост?')) {
+                        deletePost(postId);
+                    }
+                }
+                
+                // Delete comment button
+                const deleteCommentBtn = e.target.closest('.delete-btn[data-action="delete-comment"]');
+                if (deleteCommentBtn) {
+                    if (!currentUser) {
+                        showAuthModal();
+                        return;
+                    }
+                    
+                    const postId = deleteCommentBtn.dataset.post;
+                    const commentId = deleteCommentBtn.dataset.comment;
+                    
+                    if (confirm('Вы уверены, что хотите удалить этот комментарий?')) {
+                        deleteComment(postId, commentId);
+                    }
                 }
             });
         }
@@ -2438,7 +2677,9 @@
                     createdAt: serverTimestamp(),
                     email: user.email,
                     avatarUrl: user.photoURL || null,
-                    role: 'user'
+                    role: 'user',
+                    postsCount: 0,
+                    commentsCount: 0
                 });
             }
         }
@@ -2452,6 +2693,60 @@
                 console.error('Error getting profile:', error);
                 return null;
             }
+        }
+
+        async function showUserProfile(userId) {
+            try {
+                const profile = await getUserProfile(userId);
+                if (!profile) {
+                    alert('Профиль пользователя не найден');
+                    return;
+                }
+                
+                elements.userProfileAvatar.src = profile.avatarUrl || getDefaultAvatar(profile.nickname, profile.color);
+                elements.userProfileName.textContent = profile.nickname || 'Аноним';
+                elements.userProfileName.style.color = profile.color || '#1d9bf0';
+                elements.userProfileEmail.textContent = profile.email || 'Скрыт';
+                elements.userProfileRole.textContent = getRoleText(profile.role || 'user');
+                elements.userProfileRole.className = `role-badge role-${profile.role || 'user'}`;
+                
+                // Get user stats
+                const postsCount = profile.postsCount || 0;
+                const commentsCount = profile.commentsCount || 0;
+                const likesCount = await getUserLikesCount(userId);
+                
+                elements.userPostsCount.textContent = postsCount;
+                elements.userCommentsCount.textContent = commentsCount;
+                elements.userLikesCount.textContent = likesCount;
+                
+                elements.userProfileModal.classList.add('active');
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+            }
+        }
+
+        async function getUserLikesCount(userId) {
+            try {
+                const postsQuery = query(
+                    collection(db, 'posts'),
+                    where('likes', 'array-contains', userId)
+                );
+                const querySnapshot = await getDocs(postsQuery);
+                return querySnapshot.size;
+            } catch (error) {
+                console.error('Error getting user likes count:', error);
+                return 0;
+            }
+        }
+
+        function getRoleText(role) {
+            const roleTexts = {
+                'user': 'Пользователь',
+                'team': 'Команда',
+                'moderator': 'Модератор',
+                'admin': 'Администратор'
+            };
+            return roleTexts[role] || 'Пользователь';
         }
 
         async function handleAvatarUpload(e) {
@@ -2712,6 +3007,14 @@
                     }
                 }
                 
+                // Update user's posts count
+                const profileRef = doc(db, 'users', currentUser.uid);
+                await updateDoc(profileRef, {
+                    postsCount: 0,
+                    commentsCount: 0,
+                    updatedAt: serverTimestamp()
+                });
+                
                 showProfileMessage(`Удалено ${deletedCount} постов и комментариев`);
             } catch (error) {
                 console.error('Error deleting posts:', error);
@@ -2817,17 +3120,23 @@
                     updatedAt: serverTimestamp()
                 };
                 
-                // Add reply information if replying
+                // Add parentId if replying to a post
                 if (replyingTo) {
-                    postData.replyTo = replyingTo;
+                    postData.parentId = replyingTo;
+                    
                     // Get the original post to include its content
                     const originalPostRef = doc(db, 'posts', replyingTo);
                     const originalPostSnap = await getDoc(originalPostRef);
                     if (originalPostSnap.exists()) {
                         const originalPost = originalPostSnap.data();
-                        postData.replyToContent = originalPost.content.substring(0, 100) + '...';
-                        postData.replyToAuthor = originalPost.authorNickname;
-                        postData.replyToAuthorId = originalPost.authorId;
+                        postData.originalContent = originalPost.content.substring(0, 100) + '...';
+                        postData.originalAuthor = originalPost.authorNickname;
+                        postData.originalAuthorId = originalPost.authorId;
+                        
+                        // Increment comments count on original post
+                        await updateDoc(originalPostRef, {
+                            commentsCount: increment(1)
+                        });
                     }
                 }
                 
@@ -2848,7 +3157,14 @@
                     postData.popularity = 50;
                 }
                 
-                await addDoc(collection(db, 'posts'), postData);
+                const postRef = await addDoc(collection(db, 'posts'), postData);
+                
+                // Update user's posts count
+                const profileRef = doc(db, 'users', currentUser.uid);
+                await updateDoc(profileRef, {
+                    postsCount: increment(1),
+                    updatedAt: serverTimestamp()
+                });
                 
                 // Clear form
                 if (type === 'honesty') {
@@ -2890,18 +3206,119 @@
             }
         }
 
-        async function updateChallenges(type, isReply = false) {
+        async function deletePost(postId) {
             if (!currentUser) return;
             
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const todayTimestamp = today.getTime();
+            try {
+                // Get post data first
+                const postRef = doc(db, 'posts', postId);
+                const postSnap = await getDoc(postRef);
+                
+                if (!postSnap.exists()) {
+                    alert('Пост не найден');
+                    return;
+                }
+                
+                const postData = postSnap.data();
+                
+                // Check permissions
+                if (postData.authorId !== currentUser.uid && 
+                    userRole !== 'moderator' && 
+                    userRole !== 'admin' && 
+                    userRole !== 'team') {
+                    alert('У вас нет прав для удаления этого поста');
+                    return;
+                }
+                
+                if (confirm('Вы уверены, что хотите удалить этот пост?')) {
+                    // Delete post document
+                    await deleteDoc(postRef);
+                    
+                    // If post has parent, decrement comments count
+                    if (postData.parentId) {
+                        const parentRef = doc(db, 'posts', postData.parentId);
+                        await updateDoc(parentRef, {
+                            commentsCount: increment(-1)
+                        });
+                    }
+                    
+                    // Update user's posts count if they are the author
+                    if (postData.authorId === currentUser.uid) {
+                        const profileRef = doc(db, 'users', currentUser.uid);
+                        await updateDoc(profileRef, {
+                            postsCount: increment(-1),
+                            updatedAt: serverTimestamp()
+                        });
+                    }
+                    
+                    alert('Пост удален');
+                }
+            } catch (error) {
+                console.error('Error deleting post:', error);
+                alert('Ошибка при удалении поста');
+            }
+        }
+
+        async function deleteComment(postId, commentId) {
+            if (!currentUser) return;
+            
+            try {
+                const commentRef = doc(db, 'posts', postId, 'comments', commentId);
+                const commentSnap = await getDoc(commentRef);
+                
+                if (!commentSnap.exists()) {
+                    alert('Комментарий не найден');
+                    return;
+                }
+                
+                const commentData = commentSnap.data();
+                
+                // Check permissions
+                if (commentData.authorId !== currentUser.uid && 
+                    userRole !== 'moderator' && 
+                    userRole !== 'admin' && 
+                    userRole !== 'team') {
+                    alert('У вас нет прав для удаления этого комментария');
+                    return;
+                }
+                
+                if (confirm('Вы уверены, что хотите удалить этот комментарий?')) {
+                    // Delete comment document
+                    await deleteDoc(commentRef);
+                    
+                    // Decrement comments count on parent post
+                    const postRef = doc(db, 'posts', postId);
+                    await updateDoc(postRef, {
+                        commentsCount: increment(-1)
+                    });
+                    
+                    // Update user's comments count if they are the author
+                    if (commentData.authorId === currentUser.uid) {
+                        const profileRef = doc(db, 'users', currentUser.uid);
+                        await updateDoc(profileRef, {
+                            commentsCount: increment(-1),
+                            updatedAt: serverTimestamp()
+                        });
+                    }
+                    
+                    alert('Комментарий удален');
+                }
+            } catch (error) {
+                console.error('Error deleting comment:', error);
+                alert('Ошибка при удалении комментария');
+            }
+        }
+
+        async function updateChallenges(type, isReply = false) {
+            if (!currentUser) return;
             
             // Challenge 1: 3 gratitude posts
             if (type === 'regular') {
                 // Check if post contains gratitude keywords
-                const gratitudeKeywords = ['спасибо', 'благодарен', 'благодарна', 'рад', 'рада', 'счастлив', 'счастлива'];
-                const content = elements.postInput.value.toLowerCase();
+                const gratitudeKeywords = ['спасибо', 'благодарен', 'благодарна', 'рад', 'рада', 'счастлив', 'счастлива', 'благодарю'];
+                const content = type === 'honesty' ? elements.honestyPostInput.value.toLowerCase() :
+                              type === 'thought' ? elements.thoughtInput.value.toLowerCase() :
+                              elements.postInput.value.toLowerCase();
                 
                 const isGratitude = gratitudeKeywords.some(keyword => content.includes(keyword));
                 
@@ -2940,9 +3357,7 @@
             
             const percentage = (data.current / data.total) * 100;
             
-            progressElement.textContent = challengeNum === 2 ? 
-                `${data.current}/${data.total} дней` : 
-                `${data.current}/${data.total}`;
+            progressElement.textContent = `${data.current}/${data.total}`;
             barElement.style.width = `${percentage}%`;
             
             if (data.completed) {
@@ -2994,7 +3409,6 @@
                     
                     // Update UI
                     updateChallengeUI(1);
-                    updateChallengeUI(2);
                     updateChallengeUI(3);
                 }
             } catch (error) {
@@ -3013,19 +3427,6 @@
                     // Challenge 1: Add gratitude post
                     switchPage('compose');
                     break;
-                case 2:
-                    // Challenge 2: Mark no complaints day
-                    if (!challengeData.challenge2.completed) {
-                        challengeData.challenge2.current++;
-                        updateChallengeUI(2);
-                        
-                        if (challengeData.challenge2.current >= challengeData.challenge2.total) {
-                            challengeData.challenge2.completed = true;
-                            completeChallenge(2);
-                        }
-                        saveChallengeProgress();
-                    }
-                    break;
                 case 3:
                     // Challenge 3: Reply to post
                     switchSection('main');
@@ -3035,7 +3436,7 @@
 
         // Feed functions
         function setupFeedListeners() {
-            // Main feed
+            // Main feed - only posts without parentId
             const mainQuery = query(
                 collection(db, 'posts'),
                 orderBy('createdAt', 'desc')
@@ -3158,15 +3559,23 @@
             const role = post.authorRole || 'user';
             const roleBadge = getRoleBadgeHTML(role);
             
-            // Reply info if this is a reply
-            let replyInfo = '';
-            if (post.replyTo) {
-                replyInfo = `
-                    <div class="reply-to-post" style="margin-bottom: 12px;">
-                        <div class="reply-to-header">
-                            <span class="reply-to-author">Ответ для: ${post.replyToAuthor || 'Аноним'}</span>
+            // Check if current user can delete this post
+            const canDelete = currentUser && (
+                post.authorId === currentUser.uid || 
+                userRole === 'moderator' || 
+                userRole === 'admin' || 
+                userRole === 'team'
+            );
+            
+            // Original post quote if this is a reply
+            let originalPostQuote = '';
+            if (post.parentId && post.originalContent) {
+                originalPostQuote = `
+                    <div class="original-post-quote">
+                        <div class="original-post-quote-header">
+                            <span class="original-post-author">Ответ для: ${post.originalAuthor || 'Аноним'}</span>
                         </div>
-                        <div class="reply-to-content">${post.replyToContent || '...'}</div>
+                        <div class="original-post-content">${post.originalContent || '...'}</div>
                     </div>
                 `;
             }
@@ -3185,7 +3594,7 @@
                     </div>
                 </div>
                 
-                ${replyInfo}
+                ${originalPostQuote}
                 
                 <div class="post-content">${escapeHtml(post.content)}</div>
                 
@@ -3247,13 +3656,176 @@
                     <button class="action-btn btn-tiny" data-action="reply" data-post="${postId}" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
                         <i class="fas fa-reply"></i>
                     </button>
-                    <button class="action-btn" data-action="share" data-post="${postId}">
-                        <i class="far fa-share-square"></i>
+                    <button class="action-btn btn-tiny" data-action="comment" data-post="${postId}" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
+                        <i class="fas fa-comment comment-icon"></i>
+                        <span>${post.commentsCount || 0}</span>
                     </button>
+                    ${canDelete ? `
+                    <button class="delete-btn" data-action="delete-post" data-post="${postId}" title="Удалить пост">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    ` : ''}
+                </div>
+                
+                <div class="replies-section" id="replies-${postId}">
+                    <div class="reply-composer" id="reply-composer-${postId}">
+                        <img src="${userProfile?.avatarUrl || getDefaultAvatar(userProfile?.nickname, userProfile?.color)}" class="avatar" alt="Аватар" style="width: 36px; height: 36px;">
+                        <textarea class="reply-input" placeholder="Напишите комментарий..." maxlength="300"></textarea>
+                        <button class="btn btn-reply btn-primary" onclick="submitComment('${postId}')">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <div class="replies-list" id="replies-list-${postId}"></div>
                 </div>
             `;
             
+            // Load comments for this post
+            loadComments(postId);
+            
             return postElement;
+        }
+
+        async function loadComments(postId) {
+            try {
+                const commentsQuery = query(
+                    collection(db, 'posts', postId, 'comments'),
+                    orderBy('createdAt', 'asc')
+                );
+                
+                const commentsList = document.getElementById(`replies-list-${postId}`);
+                if (!commentsList) return;
+                
+                onSnapshot(commentsQuery, (snapshot) => {
+                    commentsList.innerHTML = '';
+                    
+                    if (snapshot.empty) {
+                        commentsList.innerHTML = `
+                            <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
+                                <i class="fas fa-comment-slash"></i>
+                                <p style="margin-top: 8px;">Пока нет комментариев</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    snapshot.forEach((doc) => {
+                        const comment = doc.data();
+                        const commentId = doc.id;
+                        const commentElement = createCommentElement(postId, commentId, comment);
+                        commentsList.appendChild(commentElement);
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading comments:', error);
+            }
+        }
+
+        function createCommentElement(postId, commentId, comment) {
+            const commentElement = document.createElement('div');
+            commentElement.className = 'reply-card';
+            commentElement.dataset.commentData = JSON.stringify(comment);
+            
+            const timeAgo = formatTimeAgo(comment.createdAt?.toDate());
+            const avatarUrl = comment.authorAvatarUrl || getDefaultAvatar(comment.authorNickname, comment.authorColor);
+            
+            // Check if current user can delete this comment
+            const canDelete = currentUser && (
+                comment.authorId === currentUser.uid || 
+                userRole === 'moderator' || 
+                userRole === 'admin' || 
+                userRole === 'team'
+            );
+            
+            commentElement.innerHTML = `
+                <div class="reply-header">
+                    <img src="${avatarUrl}" class="avatar" alt="Аватар" style="width: 30px; height: 30px; cursor: pointer;">
+                    <div class="reply-author" style="color: ${comment.authorColor || '#1d9bf0'}; cursor: pointer;">
+                        ${comment.authorNickname || 'Аноним'}
+                    </div>
+                    <div class="reply-time">${timeAgo}</div>
+                    ${canDelete ? `
+                    <button class="reply-delete-btn delete-btn" data-action="delete-comment" data-post="${postId}" data-comment="${commentId}" title="Удалить комментарий">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    ` : ''}
+                </div>
+                <div class="reply-content">${escapeHtml(comment.content)}</div>
+            `;
+            
+            return commentElement;
+        }
+
+        async function submitComment(postId) {
+            if (!currentUser) {
+                showAuthModal();
+                return;
+            }
+            
+            const replyInput = document.querySelector(`#replies-${postId} .reply-input`);
+            const content = replyInput.value.trim();
+            
+            if (!content) {
+                alert('Введите текст комментария');
+                return;
+            }
+            
+            if (content.length > 300) {
+                alert('Комментарий не должен превышать 300 символов');
+                return;
+            }
+            
+            try {
+                const commentData = {
+                    content: content,
+                    authorId: currentUser.uid,
+                    authorNickname: userProfile?.nickname || 'Аноним',
+                    authorColor: userProfile?.color || '#1d9bf0',
+                    authorAvatarUrl: userProfile?.avatarUrl || null,
+                    authorRole: userRole || 'user',
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                };
+                
+                // Add comment to subcollection
+                await addDoc(collection(db, 'posts', postId, 'comments'), commentData);
+                
+                // Update comments count on post
+                const postRef = doc(db, 'posts', postId);
+                await updateDoc(postRef, {
+                    commentsCount: increment(1)
+                });
+                
+                // Update user's comments count
+                const profileRef = doc(db, 'users', currentUser.uid);
+                await updateDoc(profileRef, {
+                    commentsCount: increment(1),
+                    updatedAt: serverTimestamp()
+                });
+                
+                // Clear input
+                replyInput.value = '';
+                
+                // Update challenge 3 if this is a reply to someone else's post
+                const postSnap = await getDoc(postRef);
+                if (postSnap.exists()) {
+                    const postData = postSnap.data();
+                    if (postData.authorId !== currentUser.uid && !challengeData.challenge3.completed) {
+                        challengeData.challenge3.current++;
+                        updateChallengeUI(3);
+                        
+                        if (challengeData.challenge3.current >= challengeData.challenge3.total) {
+                            challengeData.challenge3.completed = true;
+                            completeChallenge(3);
+                        }
+                        
+                        await saveChallengeProgress();
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error submitting comment:', error);
+                alert('Ошибка при отправке комментария');
+            }
         }
 
         function getRoleBadgeHTML(role) {
@@ -3463,6 +4035,7 @@
             // Close modals
             elements.authModal.classList.remove('active');
             elements.profileModal.classList.remove('active');
+            elements.userProfileModal.classList.remove('active');
             
             // Reset navigation
             switchPage('home');
@@ -3483,7 +4056,6 @@
             userRole = 'user';
             challengeData = {
                 challenge1: { current: 0, total: 3, type: 'gratitude', completed: false },
-                challenge2: { current: 0, total: 7, type: 'noComplaints', completed: false },
                 challenge3: { current: 0, total: 5, type: 'helpOthers', completed: false }
             };
         }
@@ -3561,8 +4133,9 @@
             return div.innerHTML.replace(/\n/g, '<br>');
         }
         
-        // Make clearReplySetup available globally
+        // Make functions available globally
         window.clearReplySetup = clearReplySetup;
+        window.submitComment = submitComment;
     </script>
 </body>
 </html>
