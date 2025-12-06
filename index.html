@@ -3,202 +3,564 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>True Talk X — Full Twitter-like MVP</title>
+<title>Настройки профиля — True Talk X</title>
 <style>
-:root{--bg:#0b0c10;--card:#151922;--text:#e6edf3;--muted:#9aa3ad;--accent:#1d9bf0}
-body{margin:0;font-family:system-ui,Arial;background:var(--bg);color:var(--text)}
-header{padding:12px 16px;border-bottom:1px solid #222;display:flex;justify-content:space-between;align-items:center}
-.logo{font-weight:900;font-size:20px}
-button{background:var(--accent);border:none;border-radius:20px;padding:6px 14px;color:#fff;cursor:pointer}
-button.outline{background:none;border:1px solid #333}
-main{max-width:720px;margin:auto}
-.composer{display:flex;gap:10px;padding:10px;border-bottom:1px solid #222}
-.avatar{width:44px;height:44px;border-radius:999px;background:#555;display:flex;align-items:center;justify-content:center;font-weight:800}
-textarea{flex:1;resize:none;background:none;color:white;border:none;font-size:16px;outline:none}
-.post{border-bottom:1px solid #222;padding:10px;display:flex;gap:10px}
-.post-body{flex:1}
-.nick{font-weight:700}
-.small{color:var(--muted);font-size:12px}
-.actions{display:flex;gap:16px;margin-top:6px}
-.reply-box{margin-top:8px;display:flex;gap:6px}
-.reply-box textarea{font-size:14px}
-.reply{margin-left:40px;border-left:2px solid #222;padding-left:8px;margin-top:8px}
-.like{cursor:pointer;color:var(--muted)}
-.like.active{color:#e11d48}
-@media(max-width:600px){main{padding:0 6px}}
+/* CSS Variables based on existing style and new requirements */
+:root {
+    --bg: #0b0c10;
+    --card: #151922;
+    --card-dark: #1f232b; /* Slightly darker card for inputs/secondary elements */
+    --text: #e6edf3;
+    --muted: #9aa3ad;
+    --accent: #1d9bf0;
+    --danger: #e11d48; /* Red for danger actions */
+    --radius: 12px;
+}
+
+/* Reset and base styles from the original project */
+body {
+    margin: 0;
+    font-family: system-ui, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+}
+
+/* Base button style (for general use, though main CTA is restyled) */
+button {
+    background: var(--accent);
+    border: none;
+    border-radius: 20px;
+    padding: 12px 18px; /* Larger padding for mobile-friendly buttons */
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    width: 100%; /* Full width on mobile */
+    box-sizing: border-box;
+}
+
+button:hover {
+    background: #1a8cd8; /* Slightly darker blue on hover */
+}
+
+button.outline {
+    background: none;
+    border: 1px solid var(--muted);
+    color: var(--text);
+}
+
+/* --- Layout and Structure --- */
+header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--card);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-weight: 900;
+    font-size: 20px;
+    color: var(--accent);
+}
+
+main {
+    padding: 16px; /* Initial padding for mobile */
+    display: flex;
+    justify-content: center;
+}
+
+.settings-card {
+    width: 100%;
+    max-width: 450px; /* Desktop max-width */
+    background: var(--card);
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    font-size: 24px;
+    font-weight: 800;
+    margin-top: 0;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--card-dark);
+    padding-bottom: 12px;
+}
+
+/* --- Form Elements and Controls --- */
+.form-group {
+    margin-bottom: 24px;
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+input[type="text"], input[type="file"], input[type="color"] {
+    width: 100%;
+    padding: 12px;
+    background: var(--card-dark);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus, input[type="color"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(29, 155, 240, 0.5); /* Focus glow */
+}
+
+/* File input customization */
+input[type="file"] {
+    display: none; /* Hide default file input */
+}
+
+.file-upload-label {
+    display: block;
+    padding: 12px;
+    background: var(--card-dark);
+    border: 2px dashed #444;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.file-upload-label:hover {
+    background: #252a33;
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Nickname Preview */
+.nickname-preview-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--card-dark);
+    border-radius: 8px;
+    margin-top: 8px;
+    min-height: 48px;
+}
+
+.avatar-preview {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 18px;
+    flex-shrink: 0;
+    overflow: hidden; /* For uploaded image */
+    border: 2px solid var(--card); /* Border to stand out from dark background */
+}
+
+.avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.nickname-display {
+    font-weight: 700;
+    font-size: 18px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Color Picker */
+.color-picker-flex {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.hex-input-wrap {
+    flex-grow: 1;
+}
+
+input[type="color"] {
+    padding: 4px; /* Smaller padding for color input */
+    height: 44px;
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    border: 1px solid #333;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 4px;
+}
+
+.color-presets {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.color-preset-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--card);
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.1s;
+    background: #000; /* Will be overridden by inline style */
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.color-preset-btn:hover {
+    transform: scale(1.05);
+}
+
+.color-preset-btn.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--card-dark);
+}
+
+/* --- Action Buttons --- */
+.action-buttons {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#deletePostsBtn {
+    background: var(--danger);
+}
+
+#deletePostsBtn:hover {
+    background: #c3173d;
+}
+
+/* --- Modal Window (for confirmation) --- */
+.modal-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    padding: 20px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: var(--card);
+    padding: 30px;
+    border-radius: var(--radius);
+    max-width: 350px;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.modal-content h3 {
+    color: var(--danger);
+    margin-top: 0;
+    font-size: 20px;
+}
+
+.modal-content p {
+    color: var(--muted);
+    margin-bottom: 20px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.modal-actions button {
+    flex: 1;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+#confirmDelete {
+    background: var(--danger);
+}
+
+#cancelDelete {
+    background: var(--card-dark);
+    color: var(--text);
+}
+#cancelDelete:hover {
+    background: #252a33;
+}
+
+
+/* Desktop Adaptations */
+@media (min-width: 600px) {
+    main {
+        padding: 30px 16px;
+    }
+
+    /* Override mobile full width for better desktop experience */
+    button {
+        width: auto;
+        padding: 12px 24px;
+        min-width: 150px;
+    }
+
+    .action-buttons {
+        flex-direction: row; /* Horizontal stack on desktop */
+        justify-content: flex-end;
+    }
+    
+    /* Make the save button wider and primary */
+    #saveProfileBtn {
+        flex-grow: 1;
+    }
+
+    /* Nickname input and preview layout */
+    .form-group.nickname-section {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .nickname-preview-group {
+        margin-top: 0;
+    }
+}
+
+/* Utility to match the original project's buttons */
+.header-button-group button {
+    padding: 6px 14px;
+    border-radius: 20px;
+    width: auto;
+    font-size: 14px;
+}
 </style>
 </head>
 <body>
 <header>
-<div class="logo">True Talk X</div>
-<div>
-<button id="loginBtn">Войти</button>
-<button id="logoutBtn" class="outline" style="display:none">Выйти</button>
-</div>
+    <a href="/" style="text-decoration:none;"><div class="logo">True Talk X</div></a>
+    <div class="header-button-group">
+        <button id="loginBtn" style="display:none">Войти</button>
+        <button id="logoutBtn" class="outline">Выйти</button>
+    </div>
 </header>
 <main>
-<div class="composer" id="composer" style="display:none">
-<div class="avatar" id="meAvatar">?</div>
-<textarea id="postText" placeholder="Что происходит?" maxlength="280"></textarea>
-<button id="sendPost">Пост</button>
-</div>
-<div id="feed"></div>
+    <div class="settings-card">
+        <h1>Настройки профиля</h1>
+
+        <div class="form-group nickname-section">
+            <label for="nicknameInput">Никнейм (макс. 16 символов)</label>
+            <input type="text" id="nicknameInput" placeholder="Введите новый никнейм" maxlength="16">
+            <div class="nickname-preview-group">
+                <div class="avatar-preview" id="avatarPreview">?</div>
+                <div class="nickname-display" id="nicknameDisplay" style="color: var(--accent);">AnonNick...</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="colorInput">Цвет ника (HEX)</label>
+            <div class="color-picker-flex">
+                <div class="hex-input-wrap">
+                    <input type="text" id="colorHexInput" value="#1d9bf0" maxlength="7">
+                </div>
+                <input type="color" id="colorInput" value="#1d9bf0" style="display:none;">
+                <button type="button" onclick="document.getElementById('colorInput').click();" style="width: auto; min-width: 44px; height: 44px; padding: 0; border-radius: 8px; background: none; border: 1px solid #333;"><div id="colorSwatch" style="width: 100%; height: 100%; border-radius: 7px; background-color: #1d9bf0;"></div></button>
+            </div>
+            
+            <div class="color-presets">
+                <label style="margin-bottom: 0;">Пресеты:</label>
+                <button type="button" class="color-preset-btn active" data-color="#1d9bf0" style="background-color: #1d9bf0;"></button>
+                <button type="button" class="color-preset-btn" data-color="#22c55e" style="background-color: #22c55e;"></button>
+                <button type="button" class="color-preset-btn" data-color="#a855f7" style="background-color: #a855f7;"></button>
+                <button type="button" class="color-preset-btn" data-color="#f97316" style="background-color: #f97316;"></button>
+                <button type="button" class="color-preset-btn" data-color="#e11d48" style="background-color: #e11d48;"></button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Аватарка</label>
+            <input type="file" id="avatarUpload" accept="image/*">
+            <label for="avatarUpload" class="file-upload-label">
+                Нажмите, чтобы загрузить изображение (JPEG, PNG)
+            </label>
+        </div>
+
+        <div class="action-buttons">
+            <button type="button" id="saveProfileBtn">Сохранить изменения</button>
+        </div>
+        
+        <hr style="border: none; border-top: 1px solid var(--card-dark); margin: 32px 0;">
+
+        <div class="form-group">
+            <label style="color: var(--danger);">Опасная зона</label>
+            <button type="button" id="deletePostsBtn" style="background-color: var(--danger);">Удалить мои посты</button>
+        </div>
+
+    </div>
 </main>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-import { initializeFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, getDoc, setDoc, serverTimestamp, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-content">
+        <h3>Подтверждение удаления</h3>
+        <p>Вы уверены, что хотите **навсегда** удалить все ваши посты? Это действие необратимо.</p>
+        <div class="modal-actions">
+            <button id="cancelDelete" type="button">Отмена</button>
+            <button id="confirmDelete" type="button">Удалить все</button>
+        </div>
+    </div>
+</div>
 
-const firebaseConfig={apiKey:"AIzaSyDOaDVzzPjyYm4HWMND2XYWjLy_h4wty5s",authDomain:"neuron-ecosystem-2025.firebaseapp.com",projectId:"neuron-ecosystem-2025",storageBucket:"neuron-ecosystem-2025.firebasestorage.app",messagingSenderId:"589834476565",appId:"1:589834476565:web:f657c13be1cbf8f3dd421c"};
-const app=initializeApp(firebaseConfig);
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const nicknameInput = document.getElementById('nicknameInput');
+    const colorInput = document.getElementById('colorInput');
+    const colorHexInput = document.getElementById('colorHexInput');
+    const colorSwatch = document.getElementById('colorSwatch');
+    const nicknameDisplay = document.getElementById('nicknameDisplay');
+    const avatarPreview = document.getElementById('avatarPreview');
+    const avatarUpload = document.getElementById('avatarUpload');
+    const colorPresets = document.querySelectorAll('.color-preset-btn');
+    const deletePostsBtn = document.getElementById('deletePostsBtn');
+    const deleteModal = document.getElementById('deleteModal');
+    const cancelDelete = document.getElementById('cancelDelete');
+    const confirmDelete = document.getElementById('confirmDelete');
 
-// Long polling for restricted networks
-const db = initializeFirestore(app,{experimentalForceLongPolling:true,useFetchStreams:false});
+    // Initial state simulation (replace with actual user data in a real app)
+    const initialNickname = 'MyAnonNick';
+    const initialColor = '#1d9bf0';
+    nicknameInput.value = initialNickname;
+    colorInput.value = initialColor;
+    colorHexInput.value = initialColor;
+    nicknameDisplay.textContent = initialNickname;
+    nicknameDisplay.style.color = initialColor;
+    colorSwatch.style.backgroundColor = initialColor;
+    avatarPreview.textContent = initialNickname.slice(0, 2).toUpperCase();
 
-const auth=getAuth(app);
+    // --- Nickname and Color Real-time Preview ---
 
-const loginBtn=document.getElementById('loginBtn');
-const logoutBtn=document.getElementById('logoutBtn');
-const composer=document.getElementById('composer');
-const postText=document.getElementById('postText');
-const sendPost=document.getElementById('sendPost');
-const feed=document.getElementById('feed');
-const meAvatar=document.getElementById('meAvatar');
+    function updatePreview(nick, color) {
+        // Update Nickname Display
+        nicknameDisplay.textContent = nick || 'AnonNick...';
+        nicknameDisplay.style.color = color;
+        
+        // Update Avatar Text
+        avatarPreview.textContent = nick ? nick.slice(0, 2).toUpperCase() : '?';
+        // Note: Avatar background color logic would usually be complex (hashed by UID)
+    }
 
-let currentUser=null;
+    nicknameInput.addEventListener('input', (e) => {
+        updatePreview(e.target.value, colorHexInput.value);
+    });
 
-function randColor(){return ['#1d9bf0','#22c55e','#a855f7','#f97316','#e11d48'][Math.floor(Math.random()*5)]}
+    colorInput.addEventListener('input', (e) => {
+        const newColor = e.target.value;
+        colorHexInput.value = newColor;
+        colorSwatch.style.backgroundColor = newColor;
+        updatePreview(nicknameInput.value, newColor);
+    });
+    
+    colorHexInput.addEventListener('input', (e) => {
+        let newColor = e.target.value;
+        // Simple regex check for valid hex
+        if(/^#[0-9A-F]{6}$/i.test(newColor)) {
+            colorInput.value = newColor;
+            colorSwatch.style.backgroundColor = newColor;
+            updatePreview(nicknameInput.value, newColor);
+        }
+        // Basic fallback for quick typing (visual update on valid input)
+        colorHexInput.style.borderColor = /^#[0-9A-F]{6}$/i.test(newColor) ? 'transparent' : 'var(--danger)';
+    });
 
-async function getProfile(uid){
- const ref=doc(db,'users',uid);
- const s=await getDoc(ref);
- if(s.exists()) return s.data();
- const data={nick:'anon'+uid.slice(0,4),color:randColor()};
- await setDoc(ref,data);
- return data;
-}
+    colorPresets.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const newColor = e.target.dataset.color;
+            colorInput.value = newColor;
+            colorHexInput.value = newColor;
+            colorSwatch.style.backgroundColor = newColor;
+            updatePreview(nicknameInput.value, newColor);
+            
+            // Set active class
+            colorPresets.forEach(p => p.classList.remove('active'));
+            e.target.classList.add('active');
+        });
+    });
 
-loginBtn.onclick=()=>signInWithPopup(auth,new GoogleAuthProvider());
-logoutBtn.onclick=()=>signOut(auth);
+    // --- Avatar Preview ---
+    avatarUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                // Create an image element and replace the text content
+                const img = document.createElement('img');
+                img.src = event.target.result;
+                img.alt = 'User Avatar';
+                avatarPreview.innerHTML = '';
+                avatarPreview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 
-sendPost.onclick=async()=>{
- if(!postText.value.trim()) return;
- const u=await getProfile(currentUser.uid);
- await addDoc(collection(db,'posts'),{
-  text:postText.value.trim(),
-  authorId:currentUser.uid,
-  authorNick:u.nick,
-  authorColor:u.color,
-  likes:[],
-  likesCount:0,
-  createdAt:serverTimestamp()
- });
- postText.value='';
-}
+    // --- Modal Logic ---
+    deletePostsBtn.addEventListener('click', () => {
+        deleteModal.style.display = 'flex';
+    });
 
-onAuthStateChanged(auth,async user=>{
- currentUser=user;
- if(user){
-  loginBtn.style.display='none';
-  logoutBtn.style.display='inline-block';
-  composer.style.display='flex';
-  const u=await getProfile(user.uid);
-  meAvatar.textContent=u.nick.slice(0,2).toUpperCase();
-  meAvatar.style.background=u.color;
- }else{
-  composer.style.display='none';
-  loginBtn.style.display='inline-block';
-  logoutBtn.style.display='none';
- }
+    cancelDelete.addEventListener('click', () => {
+        deleteModal.style.display = 'none';
+    });
+
+    // Handle modal closure by clicking outside (optional)
+    deleteModal.addEventListener('click', (e) => {
+        if (e.target === deleteModal) {
+            deleteModal.style.display = 'none';
+        }
+    });
+
+    // Save button click (placeholder)
+    document.getElementById('saveProfileBtn').addEventListener('click', () => {
+        alert('Изменения профиля сохранены (имитация).');
+    });
+
+    // Confirm Delete button click (placeholder)
+    confirmDelete.addEventListener('click', () => {
+        alert('Все посты удалены (имитация).');
+        deleteModal.style.display = 'none';
+    });
 });
-
-onSnapshot(query(collection(db,'posts'),orderBy('createdAt','desc')),snap=>{
- feed.innerHTML='';
- snap.forEach(d=>renderPost(d.id,d.data()))
-});
-
-function renderPost(id,p){
- const root=document.createElement('div');
- root.className='post';
-
- const avatar=document.createElement('div');
- avatar.className='avatar';
- avatar.textContent=p.authorNick.slice(0,2).toUpperCase();
- avatar.style.background=p.authorColor;
-
- const body=document.createElement('div');
- body.className='post-body';
-
- const likeClass = p.likes?.includes(currentUser?.uid) ? 'like active':'like';
-
- body.innerHTML=`<div class='nick' style='color:${p.authorColor}'>${p.authorNick}</div>
- <div>${p.text}</div>
- <div class='actions'>
-  <span class='${likeClass}' data-like="${id}">❤ ${p.likesCount||0}</span>
-  <span data-reply="${id}">💬 Ответить</span>
- </div>
- <div class='reply-box' style='display:none'>
-  <textarea placeholder='Ответ...'></textarea>
-  <button>↩</button>
- </div>
- <div class='replies'></div>`;
-
- body.querySelector('[data-like]').onclick=()=>toggleLike(id);
-
- const rToggle=body.querySelector('[data-reply]');
- const rBox=body.querySelector('.reply-box');
- rToggle.onclick=()=>rBox.style.display=rBox.style.display==='none'?'flex':'none';
-
- const sendReply=rBox.querySelector('button');
- sendReply.onclick=()=>sendReplyToPost(id,rBox);
-
- root.append(avatar,body);
- feed.appendChild(root);
-
- loadReplies(id, body.querySelector('.replies'));  
-}
-
-async function toggleLike(postId){
- if(!currentUser) return alert('Нужен вход');
- const ref=doc(db,'posts',postId);
- const p=await getDoc(ref);
- const likes=p.data().likes || [];
- const uid=currentUser.uid;
- if(likes.includes(uid)){
-  await updateDoc(ref,{likes:arrayRemove(uid),likesCount:(p.data().likesCount||1)-1});
- }else{
-  await updateDoc(ref,{likes:arrayUnion(uid),likesCount:(p.data().likesCount||0)+1});
- }
-}
-
-async function sendReplyToPost(postId,box){
- if(!currentUser) return alert('Войдите');
- const ta=box.querySelector('textarea');
- if(!ta.value.trim())return;
- const u=await getProfile(currentUser.uid);
- await addDoc(collection(db,'posts',postId,'comments'),{
-  text:ta.value.trim(),
-  authorId:currentUser.uid,
-  authorNick:u.nick,
-  authorColor:u.color,
-  createdAt:serverTimestamp()
- });
- ta.value='';
-}
-
-function loadReplies(postId,root){
- onSnapshot(query(collection(db,'posts',postId,'comments'),orderBy('createdAt','asc')),snap=>{
-  root.innerHTML='';
-  snap.forEach(d=>{
-    const r=d.data();
-    const div=document.createElement('div');
-    div.className='reply';
-    div.innerHTML=`<span style='color:${r.authorColor};font-weight:700'>${r.authorNick}</span><div>${r.text}</div>`;
-    root.appendChild(div);
-  })
- })
-}
 </script>
 </body>
 </html>
