@@ -561,7 +561,7 @@
             color: var(--text-primary);
             font-size: 14px;
             resize: none;
-            min-height: 60px;
+            min-height: 40px;
             max-height: 150px;
             font-family: inherit;
             line-height: 1.5;
@@ -669,7 +669,7 @@
             font-weight: 600;
         }
 
-        /* Рейтинг честности - ОБНОВЛЁННЫЙ */
+        /* Рейтинг честности */
         .honesty-buttons {
             display: flex;
             gap: 10px;
@@ -772,7 +772,7 @@
             50% { opacity: 1; }
         }
 
-        /* Мысль дня - ОБНОВЛЁННЫЙ */
+        /* Мысль дня */
         .thought-of-day {
             background-color: var(--bg-card);
             border-radius: var(--radius-lg);
@@ -885,7 +885,7 @@
             font-size: 13px;
         }
 
-        /* Микрочелленджи - ОБНОВЛЁННЫЙ */
+        /* Микрочелленджи */
         .challenge-card {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
@@ -1099,6 +1099,39 @@
 
         .section-content.active {
             display: block;
+        }
+
+        /* Ответ на пост */
+        .reply-to-post {
+            background-color: var(--bg-input);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin-bottom: 12px;
+            border-left: 3px solid var(--accent-blue);
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .reply-to-post-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .reply-to-post-author {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .reply-to-post-content {
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         /* Анимации */
@@ -1348,6 +1381,14 @@
             color: var(--text-secondary);
             margin-bottom: 16px;
         }
+
+        /* Reply button fix */
+        .reply-btn-fixed {
+            padding: 8px 12px !important;
+            min-width: 70px;
+            height: 40px;
+            align-self: flex-end;
+        }
     </style>
 </head>
 <body>
@@ -1448,97 +1489,10 @@
                     </div>
 
                     <div id="honestyFeed" class="feed">
-                        <!-- Пример поста с рейтингом честности -->
-                        <div class="post-card high-rated">
-                            <div class="post-header">
-                                <div class="avatar" style="background: #FF5AAC;">АТ</div>
-                                <div>
-                                    <div class="post-author" style="color: #FF5AAC">Анонимный_Тигр</div>
-                                    <div class="post-time">2 часа назад</div>
-                                </div>
-                            </div>
-                            
-                            <div class="post-content">
-                                "Работа из дома повышает продуктивность на 40%"
-                            </div>
-                            
-                            <div class="honesty-buttons">
-                                <button class="honesty-btn truth" data-post="1">
-                                    ✓ Честно <span class="count">168</span>
-                                </button>
-                                <button class="honesty-btn lie" data-post="1">
-                                    ✗ Не честно <span class="count">56</span>
-                                </button>
-                            </div>
-                            
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 75%; background: var(--accent-green);"></div>
-                            </div>
-                            
-                            <div class="honesty-stats">
-                                <span>75% считают честным</span>
-                                <span>224 голоса</span>
-                            </div>
-                            
-                            <div class="post-actions">
-                                <button class="action-btn" data-action="like">
-                                    <i class="far fa-heart"></i>
-                                    <span>42</span>
-                                </button>
-                                <button class="action-btn" data-action="reply">
-                                    <i class="far fa-comment"></i>
-                                    <span>18</span>
-                                </button>
-                                <button class="action-btn" data-action="share">
-                                    <i class="far fa-share-square"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="post-card">
-                            <div class="post-header">
-                                <div class="avatar" style="background: #00B4D8;">МР</div>
-                                <div>
-                                    <div class="post-author" style="color: #00B4D8;">Морской_Рассвет</div>
-                                    <div class="post-time">5 часов назад</div>
-                                </div>
-                            </div>
-                            
-                            <div class="post-content">
-                                "Кофеин помогает мне думать быстрее и продуктивнее работать"
-                            </div>
-                            
-                            <div class="honesty-buttons">
-                                <button class="honesty-btn truth" data-post="2">
-                                    ✓ Честно <span class="count">89</span>
-                                </button>
-                                <button class="honesty-btn lie" data-post="2">
-                                    ✗ Не честно <span class="count">47</span>
-                                </button>
-                            </div>
-                            
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 65%; background: var(--accent-green);"></div>
-                            </div>
-                            
-                            <div class="honesty-stats">
-                                <span>65% считают честным</span>
-                                <span>136 голосов</span>
-                            </div>
-                            
-                            <div class="post-actions">
-                                <button class="action-btn" data-action="like">
-                                    <i class="far fa-heart"></i>
-                                    <span>28</span>
-                                </button>
-                                <button class="action-btn" data-action="reply">
-                                    <i class="far fa-comment"></i>
-                                    <span>12</span>
-                                </button>
-                                <button class="action-btn" data-action="share">
-                                    <i class="far fa-share-square"></i>
-                                </button>
-                            </div>
+                        <!-- Посты с рейтингом честности будут загружаться через Firebase -->
+                        <div class="loading" id="honestyLoading">
+                            <i class="fas fa-spinner fa-spin fa-2x"></i>
+                            <p style="margin-top: 16px;">Загрузка голосований...</p>
                         </div>
                     </div>
                 </div>
@@ -1561,81 +1515,11 @@
                         </button>
                     </div>
 
-                    <div class="thought-of-day popular">
-                        <div class="thought-text">
-                            "Иногда тишина говорит громче, чем тысяча слов. Особенно когда понимаешь, что нечего сказать."
-                        </div>
-                        
-                        <div class="thought-author">
-                            <i class="fas fa-user-circle"></i>
-                            <span>Скрытый_Мыслитель</span>
-                        </div>
-                        
-                        <div class="thought-progress">
-                            <div class="thought-progress-fill" style="width: 85%;"></div>
-                        </div>
-                        
-                        <div class="thought-stats">
-                            <span>Популярность: 85%</span>
-                            <span>342 реакции</span>
-                        </div>
-                        
-                        <div class="thought-reactions">
-                            <button class="reaction-btn laugh" data-thought="1">
-                                <i class="fas fa-laugh fa-lg"></i>
-                                <span class="reaction-count">142</span>
-                            </button>
-                            <button class="reaction-btn think active" data-thought="1">
-                                <i class="fas fa-brain fa-lg"></i>
-                                <span class="reaction-count">98</span>
-                            </button>
-                            <button class="reaction-btn support" data-thought="1">
-                                <i class="fas fa-heart fa-lg"></i>
-                                <span class="reaction-count">76</span>
-                            </button>
-                            <button class="reaction-btn shock" data-thought="1">
-                                <i class="fas fa-surprise fa-lg"></i>
-                                <span class="reaction-count">26</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="thought-of-day">
-                        <div class="thought-text">
-                            "Настоящая свобода — это когда тебе не нужно ничего доказывать никому, включая самого себя."
-                        </div>
-                        
-                        <div class="thought-author">
-                            <i class="fas fa-user-circle"></i>
-                            <span>Свободный_Дух</span>
-                        </div>
-                        
-                        <div class="thought-progress">
-                            <div class="thought-progress-fill" style="width: 72%;"></div>
-                        </div>
-                        
-                        <div class="thought-stats">
-                            <span>Популярность: 72%</span>
-                            <span>215 реакций</span>
-                        </div>
-                        
-                        <div class="thought-reactions">
-                            <button class="reaction-btn laugh" data-thought="2">
-                                <i class="fas fa-laugh fa-lg"></i>
-                                <span class="reaction-count">89</span>
-                            </button>
-                            <button class="reaction-btn think" data-thought="2">
-                                <i class="fas fa-brain fa-lg"></i>
-                                <span class="reaction-count">67</span>
-                            </button>
-                            <button class="reaction-btn support" data-thought="2">
-                                <i class="fas fa-heart fa-lg"></i>
-                                <span class="reaction-count">42</span>
-                            </button>
-                            <button class="reaction-btn shock" data-thought="2">
-                                <i class="fas fa-surprise fa-lg"></i>
-                                <span class="reaction-count">17</span>
-                            </button>
+                    <div id="thoughtFeed" class="feed">
+                        <!-- Мысли дня будут загружаться через Firebase -->
+                        <div class="loading" id="thoughtLoading">
+                            <i class="fas fa-spinner fa-spin fa-2x"></i>
+                            <p style="margin-top: 16px;">Загрузка мыслей дня...</p>
                         </div>
                     </div>
                 </div>
@@ -1644,7 +1528,7 @@
                 <div id="challengesSection" class="section-content">
                     <h3 style="margin-bottom: 20px;">Сегодняшние челленджи</h3>
                     
-                    <div class="challenge-card active">
+                    <div id="gratitudeChallenge" class="challenge-card active">
                         <div class="challenge-header">
                             <div class="challenge-icon">🏆</div>
                             <div class="challenge-title">3 благодарности</div>
@@ -1660,18 +1544,18 @@
                         <div class="challenge-progress">
                             <div class="progress-text">
                                 <span>Прогресс</span>
-                                <span>2/3</span>
+                                <span id="gratitudeProgress">0/3</span>
                             </div>
                             <div class="progress-bar-large">
-                                <div class="progress-fill-large" style="width: 66%;"></div>
+                                <div class="progress-fill-large" id="gratitudeProgressBar" style="width: 0%;"></div>
                             </div>
                         </div>
                         
                         <div class="challenge-actions">
-                            <button class="challenge-action-btn primary" data-challenge="1">
+                            <button class="challenge-action-btn primary" data-challenge="1" id="gratitudeBtn">
                                 <i class="fas fa-plus"></i> Добавить пост
                             </button>
-                            <button class="challenge-action-btn secondary" data-challenge="1">
+                            <button class="challenge-action-btn secondary" data-challenge="1" onclick="showChallengeInfo(1)">
                                 <i class="fas fa-info-circle"></i> Подробнее
                             </button>
                         </div>
@@ -1683,7 +1567,7 @@
                         </div>
                     </div>
 
-                    <div class="challenge-card">
+                    <div id="noComplaintChallenge" class="challenge-card">
                         <div class="challenge-header">
                             <div class="challenge-icon">🎯</div>
                             <div class="challenge-title">7 дней без жалоб</div>
@@ -1699,29 +1583,29 @@
                         <div class="challenge-progress">
                             <div class="progress-text">
                                 <span>Прогресс</span>
-                                <span>4/7 дней</span>
+                                <span id="noComplaintProgress">0/7 дней</span>
                             </div>
                             <div class="progress-bar-large">
-                                <div class="progress-fill-large" style="width: 57%;"></div>
+                                <div class="progress-fill-large" id="noComplaintProgressBar" style="width: 0%;"></div>
                             </div>
                         </div>
                         
                         <div class="challenge-actions">
-                            <button class="challenge-action-btn primary" data-challenge="2">
+                            <button class="challenge-action-btn primary" data-challenge="2" id="noComplaintBtn">
                                 Отметить день
                             </button>
-                            <button class="challenge-action-btn secondary" data-challenge="2">
+                            <button class="challenge-action-btn secondary" data-challenge="2" onclick="showChallengeInfo(2)">
                                 <i class="fas fa-info-circle"></i> Подробнее
                             </button>
                         </div>
                     </div>
 
-                    <div class="challenge-card completed">
+                    <div id="helpChallenge" class="challenge-card">
                         <div class="challenge-header">
                             <div class="challenge-icon">💬</div>
                             <div class="challenge-title">Помоги 5 людям</div>
-                            <div style="color: var(--accent-green); font-weight: 600; font-size: 14px;">
-                                <i class="fas fa-check-circle"></i> Выполнен
+                            <div style="color: var(--accent-green); font-weight: 600; font-size: 14px;" id="helpChallengeStatus">
+                                Не выполнен
                             </div>
                         </div>
                         
@@ -1732,16 +1616,16 @@
                         <div class="challenge-progress">
                             <div class="progress-text">
                                 <span>Прогресс</span>
-                                <span>5/5</span>
+                                <span id="helpProgress">0/5</span>
                             </div>
                             <div class="progress-bar-large">
-                                <div class="progress-fill-large" style="width: 100%; background: var(--accent-green);"></div>
+                                <div class="progress-fill-large" id="helpProgressBar" style="width: 0%;"></div>
                             </div>
                         </div>
                         
                         <div class="challenge-actions">
-                            <button class="challenge-action-btn secondary" data-challenge="3" style="background: var(--accent-green);">
-                                <i class="fas fa-medal"></i> Челлендж пройден!
+                            <button class="challenge-action-btn secondary" data-challenge="3" id="helpBtn">
+                                <i class="fas fa-comment"></i> Ответить на пост
                             </button>
                         </div>
                     </div>
@@ -1835,6 +1719,7 @@
                 <div>
                     <h3 id="profileNickname" style="margin-bottom: 8px;"></h3>
                     <p style="color: var(--text-secondary); font-size: 14px;">ID: <span id="profileUserId"></span></p>
+                    <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">Email: <span id="profileEmail"></span></p>
                     <div id="currentColorPreview" style="margin-top: 4px; font-size: 12px; color: var(--text-secondary);">
                         Цвет ника: <span id="currentColorText"></span>
                         <div class="profile-color-preview" id="currentColorBox"></div>
@@ -1917,7 +1802,8 @@
             serverTimestamp,
             where,
             getDocs,
-            writeBatch
+            writeBatch,
+            Timestamp
         } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
         import { 
             getStorage,
@@ -1943,6 +1829,13 @@
         let selectedColor = "#1d9bf0";
         let nicknameCheckTimeout = null;
         let currentSection = 'main';
+        let replyingToPost = null; // Для ответов на посты
+        let replyingToComment = null; // Для ответов на комментарии
+        let challenges = {
+            gratitude: { count: 0, completed: false },
+            noComplaint: { count: 0, completed: false },
+            help: { count: 0, completed: false }
+        };
 
         // DOM Elements
         const elements = {
@@ -1975,6 +1868,7 @@
             profileAvatar: document.getElementById('profileAvatar'),
             profileNickname: document.getElementById('profileNickname'),
             profileUserId: document.getElementById('profileUserId'),
+            profileEmail: document.getElementById('profileEmail'),
             nicknameInput: document.getElementById('nicknameInput'),
             nicknameStatus: document.getElementById('nicknameStatus'),
             colorOptions: document.querySelectorAll('.color-option'),
@@ -2008,12 +1902,30 @@
             honestyCharCounter: document.getElementById('honestyCharCounter'),
             honestyPostSubmit: document.getElementById('honestyPostSubmit'),
             honestyFeed: document.getElementById('honestyFeed'),
+            honestyLoading: document.getElementById('honestyLoading'),
             
             // Thought section
             thoughtComposerAvatar: document.getElementById('thoughtComposerAvatar'),
             thoughtInput: document.getElementById('thoughtInput'),
             thoughtCharCounter: document.getElementById('thoughtCharCounter'),
             thoughtSubmit: document.getElementById('thoughtSubmit'),
+            thoughtFeed: document.getElementById('thoughtFeed'),
+            thoughtLoading: document.getElementById('thoughtLoading'),
+            
+            // Challenges
+            gratitudeChallenge: document.getElementById('gratitudeChallenge'),
+            noComplaintChallenge: document.getElementById('noComplaintChallenge'),
+            helpChallenge: document.getElementById('helpChallenge'),
+            gratitudeProgress: document.getElementById('gratitudeProgress'),
+            gratitudeProgressBar: document.getElementById('gratitudeProgressBar'),
+            noComplaintProgress: document.getElementById('noComplaintProgress'),
+            noComplaintProgressBar: document.getElementById('noComplaintProgressBar'),
+            helpProgress: document.getElementById('helpProgress'),
+            helpProgressBar: document.getElementById('helpProgressBar'),
+            helpChallengeStatus: document.getElementById('helpChallengeStatus'),
+            gratitudeBtn: document.getElementById('gratitudeBtn'),
+            noComplaintBtn: document.getElementById('noComplaintBtn'),
+            helpBtn: document.getElementById('helpBtn'),
             
             // Navigation
             navItems: document.querySelectorAll('.nav-item')
@@ -2026,6 +1938,8 @@
             setupEventListeners();
             setupAuthStateListener();
             setupFeedListener();
+            setupHonestyFeedListener();
+            setupThoughtFeedListener();
             setupInteractiveElements();
         }
 
@@ -2118,166 +2032,31 @@
                     });
                 }
             });
+
+            // Challenge buttons
+            elements.gratitudeBtn.addEventListener('click', () => {
+                switchSection('main');
+                elements.postInput.focus();
+                elements.postInput.placeholder = "Напишите, за что вы благодарны сегодня...";
+            });
+
+            elements.noComplaintBtn.addEventListener('click', async () => {
+                if (!currentUser) {
+                    showAuthModal();
+                    return;
+                }
+                
+                await markNoComplaintDay();
+            });
+
+            elements.helpBtn.addEventListener('click', () => {
+                switchSection('main');
+                alert('Ответьте на пост, чтобы помочь кому-то!');
+            });
         }
 
         function setupInteractiveElements() {
-            // Honesty voting buttons
-            document.querySelectorAll('.honesty-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    if (!currentUser) {
-                        showAuthModal();
-                        return;
-                    }
-                    
-                    const postId = this.dataset.post;
-                    const isTruth = this.classList.contains('truth');
-                    
-                    // Visual feedback
-                    this.classList.add('voted');
-                    this.style.transform = 'scale(1.05)';
-                    
-                    // Update counts with animation
-                    const countSpan = this.querySelector('.count');
-                    let currentCount = parseInt(countSpan.textContent);
-                    countSpan.textContent = currentCount + 1;
-                    
-                    // Animate progress bar
-                    const progressFill = this.closest('.post-card').querySelector('.progress-fill');
-                    const stats = this.closest('.post-card').querySelector('.honesty-stats span:first-child');
-                    
-                    if (isTruth) {
-                        // Simulate progress increase
-                        const currentWidth = parseFloat(progressFill.style.width);
-                        const newWidth = Math.min(currentWidth + 2, 100);
-                        progressFill.style.width = newWidth + '%';
-                        
-                        // Update percentage text
-                        const percent = Math.round(newWidth);
-                        stats.textContent = `${percent}% считают честным`;
-                    }
-                    
-                    // Reset animation after delay
-                    setTimeout(() => {
-                        this.style.transform = '';
-                        this.classList.remove('voted');
-                    }, 300);
-                });
-            });
-            
-            // Thought reaction buttons
-            document.querySelectorAll('.reaction-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    if (!currentUser) {
-                        showAuthModal();
-                        return;
-                    }
-                    
-                    const thoughtId = this.dataset.thought;
-                    const isActive = this.classList.contains('active');
-                    
-                    if (!isActive) {
-                        // Remove active class from all buttons in this thought
-                        const thoughtCard = this.closest('.thought-of-day');
-                        thoughtCard.querySelectorAll('.reaction-btn').forEach(b => {
-                            b.classList.remove('active');
-                        });
-                        
-                        // Add active class to clicked button
-                        this.classList.add('active');
-                        
-                        // Update count with animation
-                        const countSpan = this.querySelector('.reaction-count');
-                        let currentCount = parseInt(countSpan.textContent);
-                        countSpan.textContent = currentCount + 1;
-                        countSpan.style.animation = 'none';
-                        setTimeout(() => {
-                            countSpan.style.animation = 'pulse 0.3s';
-                        }, 10);
-                        
-                        // Update progress bar
-                        const progressFill = thoughtCard.querySelector('.thought-progress-fill');
-                        const stats = thoughtCard.querySelector('.thought-stats span:first-child');
-                        
-                        const currentWidth = parseFloat(progressFill.style.width);
-                        const newWidth = Math.min(currentWidth + 3, 100);
-                        progressFill.style.width = newWidth + '%';
-                        
-                        const percent = Math.round(newWidth);
-                        stats.textContent = `Популярность: ${percent}%`;
-                    }
-                });
-            });
-            
-            // Challenge buttons
-            document.querySelectorAll('.challenge-action-btn.primary').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    if (!currentUser) {
-                        showAuthModal();
-                        return;
-                    }
-                    
-                    const challengeId = this.dataset.challenge;
-                    
-                    // For challenge 1 (3 благодарности)
-                    if (challengeId === '1') {
-                        const progressFill = this.closest('.challenge-card').querySelector('.progress-fill-large');
-                        const progressText = this.closest('.challenge-card').querySelector('.progress-text span:last-child');
-                        
-                        // Update progress
-                        const currentWidth = parseFloat(progressFill.style.width);
-                        const newWidth = Math.min(currentWidth + 33.33, 100);
-                        progressFill.style.width = newWidth + '%';
-                        
-                        // Update text
-                        const currentCount = parseInt(progressText.textContent.split('/')[0]);
-                        const totalCount = parseInt(progressText.textContent.split('/')[1]);
-                        
-                        if (currentCount < totalCount) {
-                            const newCount = currentCount + 1;
-                            progressText.textContent = `${newCount}/${totalCount}`;
-                            
-                            // Show medal animation when completed
-                            if (newCount === totalCount) {
-                                const medal = document.getElementById('medal1');
-                                medal.classList.add('show');
-                                
-                                setTimeout(() => {
-                                    this.closest('.challenge-card').classList.add('completed');
-                                    this.closest('.challenge-card').classList.remove('active');
-                                    this.textContent = '🎉 Челлендж пройден!';
-                                    this.style.background = 'var(--accent-green)';
-                                    this.disabled = true;
-                                }, 1000);
-                            }
-                        }
-                    }
-                    
-                    // For challenge 2 (7 дней без жалоб)
-                    if (challengeId === '2') {
-                        const progressFill = this.closest('.challenge-card').querySelector('.progress-fill-large');
-                        const progressText = this.closest('.challenge-card').querySelector('.progress-text span:last-child');
-                        
-                        // Update progress
-                        const currentWidth = parseFloat(progressFill.style.width);
-                        const newWidth = Math.min(currentWidth + 14.28, 100);
-                        progressFill.style.width = newWidth + '%';
-                        
-                        // Update text
-                        const currentCount = parseInt(progressText.textContent.split('/')[0]);
-                        const newCount = currentCount + 1;
-                        progressText.textContent = `${newCount}/7 дней`;
-                        
-                        // Complete challenge when done
-                        if (newCount === 7) {
-                            this.closest('.challenge-card').classList.add('completed');
-                            this.closest('.challenge-card').classList.remove('active');
-                            this.textContent = '🎉 Челлендж пройден!';
-                            this.style.background = 'var(--accent-green)';
-                            this.disabled = true;
-                        }
-                    }
-                });
-            });
+            // Все обработчики будут добавляться динамически при рендере постов
         }
 
         function switchSection(section) {
@@ -2408,11 +2187,12 @@
                 elements.profileNickname.textContent = profile.nickname || 'Без имени';
                 elements.nicknameInput.value = profile.nickname || '';
                 elements.profileUserId.textContent = currentUser.uid.slice(0, 8);
+                elements.profileEmail.textContent = currentUser.email || 'Не указан';
                 
                 if (profile.avatarUrl) {
                     elements.profileAvatar.src = profile.avatarUrl;
                 } else {
-                    elements.profileAvatar.src = getDefaultAvatar(profile.nickname || '?');
+                    elements.profileAvatar.src = getDefaultAvatar(profile.nickname || '?', profile.color);
                 }
                 
                 if (profile.color) {
@@ -2509,7 +2289,12 @@
                     color: selectedColor,
                     createdAt: serverTimestamp(),
                     email: user.email,
-                    avatarUrl: user.photoURL || null
+                    avatarUrl: user.photoURL || null,
+                    challenges: {
+                        gratitude: 0,
+                        noComplaint: { streak: 0, lastDate: null },
+                        help: 0
+                    }
                 });
             }
         }
@@ -2664,6 +2449,17 @@
                 });
                 
                 userProfile = await getUserProfile(currentUser.uid);
+                
+                // Update avatar if it's a default avatar
+                if (!userProfile.avatarUrl) {
+                    const newAvatarUrl = getDefaultAvatar(nickname, selectedColor);
+                    elements.profileAvatar.src = newAvatarUrl;
+                    elements.composerAvatar.src = newAvatarUrl;
+                    elements.headerAvatar.src = newAvatarUrl;
+                    elements.honestyComposerAvatar.src = newAvatarUrl;
+                    elements.thoughtComposerAvatar.src = newAvatarUrl;
+                }
+                
                 updateUI();
                 showProfileMessage('Профиль сохранен!');
                 
@@ -2834,23 +2630,38 @@
             }
             
             try {
-                await addDoc(collection(db, 'posts'), {
+                const postData = {
                     content: content,
                     authorId: currentUser.uid,
                     authorNickname: userProfile?.nickname || 'Аноним',
                     authorColor: userProfile?.color || '#1d9bf0',
-                    authorAvatarUrl: userProfile?.avatarUrl || null,
+                    authorAvatarUrl: userProfile?.avatarUrl || getDefaultAvatar(userProfile?.nickname || '?', userProfile?.color),
                     likes: [],
                     likesCount: 0,
                     commentsCount: 0,
                     type: 'regular',
                     createdAt: serverTimestamp(),
                     updatedAt: serverTimestamp()
-                });
+                };
+                
+                // Если это ответ на пост, добавляем информацию об ответе
+                if (replyingToPost) {
+                    postData.replyingTo = replyingToPost.id;
+                    postData.replyingToContent = replyingToPost.content.substring(0, 100);
+                    postData.replyingToAuthor = replyingToPost.authorNickname;
+                }
+                
+                await addDoc(collection(db, 'posts'), postData);
+                
+                // Check if this is a gratitude post for challenge
+                if (content.toLowerCase().includes('благодарн') || content.toLowerCase().includes('спасибо')) {
+                    await updateGratitudeChallenge();
+                }
                 
                 elements.postInput.value = '';
                 updateCharCounter();
-                switchSection('main');
+                replyingToPost = null;
+                elements.postInput.placeholder = "Что у тебя на уме?";
                 
                 // Show success message
                 const successMsg = document.createElement('div');
@@ -2889,12 +2700,14 @@
                     authorId: currentUser.uid,
                     authorNickname: userProfile?.nickname || 'Аноним',
                     authorColor: userProfile?.color || '#1d9bf0',
-                    authorAvatarUrl: userProfile?.avatarUrl || null,
+                    authorAvatarUrl: userProfile?.avatarUrl || getDefaultAvatar(userProfile?.nickname || '?', userProfile?.color),
                     likes: [],
                     likesCount: 0,
                     commentsCount: 0,
                     type: 'honesty',
-                    honestyVotes: { truth: 0, lie: 0 },
+                    honestyVotes: { truth: [], lie: [] },
+                    truthVotes: 0,
+                    lieVotes: 0,
                     honestyPercentage: 50,
                     createdAt: serverTimestamp(),
                     updatedAt: serverTimestamp()
@@ -2940,12 +2753,16 @@
                     authorId: currentUser.uid,
                     authorNickname: userProfile?.nickname || 'Аноним',
                     authorColor: userProfile?.color || '#1d9bf0',
-                    authorAvatarUrl: userProfile?.avatarUrl || null,
+                    authorAvatarUrl: userProfile?.avatarUrl || getDefaultAvatar(userProfile?.nickname || '?', userProfile?.color),
                     likes: [],
                     likesCount: 0,
                     commentsCount: 0,
                     type: 'thought',
-                    reactions: { laugh: 0, think: 0, support: 0, shock: 0 },
+                    reactions: { laugh: [], think: [], support: [], shock: [] },
+                    laughCount: 0,
+                    thinkCount: 0,
+                    supportCount: 0,
+                    shockCount: 0,
                     popularity: 50,
                     createdAt: serverTimestamp(),
                     updatedAt: serverTimestamp()
@@ -2973,9 +2790,42 @@
             onSnapshot(postsQuery, (snapshot) => {
                 elements.loading.classList.add('hidden');
                 renderPosts(snapshot);
+                loadChallenges();
             }, (error) => {
                 console.error('Error loading posts:', error);
                 elements.loading.innerHTML = '<p>Ошибка загрузки ленты</p>';
+            });
+        }
+
+        function setupHonestyFeedListener() {
+            const honestyQuery = query(
+                collection(db, 'posts'),
+                where('type', '==', 'honesty'),
+                orderBy('createdAt', 'desc')
+            );
+            
+            onSnapshot(honestyQuery, (snapshot) => {
+                elements.honestyLoading.classList.add('hidden');
+                renderHonestyPosts(snapshot);
+            }, (error) => {
+                console.error('Error loading honesty posts:', error);
+                elements.honestyLoading.innerHTML = '<p>Ошибка загрузки голосований</p>';
+            });
+        }
+
+        function setupThoughtFeedListener() {
+            const thoughtQuery = query(
+                collection(db, 'posts'),
+                where('type', '==', 'thought'),
+                orderBy('createdAt', 'desc')
+            );
+            
+            onSnapshot(thoughtQuery, (snapshot) => {
+                elements.thoughtLoading.classList.add('hidden');
+                renderThoughtPosts(snapshot);
+            }, (error) => {
+                console.error('Error loading thought posts:', error);
+                elements.thoughtLoading.innerHTML = '<p>Ошибка загрузки мыслей</p>';
             });
         }
 
@@ -3001,6 +2851,50 @@
             });
         }
 
+        function renderHonestyPosts(snapshot) {
+            elements.honestyFeed.innerHTML = '';
+            
+            if (snapshot.empty) {
+                elements.honestyFeed.innerHTML = `
+                    <div class="post-card" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-star fa-3x" style="color: var(--text-secondary); margin-bottom: 16px;"></i>
+                        <h3>Пока нет голосований</h3>
+                        <p style="color: var(--text-secondary); margin-top: 8px;">Создайте первое голосование!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            snapshot.forEach((doc) => {
+                const post = doc.data();
+                const postId = doc.id;
+                const postElement = createPostElement(postId, post);
+                elements.honestyFeed.appendChild(postElement);
+            });
+        }
+
+        function renderThoughtPosts(snapshot) {
+            elements.thoughtFeed.innerHTML = '';
+            
+            if (snapshot.empty) {
+                elements.thoughtFeed.innerHTML = `
+                    <div class="post-card" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-lightbulb fa-3x" style="color: var(--text-secondary); margin-bottom: 16px;"></i>
+                        <h3>Пока нет мыслей дня</h3>
+                        <p style="color: var(--text-secondary); margin-top: 8px;">Поделитесь первой мыслью!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            snapshot.forEach((doc) => {
+                const post = doc.data();
+                const postId = doc.id;
+                const postElement = createPostElement(postId, post);
+                elements.thoughtFeed.appendChild(postElement);
+            });
+        }
+
         function createPostElement(postId, post) {
             const postElement = document.createElement('div');
             postElement.className = 'post-card';
@@ -3011,18 +2905,51 @@
             const likeIcon = isLiked ? 'fas fa-heart' : 'far fa-heart';
             
             const timeAgo = formatTimeAgo(post.createdAt?.toDate());
-            const avatarUrl = post.authorAvatarUrl || getDefaultAvatar(post.authorNickname);
+            const avatarUrl = post.authorAvatarUrl || getDefaultAvatar(post.authorNickname, post.authorColor);
+            
+            // Check user's votes and reactions
+            const hasVotedTruth = currentUser && post.honestyVotes?.truth?.includes(currentUser.uid);
+            const hasVotedLie = currentUser && post.honestyVotes?.lie?.includes(currentUser.uid);
+            const userReaction = currentUser ? 
+                (post.reactions?.laugh?.includes(currentUser.uid) ? 'laugh' :
+                 post.reactions?.think?.includes(currentUser.uid) ? 'think' :
+                 post.reactions?.support?.includes(currentUser.uid) ? 'support' :
+                 post.reactions?.shock?.includes(currentUser.uid) ? 'shock' : null) : null;
             
             // Check if it's an honesty post to add voting buttons
             const isHonestyPost = post.type === 'honesty';
             const honestyPercentage = post.honestyPercentage || 50;
-            const truthVotes = post.honestyVotes?.truth || 0;
-            const lieVotes = post.honestyVotes?.lie || 0;
+            const truthVotes = post.truthVotes || 0;
+            const lieVotes = post.lieVotes || 0;
             const totalVotes = truthVotes + lieVotes;
             
+            // Check if it's a thought post
+            const isThoughtPost = post.type === 'thought';
+            const laughCount = post.laughCount || 0;
+            const thinkCount = post.thinkCount || 0;
+            const supportCount = post.supportCount || 0;
+            const shockCount = post.shockCount || 0;
+            const totalReactions = laughCount + thinkCount + supportCount + shockCount;
+            const popularity = post.popularity || 50;
+            
+            // Check if it's a reply
+            const isReply = post.replyingTo;
+            
             postElement.innerHTML = `
+                ${isReply ? `
+                <div class="reply-to-post">
+                    <div class="reply-to-post-header">
+                        <i class="fas fa-reply" style="color: var(--accent-blue); font-size: 12px;"></i>
+                        <div class="reply-to-post-author" style="color: ${post.replyingToAuthorColor || '#1d9bf0'}">
+                            Ответ ${post.replyingToAuthor}
+                        </div>
+                    </div>
+                    <div class="reply-to-post-content">${escapeHtml(post.replyingToContent)}...</div>
+                </div>
+                ` : ''}
+                
                 <div class="post-header">
-                    <img src="${avatarUrl}" class="avatar" alt="Аватар">
+                    <img src="${avatarUrl}" class="avatar" alt="Аватар" style="border-color: ${post.authorColor || '#1d9bf0'}">
                     <div style="flex: 1;">
                         <div class="post-author" style="color: ${post.authorColor || '#1d9bf0'}">
                             ${post.authorNickname || 'Аноним'}
@@ -3034,10 +2961,10 @@
                 
                 ${isHonestyPost ? `
                 <div class="honesty-buttons">
-                    <button class="honesty-btn truth" data-post="${postId}">
+                    <button class="honesty-btn truth ${hasVotedTruth ? 'voted' : ''}" data-post="${postId}" data-vote="truth">
                         ✓ Честно <span class="count">${truthVotes}</span>
                     </button>
-                    <button class="honesty-btn lie" data-post="${postId}">
+                    <button class="honesty-btn lie ${hasVotedLie ? 'voted' : ''}" data-post="${postId}" data-vote="lie">
                         ✗ Не честно <span class="count">${lieVotes}</span>
                     </button>
                 </div>
@@ -3052,13 +2979,43 @@
                 </div>
                 ` : ''}
                 
+                ${isThoughtPost ? `
+                <div class="thought-reactions">
+                    <button class="reaction-btn laugh ${userReaction === 'laugh' ? 'active' : ''}" data-post="${postId}" data-reaction="laugh">
+                        <i class="fas fa-laugh fa-lg"></i>
+                        <span class="reaction-count">${laughCount}</span>
+                    </button>
+                    <button class="reaction-btn think ${userReaction === 'think' ? 'active' : ''}" data-post="${postId}" data-reaction="think">
+                        <i class="fas fa-brain fa-lg"></i>
+                        <span class="reaction-count">${thinkCount}</span>
+                    </button>
+                    <button class="reaction-btn support ${userReaction === 'support' ? 'active' : ''}" data-post="${postId}" data-reaction="support">
+                        <i class="fas fa-heart fa-lg"></i>
+                        <span class="reaction-count">${supportCount}</span>
+                    </button>
+                    <button class="reaction-btn shock ${userReaction === 'shock' ? 'active' : ''}" data-post="${postId}" data-reaction="shock">
+                        <i class="fas fa-surprise fa-lg"></i>
+                        <span class="reaction-count">${shockCount}</span>
+                    </button>
+                </div>
+                
+                <div class="thought-progress">
+                    <div class="thought-progress-fill" style="width: ${popularity}%;"></div>
+                </div>
+                
+                <div class="thought-stats">
+                    <span>Популярность: ${popularity}%</span>
+                    <span>${totalReactions} реакций</span>
+                </div>
+                ` : ''}
+                
                 <div class="post-actions">
                     <button class="${likeClass}" data-action="like" data-post="${postId}" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
                         <i class="${likeIcon}"></i>
                         <span>${post.likesCount || 0}</span>
                     </button>
                     <button class="action-btn" data-action="reply" data-post="${postId}" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
-                        <i class="far fa-comment"></i>
+                        <i class="fas fa-reply" style="transform: scaleX(-1);"></i>
                         <span>${post.commentsCount || 0}</span>
                     </button>
                     <button class="action-btn" data-action="share" data-post="${postId}">
@@ -3070,7 +3027,7 @@
                     ${currentUser ? `
                     <div class="reply-composer">
                         <textarea class="reply-input" placeholder="Написать ответ..." maxlength="280"></textarea>
-                        <button class="btn btn-primary btn-tiny" data-action="send-reply" data-post="${postId}">Ответить</button>
+                        <button class="btn btn-primary btn-tiny reply-btn-fixed" data-action="send-reply" data-post="${postId}">Ответить</button>
                     </div>
                     ` : `
                     <div class="reply-composer" style="justify-content: center;">
@@ -3091,7 +3048,13 @@
             
             if (currentUser) {
                 likeBtn.addEventListener('click', () => toggleLike(postId, post));
-                replyBtn.addEventListener('click', () => toggleReplies(postId));
+                replyBtn.addEventListener('click', () => {
+                    if (post.authorId !== currentUser.uid) {
+                        // Update help challenge if replying to someone else's post
+                        updateHelpChallenge();
+                    }
+                    toggleReplies(postId);
+                });
                 if (sendReplyBtn) {
                     sendReplyBtn.addEventListener('click', () => sendReply(postId));
                 }
@@ -3103,6 +3066,26 @@
                             e.preventDefault();
                             sendReply(postId);
                         }
+                    });
+                }
+                
+                // Add reply to post button
+                const replyToPostBtn = postElement.querySelector('[data-action="reply-post"]');
+                if (replyToPostBtn) {
+                    replyToPostBtn.addEventListener('click', () => {
+                        replyingToPost = {
+                            id: postId,
+                            content: post.content,
+                            authorNickname: post.authorNickname,
+                            authorColor: post.authorColor
+                        };
+                        
+                        switchPage('compose');
+                        elements.postInput.focus();
+                        elements.postInput.placeholder = `Ответ ${post.authorNickname}: ${post.content.substring(0, 50)}...`;
+                        
+                        // Scroll to composer
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     });
                 }
             } else {
@@ -3123,7 +3106,91 @@
                             return;
                         }
                         
-                        handleHonestyVote(postId, this.classList.contains('truth'));
+                        const voteType = this.dataset.vote;
+                        const hasVoted = this.classList.contains('voted');
+                        
+                        if (hasVoted) {
+                            // Remove vote
+                            handleHonestyVote(postId, voteType, true);
+                            this.classList.remove('voted');
+                            
+                            // Update count
+                            const countSpan = this.querySelector('.count');
+                            let currentCount = parseInt(countSpan.textContent);
+                            countSpan.textContent = Math.max(0, currentCount - 1);
+                        } else {
+                            // Add vote
+                            handleHonestyVote(postId, voteType, false);
+                            this.classList.add('voted');
+                            
+                            // Remove vote from other button if exists
+                            const otherBtn = voteType === 'truth' ? lieBtn : truthBtn;
+                            if (otherBtn.classList.contains('voted')) {
+                                otherBtn.classList.remove('voted');
+                                const otherCountSpan = otherBtn.querySelector('.count');
+                                let otherCount = parseInt(otherCountSpan.textContent);
+                                otherCountSpan.textContent = Math.max(0, otherCount - 1);
+                            }
+                            
+                            // Update count
+                            const countSpan = this.querySelector('.count');
+                            let currentCount = parseInt(countSpan.textContent);
+                            countSpan.textContent = currentCount + 1;
+                        }
+                        
+                        // Update progress
+                        updateHonestyProgress(postElement, postId);
+                    });
+                });
+            }
+            
+            // Add thought reaction listeners
+            if (isThoughtPost) {
+                const reactionBtns = postElement.querySelectorAll('.reaction-btn');
+                reactionBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        if (!currentUser) {
+                            showAuthModal();
+                            return;
+                        }
+                        
+                        const reactionType = this.dataset.reaction;
+                        const isActive = this.classList.contains('active');
+                        
+                        if (isActive) {
+                            // Remove reaction
+                            handleThoughtReaction(postId, reactionType, true);
+                            this.classList.remove('active');
+                            
+                            // Update count
+                            const countSpan = this.querySelector('.reaction-count');
+                            let currentCount = parseInt(countSpan.textContent);
+                            countSpan.textContent = Math.max(0, currentCount - 1);
+                        } else {
+                            // Add reaction
+                            handleThoughtReaction(postId, reactionType, false);
+                            
+                            // Remove active class from all buttons
+                            reactionBtns.forEach(b => b.classList.remove('active'));
+                            this.classList.add('active');
+                            
+                            // Update count for this button
+                            const countSpan = this.querySelector('.reaction-count');
+                            let currentCount = parseInt(countSpan.textContent);
+                            countSpan.textContent = currentCount + 1;
+                            
+                            // Decrease count for previously active button if any
+                            reactionBtns.forEach(b => {
+                                if (b !== this && b.classList.contains('active')) {
+                                    const prevCountSpan = b.querySelector('.reaction-count');
+                                    let prevCount = parseInt(prevCountSpan.textContent);
+                                    prevCountSpan.textContent = Math.max(0, prevCount - 1);
+                                }
+                            });
+                        }
+                        
+                        // Update progress
+                        updateThoughtProgress(postElement, postId);
                     });
                 });
             }
@@ -3134,39 +3201,168 @@
             return postElement;
         }
 
-        async function handleHonestyVote(postId, isTruth) {
+        async function handleHonestyVote(postId, voteType, isRemove) {
             try {
                 const postRef = doc(db, 'posts', postId);
                 const postSnap = await getDoc(postRef);
                 const postData = postSnap.data();
                 
-                const currentTruth = postData.honestyVotes?.truth || 0;
-                const currentLie = postData.honestyVotes?.lie || 0;
+                const truthVotes = postData.honestyVotes?.truth || [];
+                const lieVotes = postData.honestyVotes?.lie || [];
                 
-                let newTruth = currentTruth;
-                let newLie = currentLie;
-                
-                // For now, just add a vote
-                if (isTruth) {
-                    newTruth = currentTruth + 1;
+                if (isRemove) {
+                    // Remove vote
+                    if (voteType === 'truth') {
+                        const newTruthVotes = truthVotes.filter(id => id !== currentUser.uid);
+                        await updateDoc(postRef, {
+                            'honestyVotes.truth': newTruthVotes,
+                            truthVotes: newTruthVotes.length
+                        });
+                    } else {
+                        const newLieVotes = lieVotes.filter(id => id !== currentUser.uid);
+                        await updateDoc(postRef, {
+                            'honestyVotes.lie': newLieVotes,
+                            lieVotes: newLieVotes.length
+                        });
+                    }
                 } else {
-                    newLie = currentLie + 1;
+                    // Add vote and remove from other type if exists
+                    if (voteType === 'truth') {
+                        const newTruthVotes = [...new Set([...truthVotes, currentUser.uid])];
+                        const newLieVotes = lieVotes.filter(id => id !== currentUser.uid);
+                        
+                        await updateDoc(postRef, {
+                            'honestyVotes.truth': newTruthVotes,
+                            'honestyVotes.lie': newLieVotes,
+                            truthVotes: newTruthVotes.length,
+                            lieVotes: newLieVotes.length
+                        });
+                    } else {
+                        const newLieVotes = [...new Set([...lieVotes, currentUser.uid])];
+                        const newTruthVotes = truthVotes.filter(id => id !== currentUser.uid);
+                        
+                        await updateDoc(postRef, {
+                            'honestyVotes.lie': newLieVotes,
+                            'honestyVotes.truth': newTruthVotes,
+                            lieVotes: newLieVotes.length,
+                            truthVotes: newTruthVotes.length
+                        });
+                    }
                 }
                 
-                const totalVotes = newTruth + newLie;
-                const newPercentage = totalVotes > 0 ? Math.round((newTruth / totalVotes) * 100) : 50;
+            } catch (error) {
+                console.error('Error handling honesty vote:', error);
+            }
+        }
+
+        async function handleThoughtReaction(postId, reactionType, isRemove) {
+            try {
+                const postRef = doc(db, 'posts', postId);
+                const postSnap = await getDoc(postRef);
+                const postData = postSnap.data();
+                
+                const laughReactions = postData.reactions?.laugh || [];
+                const thinkReactions = postData.reactions?.think || [];
+                const supportReactions = postData.reactions?.support || [];
+                const shockReactions = postData.reactions?.shock || [];
+                
+                if (isRemove) {
+                    // Remove reaction
+                    const updateData = {};
+                    updateData[`reactions.${reactionType}`] = 
+                        reactionType === 'laugh' ? laughReactions.filter(id => id !== currentUser.uid) :
+                        reactionType === 'think' ? thinkReactions.filter(id => id !== currentUser.uid) :
+                        reactionType === 'support' ? supportReactions.filter(id => id !== currentUser.uid) :
+                        shockReactions.filter(id => id !== currentUser.uid);
+                    
+                    updateData[`${reactionType}Count`] = Math.max(0, 
+                        reactionType === 'laugh' ? laughReactions.length - 1 :
+                        reactionType === 'think' ? thinkReactions.length - 1 :
+                        reactionType === 'support' ? supportReactions.length - 1 :
+                        shockReactions.length - 1);
+                    
+                    await updateDoc(postRef, updateData);
+                } else {
+                    // Add reaction and remove from others
+                    const updateData = {
+                        'reactions.laugh': reactionType === 'laugh' ? 
+                            [...new Set([...laughReactions, currentUser.uid])] : 
+                            laughReactions.filter(id => id !== currentUser.uid),
+                        'reactions.think': reactionType === 'think' ? 
+                            [...new Set([...thinkReactions, currentUser.uid])] : 
+                            thinkReactions.filter(id => id !== currentUser.uid),
+                        'reactions.support': reactionType === 'support' ? 
+                            [...new Set([...supportReactions, currentUser.uid])] : 
+                            supportReactions.filter(id => id !== currentUser.uid),
+                        'reactions.shock': reactionType === 'shock' ? 
+                            [...new Set([...shockReactions, currentUser.uid])] : 
+                            shockReactions.filter(id => id !== currentUser.uid),
+                        laughCount: reactionType === 'laugh' ? 
+                            [...new Set([...laughReactions, currentUser.uid])].length : 
+                            Math.max(0, laughReactions.filter(id => id !== currentUser.uid).length),
+                        thinkCount: reactionType === 'think' ? 
+                            [...new Set([...thinkReactions, currentUser.uid])].length : 
+                            Math.max(0, thinkReactions.filter(id => id !== currentUser.uid).length),
+                        supportCount: reactionType === 'support' ? 
+                            [...new Set([...supportReactions, currentUser.uid])].length : 
+                            Math.max(0, supportReactions.filter(id => id !== currentUser.uid).length),
+                        shockCount: reactionType === 'shock' ? 
+                            [...new Set([...shockReactions, currentUser.uid])].length : 
+                            Math.max(0, shockReactions.filter(id => id !== currentUser.uid).length)
+                    };
+                    
+                    await updateDoc(postRef, updateData);
+                }
+                
+            } catch (error) {
+                console.error('Error handling thought reaction:', error);
+            }
+        }
+
+        async function updateHonestyProgress(postElement, postId) {
+            try {
+                const postRef = doc(db, 'posts', postId);
+                const postSnap = await getDoc(postRef);
+                const postData = postSnap.data();
+                
+                const truthVotes = postData.truthVotes || 0;
+                const lieVotes = postData.lieVotes || 0;
+                const totalVotes = truthVotes + lieVotes;
+                const percentage = totalVotes > 0 ? Math.round((truthVotes / totalVotes) * 100) : 50;
                 
                 await updateDoc(postRef, {
-                    honestyVotes: {
-                        truth: newTruth,
-                        lie: newLie
-                    },
-                    honestyPercentage: newPercentage,
+                    honestyPercentage: percentage,
                     updatedAt: serverTimestamp()
                 });
                 
             } catch (error) {
-                console.error('Error handling honesty vote:', error);
+                console.error('Error updating honesty progress:', error);
+            }
+        }
+
+        async function updateThoughtProgress(postElement, postId) {
+            try {
+                const postRef = doc(db, 'posts', postId);
+                const postSnap = await getDoc(postRef);
+                const postData = postSnap.data();
+                
+                const laughCount = postData.laughCount || 0;
+                const thinkCount = postData.thinkCount || 0;
+                const supportCount = postData.supportCount || 0;
+                const shockCount = postData.shockCount || 0;
+                const totalReactions = laughCount + thinkCount + supportCount + shockCount;
+                
+                // Calculate popularity based on reactions (simple algorithm)
+                const popularity = totalReactions > 0 ? 
+                    Math.round(((supportCount * 1.5 + thinkCount * 1.2 + laughCount + shockCount * 0.8) / (totalReactions * 1.5)) * 100) : 50;
+                
+                await updateDoc(postRef, {
+                    popularity: Math.min(100, Math.max(0, popularity)),
+                    updatedAt: serverTimestamp()
+                });
+                
+            } catch (error) {
+                console.error('Error updating thought progress:', error);
             }
         }
 
@@ -3251,7 +3447,7 @@
             replyElement.className = 'reply-card';
             
             const timeAgo = formatTimeAgo(reply.createdAt?.toDate());
-            const avatarUrl = reply.authorAvatarUrl || getDefaultAvatar(reply.authorNickname);
+            const avatarUrl = reply.authorAvatarUrl || getDefaultAvatar(reply.authorNickname, reply.authorColor);
             
             replyElement.innerHTML = `
                 <div class="reply-header">
@@ -3262,15 +3458,6 @@
                     <div class="reply-time">${timeAgo}</div>
                 </div>
                 <div class="reply-content">${escapeHtml(reply.content)}</div>
-                <div class="reply-actions">
-                    <button class="action-btn" data-action="like-reply">
-                        <i class="far fa-heart"></i>
-                        <span>${reply.likesCount || 0}</span>
-                    </button>
-                    <button class="action-btn" data-action="reply-to-reply">
-                        <i class="far fa-comment"></i>
-                    </button>
-                </div>
             `;
             
             return replyElement;
@@ -3303,7 +3490,7 @@
                     authorId: currentUser.uid,
                     authorNickname: userProfile?.nickname || 'Аноним',
                     authorColor: userProfile?.color || '#1d9bf0',
-                    authorAvatarUrl: userProfile?.avatarUrl || null,
+                    authorAvatarUrl: userProfile?.avatarUrl || getDefaultAvatar(userProfile?.nickname || '?', userProfile?.color),
                     likesCount: 0,
                     createdAt: serverTimestamp()
                 });
@@ -3320,10 +3507,282 @@
                 
                 replyInput.value = '';
                 replyInput.focus();
+                
+                // Update help challenge
+                updateHelpChallenge();
             } catch (error) {
                 console.error('Error sending reply:', error);
                 alert('Ошибка при отправке ответа');
             }
+        }
+
+        // Challenge functions
+        async function loadChallenges() {
+            if (!currentUser) return;
+            
+            try {
+                const profile = await getUserProfile(currentUser.uid);
+                if (!profile) return;
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                // Gratitude challenge
+                const gratitudeQuery = query(
+                    collection(db, 'posts'),
+                    where('authorId', '==', currentUser.uid),
+                    where('type', '==', 'regular'),
+                    where('createdAt', '>=', Timestamp.fromDate(today))
+                );
+                
+                const gratitudeSnapshot = await getDocs(gratitudeQuery);
+                let gratitudeCount = 0;
+                
+                gratitudeSnapshot.forEach(doc => {
+                    const post = doc.data();
+                    if (post.content.toLowerCase().includes('благодарн') || 
+                        post.content.toLowerCase().includes('спасибо')) {
+                        gratitudeCount++;
+                    }
+                });
+                
+                challenges.gratitude.count = gratitudeCount;
+                challenges.gratitude.completed = gratitudeCount >= 3;
+                
+                // No complaint challenge
+                const noComplaintData = profile.challenges?.noComplaint || { streak: 0, lastDate: null };
+                const lastDate = noComplaintData.lastDate?.toDate();
+                const isToday = lastDate && 
+                    lastDate.getDate() === today.getDate() &&
+                    lastDate.getMonth() === today.getMonth() &&
+                    lastDate.getFullYear() === today.getFullYear();
+                
+                if (!isToday) {
+                    // Check if user posted complaints today
+                    const complaintQuery = query(
+                        collection(db, 'posts'),
+                        where('authorId', '==', currentUser.uid),
+                        where('type', '==', 'regular'),
+                        where('createdAt', '>=', Timestamp.fromDate(today))
+                    );
+                    
+                    const complaintSnapshot = await getDocs(complaintQuery);
+                    let hasComplaints = false;
+                    
+                    complaintSnapshot.forEach(doc => {
+                        const post = doc.data();
+                        const complaintWords = ['жалуюсь', 'плохо', 'устал', 'устала', 'надоело', 'ненавижу', 'злой', 'злая'];
+                        if (complaintWords.some(word => post.content.toLowerCase().includes(word))) {
+                            hasComplaints = true;
+                        }
+                    });
+                    
+                    if (!hasComplaints) {
+                        challenges.noComplaint.count = noComplaintData.streak + 1;
+                    } else {
+                        challenges.noComplaint.count = 0;
+                    }
+                } else {
+                    challenges.noComplaint.count = noComplaintData.streak;
+                }
+                
+                challenges.noComplaint.completed = challenges.noComplaint.count >= 7;
+                
+                // Help challenge
+                const helpCount = profile.challenges?.help || 0;
+                challenges.help.count = helpCount;
+                challenges.help.completed = helpCount >= 5;
+                
+                updateChallengesUI();
+                
+            } catch (error) {
+                console.error('Error loading challenges:', error);
+            }
+        }
+
+        function updateChallengesUI() {
+            // Gratitude challenge
+            elements.gratitudeProgress.textContent = `${challenges.gratitude.count}/3`;
+            elements.gratitudeProgressBar.style.width = `${(challenges.gratitude.count / 3) * 100}%`;
+            
+            if (challenges.gratitude.completed) {
+                elements.gratitudeChallenge.classList.add('completed');
+                elements.gratitudeChallenge.classList.remove('active');
+                elements.gratitudeBtn.innerHTML = '<i class="fas fa-medal"></i> Челлендж пройден!';
+                elements.gratitudeBtn.style.background = 'var(--accent-green)';
+                elements.gratitudeBtn.disabled = true;
+            }
+            
+            // No complaint challenge
+            elements.noComplaintProgress.textContent = `${challenges.noComplaint.count}/7 дней`;
+            elements.noComplaintProgressBar.style.width = `${(challenges.noComplaint.count / 7) * 100}%`;
+            
+            if (challenges.noComplaint.completed) {
+                elements.noComplaintChallenge.classList.add('completed');
+                elements.noComplaintChallenge.classList.remove('active');
+                elements.noComplaintBtn.innerHTML = '<i class="fas fa-medal"></i> Челлендж пройден!';
+                elements.noComplaintBtn.style.background = 'var(--accent-green)';
+                elements.noComplaintBtn.disabled = true;
+            }
+            
+            // Help challenge
+            elements.helpProgress.textContent = `${challenges.help.count}/5`;
+            elements.helpProgressBar.style.width = `${(challenges.help.count / 5) * 100}%`;
+            
+            if (challenges.help.completed) {
+                elements.helpChallenge.classList.add('completed');
+                elements.helpChallengeStatus.innerHTML = '<i class="fas fa-check-circle"></i> Выполнен';
+                elements.helpBtn.innerHTML = '<i class="fas fa-medal"></i> Челлендж пройден!';
+                elements.helpBtn.style.background = 'var(--accent-green)';
+                elements.helpBtn.disabled = true;
+            }
+        }
+
+        async function updateGratitudeChallenge() {
+            if (!currentUser) return;
+            
+            try {
+                const profileRef = doc(db, 'users', currentUser.uid);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                // Count gratitude posts for today
+                const gratitudeQuery = query(
+                    collection(db, 'posts'),
+                    where('authorId', '==', currentUser.uid),
+                    where('type', '==', 'regular'),
+                    where('createdAt', '>=', Timestamp.fromDate(today))
+                );
+                
+                const gratitudeSnapshot = await getDocs(gratitudeQuery);
+                let gratitudeCount = 0;
+                
+                gratitudeSnapshot.forEach(doc => {
+                    const post = doc.data();
+                    if (post.content.toLowerCase().includes('благодарн') || 
+                        post.content.toLowerCase().includes('спасибо')) {
+                        gratitudeCount++;
+                    }
+                });
+                
+                challenges.gratitude.count = gratitudeCount;
+                challenges.gratitude.completed = gratitudeCount >= 3;
+                
+                updateChallengesUI();
+                
+                // Show medal animation if completed
+                if (challenges.gratitude.completed && gratitudeCount === 3) {
+                    const medal = document.getElementById('medal1');
+                    medal.classList.add('show');
+                    setTimeout(() => {
+                        medal.classList.remove('show');
+                    }, 2000);
+                }
+                
+            } catch (error) {
+                console.error('Error updating gratitude challenge:', error);
+            }
+        }
+
+        async function markNoComplaintDay() {
+            if (!currentUser) return;
+            
+            try {
+                const profileRef = doc(db, 'users', currentUser.uid);
+                const profile = await getUserProfile(currentUser.uid);
+                const noComplaintData = profile.challenges?.noComplaint || { streak: 0, lastDate: null };
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const lastDate = noComplaintData.lastDate?.toDate();
+                const isToday = lastDate && 
+                    lastDate.getDate() === today.getDate() &&
+                    lastDate.getMonth() === today.getMonth() &&
+                    lastDate.getFullYear() === today.getFullYear();
+                
+                if (!isToday) {
+                    // Check if user posted complaints today
+                    const complaintQuery = query(
+                        collection(db, 'posts'),
+                        where('authorId', '==', currentUser.uid),
+                        where('type', '==', 'regular'),
+                        where('createdAt', '>=', Timestamp.fromDate(today))
+                    );
+                    
+                    const complaintSnapshot = await getDocs(complaintQuery);
+                    let hasComplaints = false;
+                    
+                    complaintSnapshot.forEach(doc => {
+                        const post = doc.data();
+                        const complaintWords = ['жалуюсь', 'плохо', 'устал', 'устала', 'надоело', 'ненавижу', 'злой', 'злая'];
+                        if (complaintWords.some(word => post.content.toLowerCase().includes(word))) {
+                            hasComplaints = true;
+                        }
+                    });
+                    
+                    if (!hasComplaints) {
+                        const newStreak = noComplaintData.streak + 1;
+                        await updateDoc(profileRef, {
+                            'challenges.noComplaint': {
+                                streak: newStreak,
+                                lastDate: serverTimestamp()
+                            }
+                        });
+                        
+                        challenges.noComplaint.count = newStreak;
+                        challenges.noComplaint.completed = newStreak >= 7;
+                        
+                        updateChallengesUI();
+                        
+                        alert(`День без жалоб отмечен! Ваша серия: ${newStreak} дней.`);
+                    } else {
+                        alert('Вы не можете отметить день без жалоб, так как сегодня были жалобы в постах.');
+                    }
+                } else {
+                    alert('Вы уже отметили день без жалоб сегодня.');
+                }
+                
+            } catch (error) {
+                console.error('Error marking no complaint day:', error);
+                alert('Ошибка при отметке дня');
+            }
+        }
+
+        async function updateHelpChallenge() {
+            if (!currentUser) return;
+            
+            try {
+                const profileRef = doc(db, 'users', currentUser.uid);
+                const profile = await getUserProfile(currentUser.uid);
+                const currentHelpCount = profile.challenges?.help || 0;
+                const newHelpCount = currentHelpCount + 1;
+                
+                await updateDoc(profileRef, {
+                    'challenges.help': newHelpCount
+                });
+                
+                challenges.help.count = newHelpCount;
+                challenges.help.completed = newHelpCount >= 5;
+                
+                updateChallengesUI();
+                
+                if (newHelpCount === 5) {
+                    alert('Поздравляем! Вы помогли 5 людям и выполнили челлендж!');
+                }
+                
+            } catch (error) {
+                console.error('Error updating help challenge:', error);
+            }
+        }
+
+        function showChallengeInfo(challengeId) {
+            const messages = {
+                1: "Челлендж '3 благодарности':\n\nПубликуйте посты с благодарностью за что-либо в течение дня. Это помогает развивать позитивное мышление и благодарность к жизни.\n\nПосты должны содержать слова 'благодарен', 'благодарна', 'спасибо' или подобные.",
+                2: "Челлендж '7 дней без жалоб':\n\nНе жалуйтесь в постах в течение 7 дней подряд. Фокусируйтесь на решениях, а не на проблемах.\n\nКаждый день без жалоб увеличивает вашу серию. Если вы пожалуетесь, серия сбрасывается.",
+                3: "Челлендж 'Помоги 5 людям':\n\nОтвечайте на посты людей, которым нужна поддержка или совет. Помогая другим, вы не только делаете добро, но и развиваете эмпатию.\n\nКаждый ответ на чужой пост засчитывается как помощь."
+            };
+            
+            alert(messages[challengeId] || 'Информация о челлендже');
         }
 
         // UI functions
@@ -3335,6 +3794,7 @@
                     // User is signed in
                     userProfile = await getUserProfile(user.uid);
                     updateUI();
+                    loadChallenges();
                 } else {
                     // User is signed out
                     resetUI();
@@ -3348,24 +3808,14 @@
             elements.profileBtn.classList.remove('hidden');
             elements.headerAvatar.classList.remove('hidden');
             
-            if (userProfile?.avatarUrl) {
-                elements.headerAvatar.src = userProfile.avatarUrl;
-                elements.composerAvatar.src = userProfile.avatarUrl;
-                elements.honestyComposerAvatar.src = userProfile.avatarUrl;
-                elements.thoughtComposerAvatar.src = userProfile.avatarUrl;
-                
-                elements.honestyComposerAvatar.classList.remove('hidden');
-                elements.thoughtComposerAvatar.classList.remove('hidden');
-            } else {
-                const avatarUrl = getDefaultAvatar(userProfile?.nickname || '?');
-                elements.headerAvatar.src = avatarUrl;
-                elements.composerAvatar.src = avatarUrl;
-                elements.honestyComposerAvatar.src = avatarUrl;
-                elements.thoughtComposerAvatar.src = avatarUrl;
-                
-                elements.honestyComposerAvatar.classList.remove('hidden');
-                elements.thoughtComposerAvatar.classList.remove('hidden');
-            }
+            const avatarUrl = userProfile?.avatarUrl || getDefaultAvatar(userProfile?.nickname || '?', userProfile?.color);
+            elements.headerAvatar.src = avatarUrl;
+            elements.composerAvatar.src = avatarUrl;
+            elements.honestyComposerAvatar.src = avatarUrl;
+            elements.thoughtComposerAvatar.src = avatarUrl;
+            
+            elements.honestyComposerAvatar.classList.remove('hidden');
+            elements.thoughtComposerAvatar.classList.remove('hidden');
             
             // Show post composer and hide guest notification
             elements.postComposer.classList.remove('hidden');
@@ -3403,6 +3853,14 @@
             elements.honestyCharCounter.textContent = '0/280';
             elements.thoughtInput.value = '';
             elements.thoughtCharCounter.textContent = '0/280';
+            
+            // Reset challenges
+            challenges = {
+                gratitude: { count: 0, completed: false },
+                noComplaint: { count: 0, completed: false },
+                help: { count: 0, completed: false }
+            };
+            updateChallengesUI();
         }
 
         function switchPage(page) {
@@ -3428,6 +3886,8 @@
                 }
                 showProfileModal();
             } else if (page === 'home') {
+                replyingToPost = null;
+                elements.postInput.placeholder = "Что у тебя на уме?";
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
@@ -3442,11 +3902,11 @@
         }
 
         // Utility functions
-        function getDefaultAvatar(text) {
-            const colors = ['#1d9bf0', '#f91880', '#00ba7c', '#ffd400', '#7856ff', '#ff7a00'];
-            const color = colors[text.charCodeAt(0) % colors.length];
+        function getDefaultAvatar(text, color = '#1d9bf0') {
+            const colors = ['#1d9bf0', '#f91880', '#00ba7c', '#ffd400', '#7856ff', '#ff7a00', '#00b4d8', '#ff5aac', '#52b788'];
+            const selectedColor = color || colors[text.charCodeAt(0) % colors.length];
             const name = text.substring(0, 2).toUpperCase();
-            return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${color.replace('#', '')}&color=fff&size=128`;
+            return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${selectedColor.replace('#', '')}&color=fff&size=128`;
         }
 
         function formatTimeAgo(date) {
