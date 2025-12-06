@@ -15,13 +15,18 @@
             --text-secondary: #8b98a5;
             --text-muted: #6e767d;
             --accent-blue: #1d9bf0;
+            --accent-light-blue: #4FC3F7;
             --accent-pink: #f91880;
             --accent-green: #00ba7c;
             --accent-red: #f4212e;
+            --accent-yellow: #FFD400;
+            --accent-purple: #7856ff;
+            --accent-orange: #FF7A00;
             --border-color: #2f3336;
             --radius-md: 12px;
             --radius-lg: 16px;
             --shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
         * {
@@ -644,6 +649,478 @@
             font-weight: 600;
         }
 
+        /* Integrated Concepts */
+        
+        /* 1️⃣ Рейтинг честности */
+        .honesty-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .honesty-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .honesty-btn.truth {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .honesty-btn.lie {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .honesty-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* 2️⃣ Анонимные комнаты */
+        .rooms-grid {
+            display: grid;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .room-card {
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .room-card:hover {
+            transform: scale(1.02);
+        }
+
+        .room-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .room-stats {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .anonymous-author {
+            color: #FF5AAC;
+            font-weight: 600;
+        }
+
+        /* 3️⃣ Мысль дня */
+        .thought-of-day {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(120, 86, 255, 0.1));
+            border-radius: var(--radius-lg);
+            margin: 20px 0;
+            position: relative;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .thought-text {
+            font-size: 18px;
+            font-style: italic;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .thought-reactions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .reaction-btn {
+            background: none;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .reaction-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .reaction-btn.laugh { color: var(--accent-yellow); }
+        .reaction-btn.shock { color: var(--accent-red); }
+        .reaction-btn.support { color: var(--accent-green); }
+
+        /* 4️⃣ Визуальные треды */
+        .thread-container {
+            margin-left: 20px;
+            position: relative;
+        }
+
+        .thread-line {
+            position: absolute;
+            left: -20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent-blue), transparent);
+        }
+
+        .thread-reply {
+            margin: 10px 0;
+            padding: 15px;
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+            border-left: 3px solid var(--accent-blue);
+            animation: slideIn 0.3s ease;
+        }
+
+        /* 5️⃣ Микрочелленджи */
+        .challenge-card {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 122, 0, 0.1));
+            border: 2px dashed var(--accent-yellow);
+            padding: 20px;
+            border-radius: var(--radius-lg);
+            margin: 20px 0;
+        }
+
+        .challenge-progress {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .progress-step {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .progress-step.active {
+            background: var(--accent-yellow);
+        }
+
+        .medal {
+            width: 40px;
+            height: 40px;
+            background: gold;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px auto;
+            animation: medalSpin 0.8s ease;
+        }
+
+        /* 6️⃣ Скрытые реакции */
+        .hidden-reactions {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .reaction-option {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-md);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .reaction-option:hover {
+            transform: translateY(-2px);
+        }
+
+        .reaction-chart {
+            height: 40px;
+            display: flex;
+            margin: 15px 0;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .chart-segment {
+            transition: flex 0.5s ease;
+        }
+
+        /* 7️⃣ Мемогенератор */
+        .meme-creator {
+            border: 2px dashed var(--accent-blue);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .tool-btn {
+            padding: 8px 16px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tool-btn:hover {
+            background: #1976D2;
+            transform: translateY(-1px);
+        }
+
+        .meme-preview {
+            width: 100%;
+            min-height: 150px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-md);
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-style: italic;
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+
+        .meme-preview.drag-over {
+            background: rgba(33, 150, 243, 0.2);
+            border-color: var(--accent-blue);
+        }
+
+        .meme-preview img {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+        }
+
+        /* 8️⃣ 24-часовые посты */
+        .ephemeral-post {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .time-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, var(--accent-light-blue), var(--accent-red));
+            animation: timeProgress 30s linear infinite;
+        }
+
+        /* 9️⃣ Случайный диалог */
+        .chat-container {
+            height: 200px;
+            overflow-y: auto;
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .chat-message {
+            margin: 10px 0;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-md);
+            animation: floatUp 0.3s ease;
+            max-width: 80%;
+        }
+
+        .chat-message.incoming {
+            margin-left: auto;
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1s ease;
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+            20%, 40%, 60%, 80% { transform: translateX(2px); }
+        }
+
+        @keyframes floatUp {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes medalSpin {
+            from { transform: rotate(0deg) scale(0); }
+            to { transform: rotate(360deg) scale(1); }
+        }
+
+        @keyframes timeProgress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        /* Concept navigation */
+        .concept-nav {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            margin: 20px 0;
+            padding-bottom: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-blue) var(--bg-card);
+        }
+
+        .concept-nav::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .concept-nav::-webkit-scrollbar-track {
+            background: var(--bg-card);
+            border-radius: 3px;
+        }
+
+        .concept-nav::-webkit-scrollbar-thumb {
+            background: var(--accent-blue);
+            border-radius: 3px;
+        }
+
+        .concept-tab {
+            padding: 10px 20px;
+            background: var(--bg-input);
+            border: none;
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .concept-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .concept-tab.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .concept-section {
+            display: none;
+        }
+
+        .concept-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Concept specific cards */
+        .concept-post-card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        /* Avatar upload improvements */
+        .avatar-upload-area {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px dashed var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            margin: 0 auto;
+            position: relative;
+            background: var(--bg-input);
+        }
+
+        .avatar-upload-area:hover {
+            border-color: var(--accent-light-blue);
+        }
+
+        .avatar-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .avatar-upload-text {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            text-align: center;
+            padding: 5px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .avatar-upload-area:hover .avatar-upload-text {
+            opacity: 1;
+        }
+
         /* Mobile optimizations */
         @media (max-width: 600px) {
             .container, .header-inner, .nav-inner {
@@ -687,6 +1164,46 @@
             main {
                 padding-top: 60px;
                 padding-bottom: 60px;
+            }
+            
+            .rooms-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .thought-of-day {
+                padding: 20px;
+            }
+            
+            .concept-nav {
+                padding: 10px 5px;
+            }
+            
+            .concept-tab {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+            
+            .honesty-buttons {
+                flex-direction: column;
+            }
+            
+            .toolbar {
+                flex-direction: column;
+            }
+            
+            .tool-btn {
+                width: 100%;
+            }
+        }
+
+        /* Desktop adaptations */
+        @media (min-width: 768px) {
+            .rooms-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .hidden-reactions {
+                flex-direction: row;
             }
         }
 
@@ -760,6 +1277,12 @@
             text-align: center;
             border: 1px solid var(--border-color);
         }
+        
+        /* Concept icons */
+        .concept-icon {
+            font-size: 20px;
+            margin-right: 8px;
+        }
     </style>
 </head>
 <body>
@@ -783,6 +1306,31 @@
     <!-- Main Content -->
     <main>
         <div class="container">
+            <!-- Concept Navigation -->
+            <div class="concept-nav" id="conceptNav">
+                <button class="concept-tab active" data-concept="feed">
+                    <i class="fas fa-home concept-icon"></i>Лента
+                </button>
+                <button class="concept-tab" data-concept="honesty">
+                    <i class="fas fa-star concept-icon"></i>Рейтинг честности
+                </button>
+                <button class="concept-tab" data-concept="rooms">
+                    <i class="fas fa-door-closed concept-icon"></i>Анонимные комнаты
+                </button>
+                <button class="concept-tab" data-concept="thought">
+                    <i class="fas fa-lightbulb concept-icon"></i>Мысль дня
+                </button>
+                <button class="concept-tab" data-concept="challenges">
+                    <i class="fas fa-trophy concept-icon"></i>Микрочелленджи
+                </button>
+                <button class="concept-tab" data-concept="meme">
+                    <i class="fas fa-image concept-icon"></i>Мемогенератор
+                </button>
+                <button class="concept-tab" data-concept="chat">
+                    <i class="fas fa-comments concept-icon"></i>Случайный диалог
+                </button>
+            </div>
+
             <!-- Post Composer - shown only when logged in -->
             <div id="postComposer" class="post-composer hidden">
                 <div class="composer-header">
@@ -812,11 +1360,247 @@
                 </button>
             </div>
 
-            <!-- Feed -->
-            <div id="feed" class="feed">
-                <div class="loading" id="loading">
-                    <i class="fas fa-spinner fa-spin fa-2x"></i>
-                    <p style="margin-top: 16px;">Загрузка ленты...</p>
+            <!-- Concept Sections -->
+            <div id="conceptSections">
+                <!-- Main Feed -->
+                <div id="feedSection" class="concept-section active">
+                    <div id="feed" class="feed">
+                        <div class="loading" id="loading">
+                            <i class="fas fa-spinner fa-spin fa-2x"></i>
+                            <p style="margin-top: 16px;">Загрузка ленты...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Рейтинг честности -->
+                <div id="honestySection" class="concept-section">
+                    <div class="concept-post-card honesty-post">
+                        <div class="post-header">
+                            <div class="avatar">AT</div>
+                            <div>
+                                <div class="post-author" style="color: #FF5AAC">Анонимный_Тигр</div>
+                                <div class="post-time">2 часа назад</div>
+                            </div>
+                        </div>
+                        
+                        <div class="post-content">
+                            "Работа из дома повышает продуктивность на 40%"
+                        </div>
+                        
+                        <div class="honesty-buttons">
+                            <button class="honesty-btn truth">✓ Честно</button>
+                            <button class="honesty-btn lie">✗ Не честно</button>
+                        </div>
+                        
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 78%; background: var(--accent-light-blue);"></div>
+                        </div>
+                        <div style="text-align: center; color: var(--text-secondary); font-size: 12px;">
+                            78% считают честным • 224 голоса
+                        </div>
+                    </div>
+
+                    <div class="concept-post-card honesty-post">
+                        <div class="post-header">
+                            <div class="avatar">ОФ</div>
+                            <div>
+                                <div class="post-author" style="color: #FF7A00;">Офисный_Феникс</div>
+                                <div class="post-time">5 часов назад</div>
+                            </div>
+                        </div>
+                        
+                        <div class="post-content">
+                            "Кофеин помогает мне думать быстрее"
+                        </div>
+                        
+                        <div class="honesty-buttons">
+                            <button class="honesty-btn truth">✓ Честно</button>
+                            <button class="honesty-btn lie">✗ Не честно</button>
+                        </div>
+                        
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 65%; background: var(--accent-green);"></div>
+                        </div>
+                        <div style="text-align: center; color: var(--text-secondary); font-size: 12px;">
+                            65% считают честным • 189 голосов
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Анонимные комнаты -->
+                <div id="roomsSection" class="concept-section">
+                    <div class="rooms-grid">
+                        <div class="room-card">
+                            <div class="room-title">💼 Работа и карьера</div>
+                            <div class="room-stats">1.2K постов • 256 онлайн</div>
+                        </div>
+                        <div class="room-card">
+                            <div class="room-title">📚 Учёба и образование</div>
+                            <div class="room-stats">845 постов • 189 онлайн</div>
+                        </div>
+                        <div class="room-card">
+                            <div class="room-title">👻 Страшные истории</div>
+                            <div class="room-stats">2.4K постов • 512 онлайн</div>
+                        </div>
+                        <div class="room-card">
+                            <div class="room-title">❤️ Отношения</div>
+                            <div class="room-stats">3.1K постов • 401 онлайн</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: var(--bg-input); border-radius: var(--radius-md);">
+                        <div class="post-header">
+                            <div class="anonymous-author">Скрытый_Пользователь</div>
+                            <div class="post-time">только что</div>
+                        </div>
+                        <div class="post-content">Сегодня получил повышение после 2 лет работы!</div>
+                    </div>
+                </div>
+
+                <!-- Мысль дня -->
+                <div id="thoughtSection" class="concept-section">
+                    <div class="thought-of-day">
+                        <div class="thought-text" id="dailyThought">
+                            "Иногда тишина говорит громче, чем тысяча слов. Особенно когда понимаешь, что нечего сказать."
+                        </div>
+                        
+                        <div class="thought-reactions">
+                            <button class="reaction-btn laugh">
+                                <i class="fas fa-laugh fa-lg"></i>
+                            </button>
+                            <button class="reaction-btn shock">
+                                <i class="fas fa-surprise fa-lg"></i>
+                            </button>
+                            <button class="reaction-btn support">
+                                <i class="fas fa-heart fa-lg"></i>
+                            </button>
+                        </div>
+                        
+                        <div style="margin-top: 20px; color: var(--text-muted); font-size: 12px;">
+                            <button id="nextThoughtBtn" class="btn btn-outline btn-small">
+                                <i class="fas fa-arrow-right"></i> Следующая мысль
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Микрочелленджи -->
+                <div id="challengesSection" class="concept-section">
+                    <div class="challenge-card">
+                        <div style="font-weight: 600; margin-bottom: 10px; color: var(--accent-yellow);">
+                            🏆 Челлендж дня: "3 благодарности"
+                        </div>
+                        <div class="post-content">
+                            Опубликуйте 3 поста о том, за что вы благодарны сегодня
+                        </div>
+                        
+                        <div class="challenge-progress">
+                            <div class="progress-step active"></div>
+                            <div class="progress-step active"></div>
+                            <div class="progress-step"></div>
+                        </div>
+                        
+                        <div style="text-align: center;">
+                            <div class="medal">
+                                <i class="fas fa-medal" style="color: white;"></i>
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 12px;">
+                                Медаль появится при выполнении
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="challenge-card">
+                        <div style="font-weight: 600; margin-bottom: 10px; color: var(--accent-green);">
+                            🎯 Еженедельный челлендж: "7 дней без жалоб"
+                        </div>
+                        <div class="post-content">
+                            Пройдите неделю, не жалуясь ни на что в постах
+                        </div>
+                        
+                        <div class="challenge-progress">
+                            <div class="progress-step active"></div>
+                            <div class="progress-step active"></div>
+                            <div class="progress-step active"></div>
+                            <div class="progress-step"></div>
+                            <div class="progress-step"></div>
+                            <div class="progress-step"></div>
+                            <div class="progress-step"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Мемогенератор -->
+                <div id="memeSection" class="concept-section">
+                    <div class="meme-creator">
+                        <div style="margin-bottom: 15px;">
+                            <textarea placeholder="Добавьте текст к мему..." id="memeText" style="width: 100%; height: 60px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px; color: var(--text-primary); resize: none;"></textarea>
+                        </div>
+                        
+                        <div class="toolbar">
+                            <button class="tool-btn" id="uploadImageBtn">
+                                <i class="fas fa-image"></i> Загрузить изображение
+                            </button>
+                            <button class="tool-btn" id="addTextBtn">
+                                <i class="fas fa-text-height"></i> Добавить текст
+                            </button>
+                            <button class="tool-btn" id="applyFilterBtn">
+                                <i class="fas fa-paint-brush"></i> Применить фильтр
+                            </button>
+                            <button class="tool-btn" id="saveMemeBtn">
+                                <i class="fas fa-save"></i> Сохранить мем
+                            </button>
+                        </div>
+                        
+                        <div class="meme-preview" id="memePreview">
+                            <div id="memeDropText">
+                                <i class="fas fa-cloud-upload-alt fa-2x" style="margin-bottom: 10px;"></i>
+                                <div>Перетащите сюда изображение или кликните для загрузки</div>
+                            </div>
+                            <img id="memeImage" class="hidden" alt="Мем">
+                        </div>
+                        <input type="file" id="memeImageInput" accept="image/*" class="hidden">
+                    </div>
+                </div>
+
+                <!-- Случайный диалог -->
+                <div id="chatSection" class="concept-section">
+                    <div class="concept-post-card">
+                        <h3 style="margin-bottom: 15px; color: var(--accent-blue);">
+                            <i class="fas fa-random"></i> Случайный анонимный диалог
+                        </h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 15px; font-size: 14px;">
+                            Общайтесь с незнакомцами на случайные темы. Каждые 5 минут собеседник меняется.
+                        </p>
+                        
+                        <div class="chat-container" id="chatWindow">
+                            <div class="chat-message">
+                                <div style="color: #00B4D8; font-weight: 600;">Незнакомец_А:</div>
+                                <div>Привет! Как твой день?</div>
+                            </div>
+                            
+                            <div class="chat-message incoming">
+                                <div style="opacity: 0.8; font-size: 12px;">Вы:</div>
+                                <div>Нормально, работаю удалённо. А у тебя?</div>
+                            </div>
+                            
+                            <div class="chat-message">
+                                <div style="color: #FF5AAC; font-weight: 600;">Незнакомец_Б:</div>
+                                <div>Тоже удалёнка. Люблю эту свободу!</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 15px; display: flex; gap: 10px;">
+                            <input type="text" id="chatInput" placeholder="Напишите сообщение..." style="flex: 1; padding: 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary);">
+                            <button id="sendChatBtn" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 15px; color: var(--text-muted); font-size: 12px;">
+                            <i class="fas fa-sync-alt"></i> Новый собеседник появится через: <span id="chatTimer">4:32</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -826,9 +1610,9 @@
     <nav class="bottom-nav">
         <div class="nav-inner">
             <div class="nav-items">
-                <button class="nav-item active" data-page="feed">
+                <button class="nav-item active" data-page="concepts">
                     <i class="fas fa-home nav-icon"></i>
-                    <span class="nav-text">Лента</span>
+                    <span class="nav-text">Концепты</span>
                 </button>
                 <button class="nav-item" data-page="compose">
                     <i class="fas fa-plus-circle nav-icon"></i>
@@ -897,12 +1681,12 @@
             </div>
             
             <div class="profile-header">
-                <div class="avatar-upload">
-                    <img id="profileAvatar" class="profile-avatar" alt="Аватар">
-                    <div class="avatar-overlay">
-                        <i class="fas fa-camera fa-2x"></i>
+                <div class="avatar-upload-area" id="avatarUploadArea">
+                    <img id="profileAvatar" class="avatar-preview" alt="Аватар">
+                    <div class="avatar-upload-text">
+                        <i class="fas fa-camera"></i> Нажмите для загрузки
                     </div>
-                    <input type="file" id="avatarInput" accept="image/*">
+                    <input type="file" id="avatarInput" accept="image/*" class="hidden">
                 </div>
                 <div>
                     <h3 id="profileNickname" style="margin-bottom: 8px;"></h3>
@@ -995,7 +1779,8 @@
             getStorage,
             ref,
             uploadBytes,
-            getDownloadURL
+            getDownloadURL,
+            deleteObject
         } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-storage.js";
 
         // Initialize Firebase
@@ -1013,9 +1798,28 @@
         let userProfile = null;
         let selectedColor = "#1d9bf0";
         let nicknameCheckTimeout = null;
+        let currentConcept = 'feed';
+        let chatTimer = 300; // 5 minutes in seconds
+        let chatInterval = null;
+        let dailyThoughts = [
+            "Иногда тишина говорит громче, чем тысяча слов. Особенно когда понимаешь, что нечего сказать.",
+            "Самые важные решения часто принимаются в самые неожиданные моменты.",
+            "Настоящая свобода — это когда тебе не нужно ничего доказывать.",
+            "Иногда нужно потеряться, чтобы найти себя.",
+            "Время лечит не все раны, но учит с ними жить.",
+            "Самые искренние улыбки часто скрывают самые глубокие мысли.",
+            "Иногда лучшее, что можно сделать — это ничего не делать.",
+            "Настоящая смелость — это быть собой в мире, который постоянно пытается сделать тебя кем-то другим."
+        ];
+        let currentThoughtIndex = 0;
 
         // DOM Elements
         const elements = {
+            // Navigation
+            conceptNav: document.getElementById('conceptNav'),
+            conceptTabs: document.querySelectorAll('.concept-tab'),
+            conceptSections: document.getElementById('conceptSections'),
+            
             // Auth
             authBtn: document.getElementById('authBtn'),
             authModal: document.getElementById('authModal'),
@@ -1044,6 +1848,7 @@
             nicknameStatus: document.getElementById('nicknameStatus'),
             colorOptions: document.querySelectorAll('.color-option'),
             avatarInput: document.getElementById('avatarInput'),
+            avatarUploadArea: document.getElementById('avatarUploadArea'),
             saveProfile: document.getElementById('saveProfile'),
             deletePosts: document.getElementById('deletePosts'),
             logoutBtn: document.getElementById('logoutBtn'),
@@ -1066,6 +1871,23 @@
             feed: document.getElementById('feed'),
             loading: document.getElementById('loading'),
             
+            // Concepts
+            dailyThought: document.getElementById('dailyThought'),
+            nextThoughtBtn: document.getElementById('nextThoughtBtn'),
+            memeText: document.getElementById('memeText'),
+            uploadImageBtn: document.getElementById('uploadImageBtn'),
+            addTextBtn: document.getElementById('addTextBtn'),
+            applyFilterBtn: document.getElementById('applyFilterBtn'),
+            saveMemeBtn: document.getElementById('saveMemeBtn'),
+            memePreview: document.getElementById('memePreview'),
+            memeImage: document.getElementById('memeImage'),
+            memeDropText: document.getElementById('memeDropText'),
+            memeImageInput: document.getElementById('memeImageInput'),
+            chatWindow: document.getElementById('chatWindow'),
+            chatInput: document.getElementById('chatInput'),
+            sendChatBtn: document.getElementById('sendChatBtn'),
+            chatTimer: document.getElementById('chatTimer'),
+            
             // Navigation
             navItems: document.querySelectorAll('.nav-item')
         };
@@ -1076,10 +1898,20 @@
         function init() {
             setupEventListeners();
             setupAuthStateListener();
-            setupFeedListener(); // Load feed for everyone, including guests
+            setupFeedListener();
+            startConceptAnimations();
+            startChatTimer();
         }
 
         function setupEventListeners() {
+            // Concept navigation
+            elements.conceptTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const concept = tab.dataset.concept;
+                    switchConcept(concept);
+                });
+            });
+            
             // Auth buttons
             elements.authBtn.addEventListener('click', () => showAuthModal());
             elements.profileBtn.addEventListener('click', () => showProfileModal());
@@ -1108,6 +1940,7 @@
                 });
             });
             
+            elements.avatarUploadArea.addEventListener('click', () => elements.avatarInput.click());
             elements.avatarInput.addEventListener('change', handleAvatarUpload);
             elements.saveProfile.addEventListener('click', saveProfile);
             elements.deletePosts.addEventListener('click', confirmDeletePosts);
@@ -1119,6 +1952,44 @@
             // Post composer
             elements.postInput.addEventListener('input', updateCharCounter);
             elements.postSubmit.addEventListener('click', createPost);
+            
+            // Concept specific
+            elements.nextThoughtBtn.addEventListener('click', nextThought);
+            elements.uploadImageBtn.addEventListener('click', () => elements.memeImageInput.click());
+            elements.memeImageInput.addEventListener('change', handleMemeImageUpload);
+            elements.saveMemeBtn.addEventListener('click', saveMeme);
+            elements.sendChatBtn.addEventListener('click', sendChatMessage);
+            elements.chatInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    sendChatMessage();
+                }
+            });
+            
+            // Meme preview drag and drop
+            elements.memePreview.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                elements.memePreview.classList.add('drag-over');
+            });
+            
+            elements.memePreview.addEventListener('dragleave', () => {
+                elements.memePreview.classList.remove('drag-over');
+            });
+            
+            elements.memePreview.addEventListener('drop', (e) => {
+                e.preventDefault();
+                elements.memePreview.classList.remove('drag-over');
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    handleMemeImageFile(file);
+                }
+            });
+            
+            elements.memePreview.addEventListener('click', () => {
+                if (!elements.memeImage.src) {
+                    elements.memeImageInput.click();
+                }
+            });
             
             // Navigation
             elements.navItems.forEach(item => {
@@ -1145,6 +2016,212 @@
                     });
                 }
             });
+        }
+
+        function switchConcept(concept) {
+            currentConcept = concept;
+            
+            // Update active tab
+            elements.conceptTabs.forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.concept === concept);
+            });
+            
+            // Show active section
+            document.querySelectorAll('.concept-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(`${concept}Section`).classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Start concept-specific animations
+            startConceptAnimations();
+        }
+
+        function startConceptAnimations() {
+            // Stop previous animations
+            if (chatInterval) {
+                clearInterval(chatInterval);
+            }
+            
+            switch (currentConcept) {
+                case 'honesty':
+                    startHonestyAnimations();
+                    break;
+                case 'thought':
+                    startThoughtAnimations();
+                    break;
+                case 'challenges':
+                    startChallengeAnimations();
+                    break;
+                case 'chat':
+                    startChatTimer();
+                    break;
+            }
+        }
+
+        function startHonestyAnimations() {
+            const honestyPosts = document.querySelectorAll('.honesty-post');
+            honestyPosts.forEach((post, index) => {
+                setTimeout(() => {
+                    post.style.animation = 'pulse 2s infinite';
+                    setTimeout(() => {
+                        post.style.animation = '';
+                    }, 4000);
+                }, index * 2000);
+            });
+        }
+
+        function startThoughtAnimations() {
+            const thoughtText = document.getElementById('dailyThought');
+            thoughtText.style.animation = 'fadeIn 1s ease';
+        }
+
+        function startChallengeAnimations() {
+            const medals = document.querySelectorAll('.medal');
+            medals.forEach(medal => {
+                medal.style.animation = 'medalSpin 0.8s ease';
+            });
+        }
+
+        function startChatTimer() {
+            chatTimer = 300; // 5 minutes
+            updateChatTimer();
+            
+            if (chatInterval) clearInterval(chatInterval);
+            chatInterval = setInterval(() => {
+                chatTimer--;
+                updateChatTimer();
+                
+                if (chatTimer <= 0) {
+                    // New stranger
+                    addChatMessage('Система', 'Новый собеседник подключился!', '#00ba7c');
+                    chatTimer = 300;
+                }
+            }, 1000);
+        }
+
+        function updateChatTimer() {
+            const minutes = Math.floor(chatTimer / 60);
+            const seconds = chatTimer % 60;
+            elements.chatTimer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function nextThought() {
+            currentThoughtIndex = (currentThoughtIndex + 1) % dailyThoughts.length;
+            elements.dailyThought.textContent = dailyThoughts[currentThoughtIndex];
+            elements.dailyThought.style.animation = 'fadeIn 0.8s ease';
+        }
+
+        function handleMemeImageUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleMemeImageFile(file);
+            }
+        }
+
+        function handleMemeImageFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Пожалуйста, выберите изображение');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                elements.memeImage.src = e.target.result;
+                elements.memeImage.classList.remove('hidden');
+                elements.memeDropText.classList.add('hidden');
+                elements.memePreview.style.background = 'transparent';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveMeme() {
+            if (!elements.memeImage.src || elements.memeImage.src.includes('data:image')) {
+                const text = elements.memeText.value.trim();
+                if (text) {
+                    if (currentUser) {
+                        createPostFromMeme(text);
+                    } else {
+                        showAuthModal();
+                    }
+                } else {
+                    alert('Добавьте текст или изображение для мема');
+                }
+            } else {
+                alert('Функция сохранения мемов в Firestore требует дополнительной реализации');
+            }
+        }
+
+        async function createPostFromMeme(text) {
+            try {
+                await addDoc(collection(db, 'posts'), {
+                    content: text,
+                    authorId: currentUser.uid,
+                    authorNickname: userProfile?.nickname || 'Аноним',
+                    authorColor: userProfile?.color || '#1d9bf0',
+                    authorAvatarUrl: userProfile?.avatarUrl || null,
+                    likes: [],
+                    likesCount: 0,
+                    commentsCount: 0,
+                    isMeme: true,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                });
+                
+                elements.memeText.value = '';
+                elements.memeImage.src = '';
+                elements.memeImage.classList.add('hidden');
+                elements.memeDropText.classList.remove('hidden');
+                elements.memePreview.style.background = 'rgba(255, 255, 255, 0.05)';
+                
+                alert('Мем опубликован!');
+                switchConcept('feed');
+            } catch (error) {
+                console.error('Error creating meme post:', error);
+                alert('Ошибка при публикации мема');
+            }
+        }
+
+        function sendChatMessage() {
+            const message = elements.chatInput.value.trim();
+            if (!message) return;
+            
+            if (!currentUser) {
+                showAuthModal();
+                return;
+            }
+            
+            addChatMessage('Вы', message, userProfile?.color || '#1d9bf0', true);
+            elements.chatInput.value = '';
+            
+            // Simulate stranger response
+            setTimeout(() => {
+                const responses = [
+                    "Интересно! Расскажи больше.",
+                    "Я тоже так думаю!",
+                    "Никогда об этом не задумывался...",
+                    "А как ты к этому пришел?",
+                    "Спасибо, что поделился!"
+                ];
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                addChatMessage('Незнакомец', randomResponse, '#FF5AAC');
+            }, 1000 + Math.random() * 2000);
+        }
+
+        function addChatMessage(sender, text, color, isIncoming = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${isIncoming ? 'incoming' : ''}`;
+            messageDiv.style.animation = 'floatUp 0.3s ease';
+            messageDiv.innerHTML = `
+                <div style="color: ${color}; font-weight: 600; font-size: ${isIncoming ? '12px' : '14px'}; opacity: 0.8;">
+                    ${sender}${isIncoming ? '' : ':'}
+                </div>
+                <div>${escapeHtml(text)}</div>
+            `;
+            elements.chatWindow.appendChild(messageDiv);
+            elements.chatWindow.scrollTop = elements.chatWindow.scrollHeight;
         }
 
         // Auth functions
@@ -1696,7 +2773,7 @@
                 
                 elements.postInput.value = '';
                 updateCharCounter();
-                switchPage('feed');
+                switchConcept('feed');
                 
                 // Scroll to top of feed to see new post
                 document.querySelector('.feed').scrollIntoView({ behavior: 'smooth' });
@@ -1706,7 +2783,7 @@
             }
         }
 
-        // Feed functions - LOAD FOR EVERYONE (including guests)
+        // Feed functions
         function setupFeedListener() {
             const postsQuery = query(
                 collection(db, 'posts'),
@@ -1822,7 +2899,7 @@
                 replyBtn.addEventListener('click', () => showAuthModal());
             }
             
-            // Load replies for this post (for everyone, including guests)
+            // Load replies for this post
             loadReplies(postId);
             
             return postElement;
@@ -2015,7 +3092,7 @@
             elements.guestNotification.classList.add('hidden');
             
             // Update navigation
-            switchPage('feed');
+            switchPage('concepts');
         }
 
         function resetUI() {
@@ -2033,7 +3110,7 @@
             elements.profileModal.classList.remove('active');
             
             // Reset navigation
-            switchPage('feed');
+            switchPage('concepts');
             
             // Clear form fields
             elements.postInput.value = '';
@@ -2050,7 +3127,7 @@
             if (page === 'compose') {
                 if (!currentUser) {
                     showAuthModal();
-                    switchPage('feed');
+                    switchPage('concepts');
                     return;
                 }
                 elements.postInput.focus();
@@ -2058,11 +3135,11 @@
             } else if (page === 'profile') {
                 if (!currentUser) {
                     showAuthModal();
-                    switchPage('feed');
+                    switchPage('concepts');
                     return;
                 }
                 showProfileModal();
-            } else if (page === 'feed') {
+            } else if (page === 'concepts') {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
