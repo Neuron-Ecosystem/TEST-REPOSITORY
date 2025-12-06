@@ -27,6 +27,11 @@
             --radius-lg: 16px;
             --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.2);
+            
+            --role-user: #4FC3F7;
+            --role-team: #FFD400;
+            --role-moderator: #00BA7C;
+            --role-admin: #F91880;
         }
 
         * {
@@ -301,16 +306,17 @@
         }
 
         .btn-tiny {
-            padding: 6px 12px;
+            padding: 6px 10px;
             font-size: 12px;
             border-radius: 8px;
+            min-width: auto;
         }
 
         .btn-reply {
-            padding: 8px 16px;
-            font-size: 14px;
-            height: 44px;
-            min-width: 90px;
+            padding: 6px 10px;
+            font-size: 12px;
+            height: 36px;
+            min-width: 36px;
         }
 
         .divider {
@@ -491,6 +497,12 @@
             color: var(--text-secondary);
             cursor: pointer;
             font-size: 16px;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .reply-to-close:hover {
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         /* Feed */
@@ -520,6 +532,17 @@
             margin-bottom: 12px;
         }
 
+        .post-author-info {
+            flex: 1;
+        }
+
+        .post-author-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
         .post-author {
             font-weight: 700;
             font-size: 16px;
@@ -541,7 +564,7 @@
 
         .post-actions {
             display: flex;
-            gap: 32px;
+            gap: 16px;
             padding-top: 12px;
             border-top: 1px solid var(--border-color);
         }
@@ -555,9 +578,10 @@
             color: var(--text-secondary);
             font-size: 14px;
             cursor: pointer;
-            transition: color 0.2s;
-            padding: 4px 8px;
+            transition: all 0.2s;
+            padding: 6px 10px;
             border-radius: var(--radius-md);
+            min-height: 36px;
         }
 
         .action-btn:hover {
@@ -602,15 +626,15 @@
 
         .reply-input {
             flex: 1;
-            padding: 12px 14px;
+            padding: 14px 16px;
             background-color: var(--bg-input);
             border: 2px solid transparent;
             border-radius: var(--radius-md);
             color: var(--text-primary);
             font-size: 14px;
             resize: none;
-            min-height: 60px;
-            max-height: 150px;
+            min-height: 80px;
+            max-height: 200px;
             font-family: inherit;
             line-height: 1.5;
         }
@@ -661,7 +685,7 @@
 
         .reply-actions {
             display: flex;
-            gap: 20px;
+            gap: 16px;
             margin-top: 10px;
             padding-top: 8px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
@@ -720,6 +744,38 @@
         .nav-text {
             font-size: 12px;
             font-weight: 600;
+        }
+
+        /* Role Badges */
+        .role-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 4px;
+        }
+
+        .role-user {
+            background-color: var(--role-user);
+            color: #000;
+        }
+
+        .role-team {
+            background-color: var(--role-team);
+            color: #000;
+        }
+
+        .role-moderator {
+            background-color: var(--role-moderator);
+            color: #000;
+        }
+
+        .role-admin {
+            background-color: var(--role-admin);
+            color: #fff;
         }
 
         /* Рейтинг честности - ОБНОВЛЁННЫЙ */
@@ -1240,7 +1296,7 @@
             }
             
             .post-actions {
-                gap: 24px;
+                gap: 12px;
             }
             
             .nav-text {
@@ -1294,6 +1350,15 @@
             
             .challenge-card {
                 padding: 20px;
+            }
+            
+            .action-btn {
+                padding: 6px 8px;
+                font-size: 13px;
+            }
+            
+            .reply-input {
+                min-height: 70px;
             }
         }
 
@@ -1812,7 +1877,8 @@
             signInWithPopup,
             GoogleAuthProvider,
             signOut,
-            onAuthStateChanged
+            onAuthStateChanged,
+            getIdTokenResult
         } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
         import { 
             initializeFirestore,
@@ -1855,6 +1921,7 @@
         // State
         let currentUser = null;
         let userProfile = null;
+        let userRole = 'user';
         let selectedColor = "#1d9bf0";
         let nicknameCheckTimeout = null;
         let currentSection = 'main';
@@ -2109,6 +2176,27 @@
                     
                     setupReply(postId, postContent, postAuthor);
                 }
+                
+                // Like button
+                const likeBtn = e.target.closest('.action-btn[data-action="like"]');
+                if (likeBtn) {
+                    if (!currentUser) {
+                        showAuthModal();
+                        return;
+                    }
+                    
+                    const postId = likeBtn.dataset.post;
+                    const postCard = likeBtn.closest('.post-card');
+                    const postData = JSON.parse(postCard.dataset.postData || '{}');
+                    
+                    toggleLike(postId, postData);
+                }
+                
+                // Close reply button
+                const closeReplyBtn = e.target.closest('.reply-to-close');
+                if (closeReplyBtn) {
+                    clearReplySetup();
+                }
             });
         }
 
@@ -2242,11 +2330,8 @@
                 elements.profileUserId.textContent = currentUser.uid.slice(0, 8);
                 elements.profileEmail.textContent = currentUser.email;
                 
-                if (profile.avatarUrl) {
-                    elements.profileAvatar.src = profile.avatarUrl;
-                } else {
-                    elements.profileAvatar.src = getDefaultAvatar(profile.nickname || '?', profile.color);
-                }
+                // Set avatar
+                setAvatar(profile.avatarUrl, profile.nickname, profile.color);
                 
                 if (profile.color) {
                     selectedColor = profile.color;
@@ -2259,6 +2344,16 @@
                 // Check nickname availability
                 checkNicknameAvailability();
             }
+        }
+
+        function setAvatar(avatarUrl, nickname, color) {
+            const avatarSrc = avatarUrl || getDefaultAvatar(nickname || '?', color);
+            
+            elements.profileAvatar.src = avatarSrc;
+            elements.composerAvatar.src = avatarSrc;
+            elements.headerAvatar.src = avatarSrc;
+            elements.honestyComposerAvatar.src = avatarSrc;
+            elements.thoughtComposerAvatar.src = avatarSrc;
         }
 
         async function checkNicknameAvailability() {
@@ -2342,7 +2437,8 @@
                     color: selectedColor,
                     createdAt: serverTimestamp(),
                     email: user.email,
-                    avatarUrl: user.photoURL || null
+                    avatarUrl: user.photoURL || null,
+                    role: 'user'
                 });
             }
         }
@@ -2393,11 +2489,7 @@
                 });
                 
                 // Update UI
-                elements.profileAvatar.src = downloadURL;
-                elements.composerAvatar.src = downloadURL;
-                elements.headerAvatar.src = downloadURL;
-                elements.honestyComposerAvatar.src = downloadURL;
-                elements.thoughtComposerAvatar.src = downloadURL;
+                setAvatar(downloadURL, userProfile?.nickname, userProfile?.color);
                 
                 showProfileMessage('Аватар обновлен!');
                 
@@ -2655,20 +2747,15 @@
             // Clear any existing reply setup
             clearReplySetup();
             
-            // Create reply UI for current section
-            const replyContainer = currentSection === 'honesty' ? elements.honestyReplyToContainer : 
-                                 currentSection === 'thought' ? elements.thoughtReplyToContainer : 
-                                 elements.replyToContainer;
+            // Switch to compose page
+            switchPage('compose');
             
-            const postInput = currentSection === 'honesty' ? elements.honestyPostInput :
-                            currentSection === 'thought' ? elements.thoughtInput :
-                            elements.postInput;
-            
-            replyContainer.innerHTML = `
+            // Create reply UI in the composer
+            elements.replyToContainer.innerHTML = `
                 <div class="reply-to-post">
                     <div class="reply-to-header">
                         <span class="reply-to-author">Ответ для: ${postAuthor}</span>
-                        <button class="reply-to-close" onclick="clearReplySetup()">
+                        <button class="reply-to-close">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -2676,8 +2763,8 @@
                 </div>
             `;
             
-            postInput.focus();
-            postInput.placeholder = "Напишите ваш ответ...";
+            elements.postInput.focus();
+            elements.postInput.placeholder = "Напишите ваш ответ...";
             
             // Scroll to composer
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2721,6 +2808,7 @@
                     authorNickname: userProfile?.nickname || 'Аноним',
                     authorColor: userProfile?.color || '#1d9bf0',
                     authorAvatarUrl: userProfile?.avatarUrl || null,
+                    authorRole: userRole || 'user',
                     likes: [],
                     likesCount: 0,
                     commentsCount: 0,
@@ -2739,6 +2827,7 @@
                         const originalPost = originalPostSnap.data();
                         postData.replyToContent = originalPost.content.substring(0, 100) + '...';
                         postData.replyToAuthor = originalPost.authorNickname;
+                        postData.replyToAuthorId = originalPost.authorId;
                     }
                 }
                 
@@ -2812,9 +2901,7 @@
             if (type === 'regular') {
                 // Check if post contains gratitude keywords
                 const gratitudeKeywords = ['спасибо', 'благодарен', 'благодарна', 'рад', 'рада', 'счастлив', 'счастлива'];
-                const content = type === 'honesty' ? elements.honestyPostInput.value.toLowerCase() :
-                              type === 'thought' ? elements.thoughtInput.value.toLowerCase() :
-                              elements.postInput.value.toLowerCase();
+                const content = elements.postInput.value.toLowerCase();
                 
                 const isGratitude = gratitudeKeywords.some(keyword => content.includes(keyword));
                 
@@ -2826,6 +2913,8 @@
                         challengeData.challenge1.completed = true;
                         completeChallenge(1);
                     }
+                    
+                    await saveChallengeProgress();
                 }
             }
             
@@ -2838,10 +2927,9 @@
                     challengeData.challenge3.completed = true;
                     completeChallenge(3);
                 }
+                
+                await saveChallengeProgress();
             }
-            
-            // Save challenge progress
-            await saveChallengeProgress();
         }
 
         function updateChallengeUI(challengeNum) {
@@ -3031,12 +3119,15 @@
             postElement.className = 'post-card';
             if (type === 'honesty') postElement.classList.add('high-rated');
             postElement.dataset.postId = postId;
+            postElement.dataset.postData = JSON.stringify(post);
             
             const isLiked = currentUser ? (post.likes?.includes(currentUser.uid) || false) : false;
             const likeClass = isLiked ? 'action-btn liked' : 'action-btn';
             const likeIcon = isLiked ? 'fas fa-heart' : 'far fa-heart';
             
             const timeAgo = formatTimeAgo(post.createdAt?.toDate());
+            
+            // Get avatar URL with fallback
             const avatarUrl = post.authorAvatarUrl || getDefaultAvatar(post.authorNickname, post.authorColor);
             
             // Check user's votes/reactions
@@ -3063,6 +3154,10 @@
                 shock: post.reactions?.shock?.length || 0
             };
             
+            // Get role badge HTML
+            const role = post.authorRole || 'user';
+            const roleBadge = getRoleBadgeHTML(role);
+            
             // Reply info if this is a reply
             let replyInfo = '';
             if (post.replyTo) {
@@ -3079,11 +3174,14 @@
             postElement.innerHTML = `
                 <div class="post-header">
                     <img src="${avatarUrl}" class="avatar" alt="Аватар">
-                    <div style="flex: 1;">
-                        <div class="post-author" style="color: ${post.authorColor || '#1d9bf0'}">
-                            ${post.authorNickname || 'Аноним'}
+                    <div class="post-author-info">
+                        <div class="post-author-row">
+                            <div class="post-author" style="color: ${post.authorColor || '#1d9bf0'}">
+                                ${post.authorNickname || 'Аноним'}
+                            </div>
+                            ${roleBadge}
+                            <div class="post-time">${timeAgo}</div>
                         </div>
-                        <div class="post-time">${timeAgo}</div>
                     </div>
                 </div>
                 
@@ -3146,9 +3244,8 @@
                         <i class="${likeIcon}"></i>
                         <span>${post.likesCount || 0}</span>
                     </button>
-                    <button class="action-btn" data-action="reply" data-post="${postId}" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
+                    <button class="action-btn btn-tiny" data-action="reply" data-post="${postId}" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
                         <i class="fas fa-reply"></i>
-                        <span>Ответить</span>
                     </button>
                     <button class="action-btn" data-action="share" data-post="${postId}">
                         <i class="far fa-share-square"></i>
@@ -3157,6 +3254,18 @@
             `;
             
             return postElement;
+        }
+
+        function getRoleBadgeHTML(role) {
+            const roleConfigs = {
+                'user': { class: 'role-user', text: 'Пользователь' },
+                'team': { class: 'role-team', text: 'Команда' },
+                'moderator': { class: 'role-moderator', text: 'Модератор' },
+                'admin': { class: 'role-admin', text: 'Админ' }
+            };
+            
+            const config = roleConfigs[role] || roleConfigs.user;
+            return `<span class="role-badge ${config.class}">${config.text}</span>`;
         }
 
         async function handleHonestyVote(postId, isTruth, button) {
@@ -3298,6 +3407,16 @@
                 if (user) {
                     // User is signed in
                     userProfile = await getUserProfile(user.uid);
+                    
+                    // Get user role from token claims
+                    try {
+                        const tokenResult = await getIdTokenResult(user);
+                        userRole = tokenResult.claims.role || 'user';
+                    } catch (error) {
+                        console.error('Error getting user role:', error);
+                        userRole = 'user';
+                    }
+                    
                     updateUI();
                     loadChallengeProgress();
                 } else {
@@ -3314,12 +3433,7 @@
             elements.headerAvatar.classList.remove('hidden');
             
             if (userProfile) {
-                const avatarUrl = userProfile.avatarUrl || getDefaultAvatar(userProfile.nickname || '?', userProfile.color);
-                elements.headerAvatar.src = avatarUrl;
-                elements.composerAvatar.src = avatarUrl;
-                elements.honestyComposerAvatar.src = avatarUrl;
-                elements.thoughtComposerAvatar.src = avatarUrl;
-                
+                setAvatar(userProfile.avatarUrl, userProfile.nickname, userProfile.color);
                 elements.honestyComposerAvatar.classList.remove('hidden');
                 elements.thoughtComposerAvatar.classList.remove('hidden');
             }
@@ -3363,6 +3477,15 @@
             
             // Clear reply setup
             clearReplySetup();
+            
+            // Reset state
+            userProfile = null;
+            userRole = 'user';
+            challengeData = {
+                challenge1: { current: 0, total: 3, type: 'gratitude', completed: false },
+                challenge2: { current: 0, total: 7, type: 'noComplaints', completed: false },
+                challenge3: { current: 0, total: 5, type: 'helpOthers', completed: false }
+            };
         }
 
         function switchPage(page) {
@@ -3405,7 +3528,7 @@
         // Utility functions
         function getDefaultAvatar(text, color = '#1d9bf0') {
             const colors = ['#1d9bf0', '#f91880', '#00ba7c', '#ffd400', '#7856ff', '#ff7a00', '#00b4d8', '#ff5aac', '#52b788'];
-            const selectedColor = color || colors[text.charCodeAt(0) % colors.length];
+            const selectedColor = color || colors[text?.charCodeAt(0) % colors.length] || '#1d9bf0';
             const name = text ? text.substring(0, 2).toUpperCase() : '??';
             return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${selectedColor.replace('#', '')}&color=fff&size=128`;
         }
