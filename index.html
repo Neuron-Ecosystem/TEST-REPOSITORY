@@ -1656,14 +1656,6 @@
             min-width: 60px;
             height: 28px;
         }
-        
-        /* Миниатюрная кнопка "Ответить" */
-        .tiny-reply-btn {
-            padding: 2px 6px !important;
-            font-size: 11px !important;
-            height: 24px !important;
-            min-width: 24px !important;
-        }
     </style>
 </head>
 <body>
@@ -2222,6 +2214,7 @@
             setupEventListeners();
             setupAuthStateListener();
             setupFeedListeners();
+            setupInteractiveElements();
         }
 
         function setupEventListeners() {
@@ -2323,16 +2316,18 @@
                 elements.userProfileModal.classList.remove('active');
             });
             
-            // Setup global event listeners for dynamically created elements
-            setupGlobalEventListeners();
+            // Close reply button
+            const closeReplyBtn = document.querySelector('.reply-to-close');
+            if (closeReplyBtn) {
+                closeReplyBtn.addEventListener('click', clearReplySetup);
+            }
         }
 
-        function setupGlobalEventListeners() {
-            // Используем делегирование событий для динамически созданных элементов
-            document.addEventListener('click', function(e) {
+        function setupInteractiveElements() {
+            document.body.addEventListener('click', function(e) {
                 // Honesty voting buttons
                 const honestyBtn = e.target.closest('.honesty-btn');
-                if (honestyBtn) {
+                if (honestyBtn && !honestyBtn.classList.contains('voted')) {
                     if (!currentUser) {
                         showAuthModal();
                         return;
@@ -2628,15 +2623,6 @@
             elements.headerAvatar.src = avatarSrc;
             elements.honestyComposerAvatar.src = avatarSrc;
             elements.thoughtComposerAvatar.src = avatarSrc;
-            
-            // Обновляем все аватары в UI
-            document.querySelectorAll('.avatar').forEach(avatar => {
-                if (avatar.src.includes('ui-avatars.com') || avatar === elements.profileAvatar || 
-                    avatar === elements.composerAvatar || avatar === elements.headerAvatar ||
-                    avatar === elements.honestyComposerAvatar || avatar === elements.thoughtComposerAvatar) {
-                    avatar.src = avatarSrc;
-                }
-            });
         }
 
         async function checkNicknameAvailability() {
@@ -3128,12 +3114,9 @@
                     const originalPostSnap = await getDoc(originalPostRef);
                     if (originalPostSnap.exists()) {
                         const originalPost = originalPostSnap.data();
-                        postData.parentPostData = {
-                            content: originalPost.content.substring(0, 100) + (originalPost.content.length > 100 ? '...' : ''),
-                            authorNickname: originalPost.authorNickname || 'Аноним',
-                            authorId: originalPost.authorId,
-                            authorColor: originalPost.authorColor || '#1d9bf0'
-                        };
+                        postData.originalContent = originalPost.content.substring(0, 100) + (originalPost.content.length > 100 ? '...' : '');
+                        postData.originalAuthor = originalPost.authorNickname || 'Аноним';
+                        postData.originalAuthorId = originalPost.authorId;
                         
                         // Increment comments count on original post
                         await updateDoc(originalPostRef, {
@@ -3318,7 +3301,7 @@
                 // Challenge 1: 3 gratitude posts
                 if (type === 'regular') {
                     // Check if post contains gratitude keywords
-                    const gratitudeKeywords = ['спасибо', 'благодарен', 'благодарна', 'рад', 'рада', 'счастлив', 'счастлива', 'благодарю', 'спасибо', 'thanks', 'thankful', 'grateful'];
+                    const gratitudeKeywords = ['спасибо', 'благодарен', 'благодарна', 'рад', 'рада', 'счастлив', 'счастлива', 'благодарю'];
                     const contentLower = content.toLowerCase();
                     
                     const isGratitude = gratitudeKeywords.some(keyword => contentLower.includes(keyword));
@@ -3486,7 +3469,7 @@
             onSnapshot(thoughtQuery, (snapshot) => {
                 elements.thoughtLoading?.classList.add('hidden');
                 renderPosts(snapshot, elements.thoughtFeed, 'thought');
-            }, (error) => {
+            }, (error) {
                 console.error('Error loading thought posts:', error);
                 if (elements.thoughtLoading) {
                     elements.thoughtLoading.innerHTML = '<p>Ошибка загрузки мыслей</p>';
@@ -3578,22 +3561,20 @@
             
             // Original post quote if this is a reply
             let originalPostQuote = '';
-            if (post.parentId && post.parentPostData) {
+            if (post.parentId && post.originalContent) {
                 originalPostQuote = `
                     <div class="original-post-quote">
                         <div class="original-post-quote-header">
-                            <span class="original-post-author" style="color: ${post.parentPostData.authorColor || '#1d9bf0'}">
-                                Ответ для: ${escapeHtml(post.parentPostData.authorNickname || 'Аноним')}
-                            </span>
+                            <span class="original-post-author">Ответ для: ${escapeHtml(post.originalAuthor || 'Аноним')}</span>
                         </div>
-                        <div class="original-post-content">${escapeHtml(post.parentPostData.content || '...')}</div>
+                        <div class="original-post-content">${escapeHtml(post.originalContent || '...')}</div>
                     </div>
                 `;
             }
             
             postElement.innerHTML = `
                 <div class="post-header">
-                    <img src="${avatarUrl}" class="avatar" alt="Аватар" onerror="this.src='${getDefaultAvatar(post.authorNickname, post.authorColor)}'">
+                    <img src="${avatarUrl}" class="avatar" alt="Аватар">
                     <div class="post-author-info">
                         <div class="post-author-row">
                             <div class="post-author" style="color: ${post.authorColor || '#1d9bf0'}">
@@ -3664,7 +3645,7 @@
                         <i class="${likeIcon}"></i>
                         <span>${post.likesCount || 0}</span>
                     </button>
-                    <button class="action-btn btn-tiny-reply tiny-reply-btn" data-action="reply" data-post="${postId}" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
+                    <button class="action-btn btn-tiny-reply" data-action="reply" data-post="${postId}" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
                         <i class="fas fa-reply"></i>
                     </button>
                     <button class="action-btn btn-tiny" data-action="comment" data-post="${postId}" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
@@ -3680,9 +3661,9 @@
                 
                 <div class="replies-section" id="replies-${postId}">
                     <div class="reply-composer" id="reply-composer-${postId}">
-                        <img src="${userProfile?.avatarUrl || getDefaultAvatar(userProfile?.nickname, userProfile?.color)}" class="avatar" alt="Аватар" style="width: 36px; height: 36px;" onerror="this.src='${getDefaultAvatar(userProfile?.nickname, userProfile?.color)}'">
+                        <img src="${userProfile?.avatarUrl || getDefaultAvatar(userProfile?.nickname, userProfile?.color)}" class="avatar" alt="Аватар" style="width: 36px; height: 36px;">
                         <textarea class="reply-input" placeholder="Напишите комментарий..." maxlength="300"></textarea>
-                        <button class="btn btn-reply btn-primary btn-tiny-reply tiny-reply-btn" data-post="${postId}">
+                        <button class="btn btn-reply btn-primary btn-tiny-reply" data-post="${postId}">
                             <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
@@ -3749,7 +3730,7 @@
             
             commentElement.innerHTML = `
                 <div class="reply-header">
-                    <img src="${avatarUrl}" class="avatar" alt="Аватар" style="width: 30px; height: 30px; cursor: pointer;" onerror="this.src='${getDefaultAvatar(comment.authorNickname, comment.authorColor)}'">
+                    <img src="${avatarUrl}" class="avatar" alt="Аватар" style="width: 30px; height: 30px; cursor: pointer;">
                     <div class="reply-author" style="color: ${comment.authorColor || '#1d9bf0'}; cursor: pointer;">
                         ${escapeHtml(comment.authorNickname || 'Аноним')}
                     </div>
@@ -3773,11 +3754,6 @@
             }
             
             const replyInput = document.querySelector(`#replies-${postId} .reply-input`);
-            if (!replyInput) {
-                console.error('Reply input not found');
-                return;
-            }
-            
             const content = replyInput.value.trim();
             
             if (!content) {
