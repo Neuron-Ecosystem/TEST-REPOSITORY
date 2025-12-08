@@ -1647,6 +1647,15 @@
         .comment-icon:hover {
             color: var(--accent-blue);
         }
+        
+        /* Уменьшенная кнопка ответа */
+        .btn-tiny-reply {
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 6px;
+            min-width: 60px;
+            height: 28px;
+        }
     </style>
 </head>
 <body>
@@ -2315,8 +2324,8 @@
         }
 
         function setupInteractiveElements() {
-            // Honesty voting buttons
             document.body.addEventListener('click', function(e) {
+                // Honesty voting buttons
                 const honestyBtn = e.target.closest('.honesty-btn');
                 if (honestyBtn && !honestyBtn.classList.contains('voted')) {
                     if (!currentUser) {
@@ -2324,7 +2333,8 @@
                         return;
                     }
                     
-                    const postId = honestyBtn.closest('.post-card').dataset.postId;
+                    const postCard = honestyBtn.closest('.post-card');
+                    const postId = postCard.dataset.postId;
                     const isTruth = honestyBtn.classList.contains('truth');
                     handleHonestyVote(postId, isTruth, honestyBtn);
                 }
@@ -2337,14 +2347,15 @@
                         return;
                     }
                     
-                    const postId = reactionBtn.closest('.post-card').dataset.postId;
+                    const postCard = reactionBtn.closest('.post-card');
+                    const postId = postCard.dataset.postId;
                     const reactionType = reactionBtn.classList.contains('laugh') ? 'laugh' :
                                        reactionBtn.classList.contains('think') ? 'think' :
                                        reactionBtn.classList.contains('support') ? 'support' : 'shock';
                     handleReaction(postId, reactionType, reactionBtn);
                 }
                 
-                // Reply button
+                // Reply button (small reply button in post actions)
                 const replyBtn = e.target.closest('.action-btn[data-action="reply"]');
                 if (replyBtn) {
                     if (!currentUser) {
@@ -2373,6 +2384,16 @@
                     const postData = JSON.parse(postCard.dataset.postData || '{}');
                     
                     toggleLike(postId, postData);
+                }
+                
+                // Comment button (toggle comments section)
+                const commentBtn = e.target.closest('.action-btn[data-action="comment"]');
+                if (commentBtn) {
+                    const postId = commentBtn.dataset.post;
+                    const repliesSection = document.getElementById(`replies-${postId}`);
+                    if (repliesSection) {
+                        repliesSection.classList.toggle('active');
+                    }
                 }
                 
                 // Close reply button
@@ -2434,6 +2455,15 @@
                     
                     if (confirm('Вы уверены, что хотите удалить этот комментарий?')) {
                         deleteComment(postId, commentId);
+                    }
+                }
+                
+                // Submit comment button
+                const submitCommentBtn = e.target.closest('.btn-reply');
+                if (submitCommentBtn) {
+                    const postId = submitCommentBtn.dataset.post;
+                    if (postId) {
+                        submitComment(postId);
                     }
                 }
             });
@@ -2771,7 +2801,7 @@
                 const fileExtension = file.name.split('.').pop();
                 const fileName = `avatar_${Date.now()}.${fileExtension}`;
                 
-                // Upload to Firebase Storage with unique name
+                // Upload to Firebase Storage
                 const storageRef = ref(storage, `avatars/${currentUser.uid}/${fileName}`);
                 await uploadBytes(storageRef, file);
                 const downloadURL = await getDownloadURL(storageRef);
@@ -2791,59 +2821,9 @@
                 // Update user profile in state
                 userProfile = await getUserProfile(currentUser.uid);
                 
-                // Also update all user's posts and comments with new avatar
-                await updateUserPostsAndCommentsWithAvatar(downloadURL);
-                
             } catch (error) {
                 console.error('Error uploading avatar:', error);
                 showProfileMessage('Ошибка загрузки аватара: ' + error.message);
-            }
-        }
-
-        async function updateUserPostsAndCommentsWithAvatar(avatarUrl) {
-            try {
-                // Update posts
-                const postsQuery = query(
-                    collection(db, 'posts'),
-                    where('authorId', '==', currentUser.uid)
-                );
-                
-                const postsSnapshot = await getDocs(postsQuery);
-                const batch = writeBatch(db);
-                
-                postsSnapshot.forEach((postDoc) => {
-                    batch.update(postDoc.ref, {
-                        authorAvatarUrl: avatarUrl
-                    });
-                });
-                
-                await batch.commit();
-                
-                // Update comments in all posts
-                const allPostsQuery = query(collection(db, 'posts'));
-                const allPostsSnapshot = await getDocs(allPostsQuery);
-                
-                for (const postDoc of allPostsSnapshot.docs) {
-                    const commentsQuery = query(
-                        collection(db, 'posts', postDoc.id, 'comments'),
-                        where('authorId', '==', currentUser.uid)
-                    );
-                    
-                    const commentsSnapshot = await getDocs(commentsQuery);
-                    const commentBatch = writeBatch(db);
-                    
-                    commentsSnapshot.forEach((commentDoc) => {
-                        commentBatch.update(commentDoc.ref, {
-                            authorAvatarUrl: avatarUrl
-                        });
-                    });
-                    
-                    if (commentsSnapshot.size > 0) {
-                        await commentBatch.commit();
-                    }
-                }
-            } catch (error) {
-                console.error('Error updating user posts and comments with avatar:', error);
             }
         }
 
@@ -3062,7 +3042,7 @@
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    <div class="reply-to-content">${postContent}</div>
+                    <div class="reply-to-content">${escapeHtml(postContent)}</div>
                 </div>
             `;
             
@@ -3090,9 +3070,14 @@
                 return;
             }
             
-            const content = type === 'honesty' ? elements.honestyPostInput.value.trim() :
-                          type === 'thought' ? elements.thoughtInput.value.trim() :
-                          elements.postInput.value.trim();
+            let content = '';
+            if (type === 'honesty') {
+                content = elements.honestyPostInput.value.trim();
+            } else if (type === 'thought') {
+                content = elements.thoughtInput.value.trim();
+            } else {
+                content = elements.postInput.value.trim();
+            }
             
             if (!content) {
                 alert('Введите текст поста');
@@ -3121,7 +3106,7 @@
                 };
                 
                 // Add parentId if replying to a post
-                if (replyingTo) {
+                if (replyingTo && type === 'regular') {
                     postData.parentId = replyingTo;
                     
                     // Get the original post to include its content
@@ -3129,8 +3114,8 @@
                     const originalPostSnap = await getDoc(originalPostRef);
                     if (originalPostSnap.exists()) {
                         const originalPost = originalPostSnap.data();
-                        postData.originalContent = originalPost.content.substring(0, 100) + '...';
-                        postData.originalAuthor = originalPost.authorNickname;
+                        postData.originalContent = originalPost.content.substring(0, 100) + (originalPost.content.length > 100 ? '...' : '');
+                        postData.originalAuthor = originalPost.authorNickname || 'Аноним';
                         postData.originalAuthorId = originalPost.authorId;
                         
                         // Increment comments count on original post
@@ -3181,7 +3166,7 @@
                 clearReplySetup();
                 
                 // Update challenges
-                await updateChallenges(type, replyingTo);
+                await updateChallenges(type, replyingTo, content);
                 
                 // Show success message
                 const successMsg = document.createElement('div');
@@ -3309,43 +3294,45 @@
             }
         }
 
-        async function updateChallenges(type, isReply = false) {
+        async function updateChallenges(type, isReply = false, content = '') {
             if (!currentUser) return;
             
-            // Challenge 1: 3 gratitude posts
-            if (type === 'regular') {
-                // Check if post contains gratitude keywords
-                const gratitudeKeywords = ['спасибо', 'благодарен', 'благодарна', 'рад', 'рада', 'счастлив', 'счастлива', 'благодарю'];
-                const content = type === 'honesty' ? elements.honestyPostInput.value.toLowerCase() :
-                              type === 'thought' ? elements.thoughtInput.value.toLowerCase() :
-                              elements.postInput.value.toLowerCase();
-                
-                const isGratitude = gratitudeKeywords.some(keyword => content.includes(keyword));
-                
-                if (isGratitude && !challengeData.challenge1.completed) {
-                    challengeData.challenge1.current++;
-                    updateChallengeUI(1);
+            try {
+                // Challenge 1: 3 gratitude posts
+                if (type === 'regular') {
+                    // Check if post contains gratitude keywords
+                    const gratitudeKeywords = ['спасибо', 'благодарен', 'благодарна', 'рад', 'рада', 'счастлив', 'счастлива', 'благодарю'];
+                    const contentLower = content.toLowerCase();
                     
-                    if (challengeData.challenge1.current >= challengeData.challenge1.total) {
-                        challengeData.challenge1.completed = true;
-                        completeChallenge(1);
+                    const isGratitude = gratitudeKeywords.some(keyword => contentLower.includes(keyword));
+                    
+                    if (isGratitude && !challengeData.challenge1.completed) {
+                        challengeData.challenge1.current++;
+                        updateChallengeUI(1);
+                        
+                        if (challengeData.challenge1.current >= challengeData.challenge1.total) {
+                            challengeData.challenge1.completed = true;
+                            completeChallenge(1);
+                        }
+                        
+                        await saveChallengeProgress();
+                    }
+                }
+                
+                // Challenge 3: Help 5 people (reply to posts)
+                if (isReply && !challengeData.challenge3.completed) {
+                    challengeData.challenge3.current++;
+                    updateChallengeUI(3);
+                    
+                    if (challengeData.challenge3.current >= challengeData.challenge3.total) {
+                        challengeData.challenge3.completed = true;
+                        completeChallenge(3);
                     }
                     
                     await saveChallengeProgress();
                 }
-            }
-            
-            // Challenge 3: Help 5 people (reply to posts)
-            if (isReply && !challengeData.challenge3.completed) {
-                challengeData.challenge3.current++;
-                updateChallengeUI(3);
-                
-                if (challengeData.challenge3.current >= challengeData.challenge3.total) {
-                    challengeData.challenge3.completed = true;
-                    completeChallenge(3);
-                }
-                
-                await saveChallengeProgress();
+            } catch (error) {
+                console.error('Error updating challenges:', error);
             }
         }
 
@@ -3374,15 +3361,17 @@
             }
             
             const card = document.querySelector(`[data-challenge="${challengeNum}"]`).closest('.challenge-card');
-            card.classList.add('completed');
-            card.classList.remove('active');
-            
-            // Show celebration
-            const celebration = document.createElement('div');
-            celebration.className = 'success-message';
-            celebration.textContent = '🎉 Челлендж пройден!';
-            celebration.style.marginTop = '10px';
-            card.appendChild(celebration);
+            if (card) {
+                card.classList.add('completed');
+                card.classList.remove('active');
+                
+                // Show celebration
+                const celebration = document.createElement('div');
+                celebration.className = 'success-message';
+                celebration.textContent = '🎉 Челлендж пройден!';
+                celebration.style.marginTop = '10px';
+                card.appendChild(celebration);
+            }
         }
 
         async function saveChallengeProgress() {
@@ -3436,9 +3425,10 @@
 
         // Feed functions
         function setupFeedListeners() {
-            // Main feed - only posts without parentId
+            // Main feed - posts without parentId (not replies)
             const mainQuery = query(
                 collection(db, 'posts'),
+                where('parentId', '==', null),
                 orderBy('createdAt', 'desc')
             );
             
@@ -3454,6 +3444,7 @@
             const honestyQuery = query(
                 collection(db, 'posts'),
                 where('type', '==', 'honesty'),
+                where('parentId', '==', null),
                 orderBy('createdAt', 'desc')
             );
             
@@ -3471,13 +3462,14 @@
             const thoughtQuery = query(
                 collection(db, 'posts'),
                 where('type', '==', 'thought'),
+                where('parentId', '==', null),
                 orderBy('createdAt', 'desc')
             );
             
             onSnapshot(thoughtQuery, (snapshot) => {
                 elements.thoughtLoading?.classList.add('hidden');
                 renderPosts(snapshot, elements.thoughtFeed, 'thought');
-            }, (error) => {
+            }, (error) {
                 console.error('Error loading thought posts:', error);
                 if (elements.thoughtLoading) {
                     elements.thoughtLoading.innerHTML = '<p>Ошибка загрузки мыслей</p>';
@@ -3573,9 +3565,9 @@
                 originalPostQuote = `
                     <div class="original-post-quote">
                         <div class="original-post-quote-header">
-                            <span class="original-post-author">Ответ для: ${post.originalAuthor || 'Аноним'}</span>
+                            <span class="original-post-author">Ответ для: ${escapeHtml(post.originalAuthor || 'Аноним')}</span>
                         </div>
-                        <div class="original-post-content">${post.originalContent || '...'}</div>
+                        <div class="original-post-content">${escapeHtml(post.originalContent || '...')}</div>
                     </div>
                 `;
             }
@@ -3586,7 +3578,7 @@
                     <div class="post-author-info">
                         <div class="post-author-row">
                             <div class="post-author" style="color: ${post.authorColor || '#1d9bf0'}">
-                                ${post.authorNickname || 'Аноним'}
+                                ${escapeHtml(post.authorNickname || 'Аноним')}
                             </div>
                             ${roleBadge}
                             <div class="post-time">${timeAgo}</div>
@@ -3653,7 +3645,7 @@
                         <i class="${likeIcon}"></i>
                         <span>${post.likesCount || 0}</span>
                     </button>
-                    <button class="action-btn btn-tiny" data-action="reply" data-post="${postId}" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
+                    <button class="action-btn btn-tiny-reply" data-action="reply" data-post="${postId}" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
                         <i class="fas fa-reply"></i>
                     </button>
                     <button class="action-btn btn-tiny" data-action="comment" data-post="${postId}" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
@@ -3671,7 +3663,7 @@
                     <div class="reply-composer" id="reply-composer-${postId}">
                         <img src="${userProfile?.avatarUrl || getDefaultAvatar(userProfile?.nickname, userProfile?.color)}" class="avatar" alt="Аватар" style="width: 36px; height: 36px;">
                         <textarea class="reply-input" placeholder="Напишите комментарий..." maxlength="300"></textarea>
-                        <button class="btn btn-reply btn-primary" onclick="submitComment('${postId}')">
+                        <button class="btn btn-reply btn-primary btn-tiny-reply" data-post="${postId}">
                             <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
@@ -3740,7 +3732,7 @@
                 <div class="reply-header">
                     <img src="${avatarUrl}" class="avatar" alt="Аватар" style="width: 30px; height: 30px; cursor: pointer;">
                     <div class="reply-author" style="color: ${comment.authorColor || '#1d9bf0'}; cursor: pointer;">
-                        ${comment.authorNickname || 'Аноним'}
+                        ${escapeHtml(comment.authorNickname || 'Аноним')}
                     </div>
                     <div class="reply-time">${timeAgo}</div>
                     ${canDelete ? `
@@ -4128,14 +4120,11 @@
         }
 
         function escapeHtml(text) {
+            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML.replace(/\n/g, '<br>');
         }
-        
-        // Make functions available globally
-        window.clearReplySetup = clearReplySetup;
-        window.submitComment = submitComment;
     </script>
 </body>
 </html>
