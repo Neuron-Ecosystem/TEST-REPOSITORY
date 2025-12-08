@@ -2222,7 +2222,6 @@
             setupEventListeners();
             setupAuthStateListener();
             setupFeedListeners();
-            setupInteractiveElements();
         }
 
         function setupEventListeners() {
@@ -2324,18 +2323,16 @@
                 elements.userProfileModal.classList.remove('active');
             });
             
-            // Close reply button
-            const closeReplyBtn = document.querySelector('.reply-to-close');
-            if (closeReplyBtn) {
-                closeReplyBtn.addEventListener('click', clearReplySetup);
-            }
+            // Setup global event listeners for dynamically created elements
+            setupGlobalEventListeners();
         }
 
-        function setupInteractiveElements() {
-            document.body.addEventListener('click', function(e) {
+        function setupGlobalEventListeners() {
+            // Используем делегирование событий для динамически созданных элементов
+            document.addEventListener('click', function(e) {
                 // Honesty voting buttons
                 const honestyBtn = e.target.closest('.honesty-btn');
-                if (honestyBtn && !honestyBtn.classList.contains('voted')) {
+                if (honestyBtn) {
                     if (!currentUser) {
                         showAuthModal();
                         return;
@@ -2466,7 +2463,7 @@
                     }
                 }
                 
-                // Submit comment button - ИСПРАВЛЕНО
+                // Submit comment button
                 const submitCommentBtn = e.target.closest('.btn-reply');
                 if (submitCommentBtn) {
                     const postId = submitCommentBtn.dataset.post;
@@ -2607,7 +2604,7 @@
                 elements.profileUserId.textContent = currentUser.uid.slice(0, 8);
                 elements.profileEmail.textContent = currentUser.email;
                 
-                // Set avatar - ИСПРАВЛЕНО
+                // Set avatar
                 setAvatar(profile.avatarUrl, profile.nickname, profile.color);
                 
                 if (profile.color) {
@@ -2830,7 +2827,7 @@
                     updatedAt: serverTimestamp()
                 });
                 
-                // Update UI - ИСПРАВЛЕНО
+                // Update UI
                 setAvatar(downloadURL, userProfile?.nickname, userProfile?.color);
                 
                 showProfileMessage('Аватар обновлен!');
@@ -3122,7 +3119,7 @@
                     updatedAt: serverTimestamp()
                 };
                 
-                // Add parentId if replying to a post - ИСПРАВЛЕНО: добавим parentPostData
+                // Add parentId if replying to a post
                 if (replyingTo && type === 'regular') {
                     postData.parentId = replyingTo;
                     
@@ -3185,7 +3182,7 @@
                 
                 clearReplySetup();
                 
-                // Update challenges - ИСПРАВЛЕНО
+                // Update challenges
                 await updateChallenges(type, replyingTo, content);
                 
                 // Show success message
@@ -3318,7 +3315,7 @@
             if (!currentUser) return;
             
             try {
-                // Challenge 1: 3 gratitude posts - ИСПРАВЛЕНО
+                // Challenge 1: 3 gratitude posts
                 if (type === 'regular') {
                     // Check if post contains gratitude keywords
                     const gratitudeKeywords = ['спасибо', 'благодарен', 'благодарна', 'рад', 'рада', 'счастлив', 'счастлива', 'благодарю', 'спасибо', 'thanks', 'thankful', 'grateful'];
@@ -3339,7 +3336,7 @@
                     }
                 }
                 
-                // Challenge 3: Help 5 people (reply to posts) - ИСПРАВЛЕНО
+                // Challenge 3: Help 5 people (reply to posts)
                 if (isReply && !challengeData.challenge3.completed) {
                     challengeData.challenge3.current++;
                     updateChallengeUI(3);
@@ -3489,7 +3486,7 @@
             onSnapshot(thoughtQuery, (snapshot) => {
                 elements.thoughtLoading?.classList.add('hidden');
                 renderPosts(snapshot, elements.thoughtFeed, 'thought');
-            }, (error) {
+            }, (error) => {
                 console.error('Error loading thought posts:', error);
                 if (elements.thoughtLoading) {
                     elements.thoughtLoading.innerHTML = '<p>Ошибка загрузки мыслей</p>';
@@ -3540,7 +3537,7 @@
             
             const timeAgo = formatTimeAgo(post.createdAt?.toDate());
             
-            // Get avatar URL with fallback - ИСПРАВЛЕНО
+            // Get avatar URL with fallback
             const avatarUrl = post.authorAvatarUrl || getDefaultAvatar(post.authorNickname, post.authorColor);
             
             // Check user's votes/reactions
@@ -3579,7 +3576,7 @@
                 userRole === 'team'
             );
             
-            // Original post quote if this is a reply - ИСПРАВЛЕНО: используем parentPostData
+            // Original post quote if this is a reply
             let originalPostQuote = '';
             if (post.parentId && post.parentPostData) {
                 originalPostQuote = `
