@@ -1656,6 +1656,14 @@
             min-width: 60px;
             height: 28px;
         }
+        
+        /* Миниатюрная кнопка "Ответить" */
+        .tiny-reply-btn {
+            padding: 2px 6px !important;
+            font-size: 11px !important;
+            height: 24px !important;
+            min-width: 24px !important;
+        }
     </style>
 </head>
 <body>
@@ -2458,7 +2466,7 @@
                     }
                 }
                 
-                // Submit comment button
+                // Submit comment button - ИСПРАВЛЕНО
                 const submitCommentBtn = e.target.closest('.btn-reply');
                 if (submitCommentBtn) {
                     const postId = submitCommentBtn.dataset.post;
@@ -2599,7 +2607,7 @@
                 elements.profileUserId.textContent = currentUser.uid.slice(0, 8);
                 elements.profileEmail.textContent = currentUser.email;
                 
-                // Set avatar
+                // Set avatar - ИСПРАВЛЕНО
                 setAvatar(profile.avatarUrl, profile.nickname, profile.color);
                 
                 if (profile.color) {
@@ -2623,6 +2631,15 @@
             elements.headerAvatar.src = avatarSrc;
             elements.honestyComposerAvatar.src = avatarSrc;
             elements.thoughtComposerAvatar.src = avatarSrc;
+            
+            // Обновляем все аватары в UI
+            document.querySelectorAll('.avatar').forEach(avatar => {
+                if (avatar.src.includes('ui-avatars.com') || avatar === elements.profileAvatar || 
+                    avatar === elements.composerAvatar || avatar === elements.headerAvatar ||
+                    avatar === elements.honestyComposerAvatar || avatar === elements.thoughtComposerAvatar) {
+                    avatar.src = avatarSrc;
+                }
+            });
         }
 
         async function checkNicknameAvailability() {
@@ -2813,7 +2830,7 @@
                     updatedAt: serverTimestamp()
                 });
                 
-                // Update UI
+                // Update UI - ИСПРАВЛЕНО
                 setAvatar(downloadURL, userProfile?.nickname, userProfile?.color);
                 
                 showProfileMessage('Аватар обновлен!');
@@ -3105,7 +3122,7 @@
                     updatedAt: serverTimestamp()
                 };
                 
-                // Add parentId if replying to a post
+                // Add parentId if replying to a post - ИСПРАВЛЕНО: добавим parentPostData
                 if (replyingTo && type === 'regular') {
                     postData.parentId = replyingTo;
                     
@@ -3114,9 +3131,12 @@
                     const originalPostSnap = await getDoc(originalPostRef);
                     if (originalPostSnap.exists()) {
                         const originalPost = originalPostSnap.data();
-                        postData.originalContent = originalPost.content.substring(0, 100) + (originalPost.content.length > 100 ? '...' : '');
-                        postData.originalAuthor = originalPost.authorNickname || 'Аноним';
-                        postData.originalAuthorId = originalPost.authorId;
+                        postData.parentPostData = {
+                            content: originalPost.content.substring(0, 100) + (originalPost.content.length > 100 ? '...' : ''),
+                            authorNickname: originalPost.authorNickname || 'Аноним',
+                            authorId: originalPost.authorId,
+                            authorColor: originalPost.authorColor || '#1d9bf0'
+                        };
                         
                         // Increment comments count on original post
                         await updateDoc(originalPostRef, {
@@ -3165,7 +3185,7 @@
                 
                 clearReplySetup();
                 
-                // Update challenges
+                // Update challenges - ИСПРАВЛЕНО
                 await updateChallenges(type, replyingTo, content);
                 
                 // Show success message
@@ -3298,10 +3318,10 @@
             if (!currentUser) return;
             
             try {
-                // Challenge 1: 3 gratitude posts
+                // Challenge 1: 3 gratitude posts - ИСПРАВЛЕНО
                 if (type === 'regular') {
                     // Check if post contains gratitude keywords
-                    const gratitudeKeywords = ['спасибо', 'благодарен', 'благодарна', 'рад', 'рада', 'счастлив', 'счастлива', 'благодарю'];
+                    const gratitudeKeywords = ['спасибо', 'благодарен', 'благодарна', 'рад', 'рада', 'счастлив', 'счастлива', 'благодарю', 'спасибо', 'thanks', 'thankful', 'grateful'];
                     const contentLower = content.toLowerCase();
                     
                     const isGratitude = gratitudeKeywords.some(keyword => contentLower.includes(keyword));
@@ -3319,7 +3339,7 @@
                     }
                 }
                 
-                // Challenge 3: Help 5 people (reply to posts)
+                // Challenge 3: Help 5 people (reply to posts) - ИСПРАВЛЕНО
                 if (isReply && !challengeData.challenge3.completed) {
                     challengeData.challenge3.current++;
                     updateChallengeUI(3);
@@ -3520,7 +3540,7 @@
             
             const timeAgo = formatTimeAgo(post.createdAt?.toDate());
             
-            // Get avatar URL with fallback
+            // Get avatar URL with fallback - ИСПРАВЛЕНО
             const avatarUrl = post.authorAvatarUrl || getDefaultAvatar(post.authorNickname, post.authorColor);
             
             // Check user's votes/reactions
@@ -3559,22 +3579,24 @@
                 userRole === 'team'
             );
             
-            // Original post quote if this is a reply
+            // Original post quote if this is a reply - ИСПРАВЛЕНО: используем parentPostData
             let originalPostQuote = '';
-            if (post.parentId && post.originalContent) {
+            if (post.parentId && post.parentPostData) {
                 originalPostQuote = `
                     <div class="original-post-quote">
                         <div class="original-post-quote-header">
-                            <span class="original-post-author">Ответ для: ${escapeHtml(post.originalAuthor || 'Аноним')}</span>
+                            <span class="original-post-author" style="color: ${post.parentPostData.authorColor || '#1d9bf0'}">
+                                Ответ для: ${escapeHtml(post.parentPostData.authorNickname || 'Аноним')}
+                            </span>
                         </div>
-                        <div class="original-post-content">${escapeHtml(post.originalContent || '...')}</div>
+                        <div class="original-post-content">${escapeHtml(post.parentPostData.content || '...')}</div>
                     </div>
                 `;
             }
             
             postElement.innerHTML = `
                 <div class="post-header">
-                    <img src="${avatarUrl}" class="avatar" alt="Аватар">
+                    <img src="${avatarUrl}" class="avatar" alt="Аватар" onerror="this.src='${getDefaultAvatar(post.authorNickname, post.authorColor)}'">
                     <div class="post-author-info">
                         <div class="post-author-row">
                             <div class="post-author" style="color: ${post.authorColor || '#1d9bf0'}">
@@ -3645,7 +3667,7 @@
                         <i class="${likeIcon}"></i>
                         <span>${post.likesCount || 0}</span>
                     </button>
-                    <button class="action-btn btn-tiny-reply" data-action="reply" data-post="${postId}" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
+                    <button class="action-btn btn-tiny-reply tiny-reply-btn" data-action="reply" data-post="${postId}" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
                         <i class="fas fa-reply"></i>
                     </button>
                     <button class="action-btn btn-tiny" data-action="comment" data-post="${postId}" ${!currentUser ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>
@@ -3661,9 +3683,9 @@
                 
                 <div class="replies-section" id="replies-${postId}">
                     <div class="reply-composer" id="reply-composer-${postId}">
-                        <img src="${userProfile?.avatarUrl || getDefaultAvatar(userProfile?.nickname, userProfile?.color)}" class="avatar" alt="Аватар" style="width: 36px; height: 36px;">
+                        <img src="${userProfile?.avatarUrl || getDefaultAvatar(userProfile?.nickname, userProfile?.color)}" class="avatar" alt="Аватар" style="width: 36px; height: 36px;" onerror="this.src='${getDefaultAvatar(userProfile?.nickname, userProfile?.color)}'">
                         <textarea class="reply-input" placeholder="Напишите комментарий..." maxlength="300"></textarea>
-                        <button class="btn btn-reply btn-primary btn-tiny-reply" data-post="${postId}">
+                        <button class="btn btn-reply btn-primary btn-tiny-reply tiny-reply-btn" data-post="${postId}">
                             <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
@@ -3730,7 +3752,7 @@
             
             commentElement.innerHTML = `
                 <div class="reply-header">
-                    <img src="${avatarUrl}" class="avatar" alt="Аватар" style="width: 30px; height: 30px; cursor: pointer;">
+                    <img src="${avatarUrl}" class="avatar" alt="Аватар" style="width: 30px; height: 30px; cursor: pointer;" onerror="this.src='${getDefaultAvatar(comment.authorNickname, comment.authorColor)}'">
                     <div class="reply-author" style="color: ${comment.authorColor || '#1d9bf0'}; cursor: pointer;">
                         ${escapeHtml(comment.authorNickname || 'Аноним')}
                     </div>
@@ -3754,6 +3776,11 @@
             }
             
             const replyInput = document.querySelector(`#replies-${postId} .reply-input`);
+            if (!replyInput) {
+                console.error('Reply input not found');
+                return;
+            }
+            
             const content = replyInput.value.trim();
             
             if (!content) {
