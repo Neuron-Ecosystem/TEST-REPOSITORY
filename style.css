@@ -1,0 +1,189 @@
+/* style.css */
+/* Глобальные стили для премиум-эстетики: мягкие цвета, плавные переходы, отсутствие углов */
+body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+    font-family: 'Arial', sans-serif;
+    color: white;
+    user-select: none;
+}
+
+#cosmos-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://source.unsplash.com/random/1920x1080/?space,stars') no-repeat center center/cover;
+    opacity: 0.8;
+    animation: cosmos-pulse 20s infinite alternate ease-in-out;
+}
+
+@keyframes cosmos-pulse {
+    0% { opacity: 0.8; }
+    100% { opacity: 0.9; }
+}
+
+/* Экран авторизации: полупрозрачная карточка, плавные анимации */
+.auth-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    animation: fade-in 1s ease-in;
+}
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    animation: card-appear 0.5s ease-out;
+}
+
+@keyframes card-appear {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.auth-card input {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    width: 200px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-card input:focus {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.auth-card button {
+    margin: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(45deg, #00bfff, #1e90ff);
+    color: white;
+    cursor: pointer;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.auth-card button:hover {
+    transform: scale(1.1);
+    opacity: 0.9;
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+}
+
+/* Основная сцена */
+#main-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#globe-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+#question {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    animation: text-pulse 2s infinite alternate ease-in-out;
+}
+
+@keyframes text-pulse {
+    0% { opacity: 0.8; }
+    100% { opacity: 1; }
+}
+
+#buttons {
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.state-btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 30px;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.state-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.state-btn[data-state="CREATE"] { background: linear-gradient(45deg, #ffd700, #ffff00); }
+.state-btn[data-state="WORK"] { background: linear-gradient(45deg, #0000ff, #00bfff); }
+.state-btn[data-state="COMMUTE"] { background: linear-gradient(45deg, #008000, #00ff00); }
+.state-btn[data-state="SLEEP"] { background: linear-gradient(45deg, #00008b, #191970); }
+.state-btn[data-state="ANXIOUS"] { background: linear-gradient(45deg, #808080, #a9a9a9); }
+.state-btn[data-state="ACTIVE"] { background: linear-gradient(45deg, #ff0000, #ff4500); }
+
+/* Карточка статистики */
+#stats-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    animation: card-appear 0.5s ease-out;
+}
+
+#stats-card button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(45deg, #00bfff, #1e90ff);
+    color: white;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
