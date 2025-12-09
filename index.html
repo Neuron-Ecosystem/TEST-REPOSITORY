@@ -1,4 +1,4 @@
-<!-- index.html -->
+<!-- index.html (обновлен: добавлен importmap для Three.js) -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -6,6 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MOMENTUM MOSAIC — Мозаика Момента</title>
     <link rel="stylesheet" href="style.css">
+
+    <!-- Import map для Three.js -->
+    <script async src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js?module",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+          }
+        }
+    </script>
 </head>
 <body>
     <!-- Фон космоса -->
