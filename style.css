@@ -47,6 +47,7 @@ body {
     text-align: center;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
     animation: card-appear 0.5s ease-out;
+    max-width: 80%;
 }
 
 @keyframes card-appear {
@@ -62,7 +63,8 @@ body {
     border-radius: 20px;
     background: rgba(255, 255, 255, 0.2);
     color: white;
-    width: 200px;
+    width: 100%;
+    max-width: 300px;
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -81,6 +83,8 @@ body {
     color: white;
     cursor: pointer;
     transition: transform 0.3s ease, opacity 0.3s ease;
+    width: 100%;
+    max-width: 300px;
 }
 
 .auth-card button:hover {
@@ -109,12 +113,13 @@ body {
 
 #question {
     position: absolute;
-    bottom: 20px;
+    bottom: 80px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 24px;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     animation: text-pulse 2s infinite alternate ease-in-out;
+    text-align: center;
 }
 
 @keyframes text-pulse {
@@ -124,12 +129,14 @@ body {
 
 #buttons {
     position: absolute;
-    bottom: 60px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    gap: 20px;
+    gap: 10px;
+    max-width: 90%;
 }
 
 .state-btn {
@@ -140,6 +147,8 @@ body {
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    flex: 1 1 40%;
+    max-width: 150px;
 }
 
 .state-btn:hover {
@@ -167,6 +176,7 @@ body {
     text-align: center;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
     animation: card-appear 0.5s ease-out;
+    max-width: 80%;
 }
 
 #stats-card button {
@@ -186,4 +196,52 @@ body {
 @keyframes fade-in {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+    .auth-card {
+        padding: 20px;
+    }
+
+    .auth-card h1 {
+        font-size: 24px;
+    }
+
+    .auth-card p {
+        font-size: 16px;
+    }
+
+    #question {
+        font-size: 18px;
+        bottom: 100px;
+    }
+
+    #buttons {
+        bottom: 10px;
+        gap: 5px;
+    }
+
+    .state-btn {
+        padding: 10px 20px;
+        font-size: 14px;
+        flex: 1 1 45%;
+    }
+
+    #stats-card {
+        padding: 15px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    #buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .state-btn {
+        width: 80%;
+        max-width: none;
+    }
 }
