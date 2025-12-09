@@ -1,9 +1,9 @@
-// script.js
+// script.js (обновлен: импорты Three.js через import map, добавлены alert для ошибок)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
-import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // Firebase config
 const firebaseConfig = {
@@ -212,7 +212,7 @@ buttons.forEach(btn => {
             setTimeout(() => btn.style.transform = 'scale(1)', 300);
         } catch (err) {
             console.error('Error submitting state:', err);
-            alert('Ошибка: ' + err.message); // Для дебага
+            alert('Ошибка отправки состояния: ' + err.message); // Для видимости ошибок
         }
     });
 });
@@ -274,6 +274,7 @@ async function login(mode) {
     } catch (err) {
         console.error('Auth error:', err);
         authError.textContent = err.message;
+        alert('Ошибка авторизации: ' + err.message); // Для видимости
     }
 }
 
@@ -285,6 +286,7 @@ async function googleLogin() {
     } catch (err) {
         console.error('Google auth error:', err);
         authError.textContent = err.message;
+        alert('Ошибка Google авторизации: ' + err.message);
     }
 }
 
@@ -326,4 +328,5 @@ auth.onAuthStateChanged(user => {
 // Для дебага: Логировать ошибки
 window.addEventListener('error', (event) => {
     console.error('Global error:', event.message);
+    alert('Глобальная ошибка: ' + event.message); // Для видимости в тесте
 });
