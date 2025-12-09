@@ -1,7 +1,7 @@
 // script.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js";
 
@@ -125,7 +125,7 @@ function updateTexture() {
 
         textureContext.fillStyle = `#${blendedColor.getHexString()}`;
         const x = (lonIdx / 36) * textureCanvas.width; // 360 / 10 = 36
-        const y = ( (90 - (latIdx * gridSize)) / 180 ) * textureCanvas.height; // Lat from -90 to 90
+        const y = ((90 - (latIdx * gridSize)) / 180) * textureCanvas.height; // Lat from -90 to 90
         const w = textureCanvas.width / 36;
         const h = textureCanvas.height / 18; // 180 / 10 = 18
         textureContext.fillRect(x, y, w, h);
@@ -137,7 +137,8 @@ function updateTexture() {
 // Агрегация данных
 async function aggregateRegions() {
     regions = {};
-    const q = query(collection(db, 'states'), where('timestamp', '>', new Date(Date.now() - 3600000))); // Последний час
+    const oneHourAgo = new Date(Date.now() - 3600000);
+    const q = query(collection(db, 'states'), where('timestamp', '>', oneHourAgo));
     const snapshot = await getDocs(q);
     snapshot.forEach(doc => {
         const data = doc.data();
@@ -171,11 +172,15 @@ function listenToStates() {
 // Получить локацию
 function getLocation() {
     return new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(pos => {
-            resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude });
-        }, err => {
-            reject(err);
-        });
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(pos => {
+                resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+            }, err => {
+                reject(err);
+            }, { enableHighAccuracy: true });
+        } else {
+            reject(new Error('Geolocation not supported'));
+        }
     });
 }
 
@@ -193,20 +198,21 @@ buttons.forEach(btn => {
             });
 
             // Анимация вспышки
-            const flashMaterial = globe.material.clone();
+            const originalMaterial = globe.material;
+            const flashMaterial = originalMaterial.clone();
             flashMaterial.emissive = new THREE.Color(0xffffff);
             flashMaterial.emissiveIntensity = 0.5;
             globe.material = flashMaterial;
             setTimeout(() => {
-                globe.material = flashMaterial; // Reset, but actually revert
-                flashMaterial.emissiveIntensity = 0;
+                globe.material = originalMaterial;
             }, 500);
 
             // Микро-анимация кнопки
             btn.style.transform = 'scale(1.2)';
             setTimeout(() => btn.style.transform = 'scale(1)', 300);
         } catch (err) {
-            console.error(err);
+            console.error('Error submitting state:', err);
+            alert('Ошибка: ' + err.message); // Для дебага
         }
     });
 });
@@ -252,8 +258,12 @@ registerBtn.addEventListener('click', () => login('register'));
 googleBtn.addEventListener('click', () => googleLogin());
 
 async function login(mode) {
-    const email = emailInput.value;
-    const password = passwordInput.value;
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+    if (!email || !password) {
+        authError.textContent = 'Введите email и пароль';
+        return;
+    }
     try {
         if (mode === 'login') {
             await signInWithEmailAndPassword(auth, email, password);
@@ -262,6 +272,7 @@ async function login(mode) {
         }
         transitionToMain();
     } catch (err) {
+        console.error('Auth error:', err);
         authError.textContent = err.message;
     }
 }
@@ -272,28 +283,34 @@ async function googleLogin() {
         await signInWithPopup(auth, provider);
         transitionToMain();
     } catch (err) {
+        console.error('Google auth error:', err);
         authError.textContent = err.message;
     }
 }
 
 // Переход к главной сцене
 function transitionToMain() {
+    authScreen.style.transition = 'opacity 1s ease';
     authScreen.style.opacity = 0;
     setTimeout(() => {
         authScreen.classList.add('hidden');
         mainScreen.classList.remove('hidden');
         mainScreen.style.opacity = 1;
-        initThree();
-        listenToStates();
-        aggregateRegions();
+        if (!scene) { // Инициализировать только раз
+            initThree();
+            listenToStates();
+            aggregateRegions();
+        }
     }, 1000);
 }
 
 // Resize
 function onResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    if (camera && renderer) {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
 }
 
 // Проверка auth состояния
@@ -302,5 +319,11 @@ auth.onAuthStateChanged(user => {
         transitionToMain();
     } else {
         authScreen.classList.remove('hidden');
+        authScreen.style.opacity = 1;
     }
+});
+
+// Для дебага: Логировать ошибки
+window.addEventListener('error', (event) => {
+    console.error('Global error:', event.message);
 });
